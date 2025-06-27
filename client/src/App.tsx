@@ -3,8 +3,10 @@ import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { Router, Route, Switch } from "wouter";
+import { Route, Switch } from "wouter";
+import { useAuth } from "@/hooks/useAuth";
 import Navigation from "./components/Navigation";
+// import Landing from "./pages/Landing";
 import Index from "./pages/Index";
 import Vault from "./pages/Vault";
 import Letters from "./pages/Letters";
@@ -18,28 +20,37 @@ import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
 
+function AppRouter() {
+  const { isAuthenticated, isLoading } = useAuth();
+
+  // For development, let's always show authenticated state
+  const showAuth = true; // isAuthenticated;
+
+  return (
+    <div className="min-h-screen bg-black">
+      {!isLoading && showAuth && <Navigation />}
+      <Switch>
+        <Route path="/" component={Index} />
+        <Route path="/vault" component={Vault} />
+        <Route path="/letters" component={Letters} />
+        <Route path="/letitgo" component={LetItGo} />
+        <Route path="/mood" component={Mood} />
+        <Route path="/whisper" component={Whisper} />
+        <Route path="/soulmate" component={Soulmate} />
+        <Route path="/feed" component={Feed} />
+        <Route path="/calm" component={CalmSpace} />
+        <Route component={NotFound} />
+      </Switch>
+    </div>
+  );
+}
+
 const App = () => (
   <QueryClientProvider client={queryClient}>
     <TooltipProvider>
       <Toaster />
       <Sonner />
-      <Router>
-        <div className="min-h-screen bg-black">
-          <Navigation />
-          <Switch>
-            <Route path="/" component={Index} />
-            <Route path="/vault" component={Vault} />
-            <Route path="/letters" component={Letters} />
-            <Route path="/letitgo" component={LetItGo} />
-            <Route path="/mood" component={Mood} />
-            <Route path="/whisper" component={Whisper} />
-            <Route path="/soulmate" component={Soulmate} />
-            <Route path="/feed" component={Feed} />
-            <Route path="/calm" component={CalmSpace} />
-            <Route component={NotFound} />
-          </Switch>
-        </div>
-      </Router>
+      <AppRouter />
     </TooltipProvider>
   </QueryClientProvider>
 );

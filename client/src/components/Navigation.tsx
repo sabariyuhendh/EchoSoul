@@ -2,10 +2,16 @@
 import { useState } from 'react';
 import { Link, useLocation } from 'wouter';
 import { Button } from '@/components/ui/button';
+import { useAuth } from '@/hooks/useAuth';
+import type { User } from '@shared/schema';
+import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 
 const Navigation = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [location] = useLocation();
+  const { user, isAuthenticated } = useAuth();
+  const typedUser = user as User | undefined;
 
   const navItems = [
     { title: "Vault", path: "/vault", color: "calm" },
@@ -19,6 +25,14 @@ const Navigation = () => {
   ];
 
   const isActive = (path: string) => location === path;
+
+  const handleLogin = () => {
+    window.location.href = "/api/login";
+  };
+
+  const handleLogout = () => {
+    window.location.href = "/api/logout";
+  };
 
   return (
     <nav className="fixed top-0 left-0 right-0 z-50 backdrop-blur-xl bg-black/90 border-b border-white/10">
@@ -45,6 +59,41 @@ const Navigation = () => {
                 </Button>
               </Link>
             ))}
+            
+            {/* User menu */}
+            {isAuthenticated && typedUser ? (
+              <DropdownMenu>
+                <DropdownMenuTrigger className="ml-4">
+                  <Avatar className="w-8 h-8">
+                    <AvatarImage src={typedUser.profileImageUrl || undefined} />
+                    <AvatarFallback className="bg-blue-600 text-white text-sm">
+                      {typedUser.firstName?.[0] || typedUser.email?.[0]?.toUpperCase() || "U"}
+                    </AvatarFallback>
+                  </Avatar>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent className="w-56 bg-black/90 border-white/20 text-white">
+                  <DropdownMenuItem className="focus:bg-white/10">
+                    <div className="flex flex-col">
+                      <span className="font-medium">{typedUser.firstName || "User"}</span>
+                      <span className="text-sm text-gray-400">{typedUser.email}</span>
+                    </div>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem 
+                    onClick={handleLogout}
+                    className="focus:bg-white/10 cursor-pointer"
+                  >
+                    Sign Out
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            ) : (
+              <Button
+                onClick={handleLogin}
+                className="ml-4 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-medium transition-all duration-300"
+              >
+                Sign In
+              </Button>
+            )}
           </div>
 
           {/* Mobile Menu Button */}
