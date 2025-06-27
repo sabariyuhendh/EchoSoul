@@ -92,8 +92,8 @@ const LetItGo = () => {
   }
 
   return (
-    <div className="min-h-screen bg-black text-white p-6">
-      <div className="max-w-6xl mx-auto">
+    <div className="min-h-screen bg-black text-white page-content">
+      <div className="max-w-6xl mx-auto px-6">
         {/* Header */}
         <div className="flex items-center justify-between mb-8">
           <Link to="/" className="flex items-center space-x-2 text-gray-400 hover:text-white transition-colors">
@@ -132,7 +132,7 @@ const LetItGo = () => {
           {/* Burn Mode */}
           <Card 
             className="glass p-8 hover:scale-105 transition-all duration-300 cursor-pointer group hover:ring-2 hover:ring-red-500/20 animate-fade-in border border-white/10"
-            onClick={() => content.trim() && setMode('burn')}
+            onClick={() => setMode('burn')}
           >
             <div className="text-center space-y-6">
               <div className="text-6xl mb-4 group-hover:animate-bounce">
@@ -145,10 +145,9 @@ const LetItGo = () => {
                 </p>
               </div>
               <Button
-                disabled={!content.trim()}
-                className="w-full bg-gradient-to-r from-red-500 to-orange-500 hover:from-red-600 hover:to-orange-600 text-white border-0 disabled:opacity-50"
+                className="w-full bg-red-600 hover:bg-red-700 text-white font-medium border-0"
               >
-                Choose Mode
+                Start Burning
               </Button>
             </div>
           </Card>
@@ -156,7 +155,7 @@ const LetItGo = () => {
           {/* Smash Mode */}
           <Card 
             className="glass p-8 hover:scale-105 transition-all duration-300 cursor-pointer group hover:ring-2 hover:ring-yellow-500/20 animate-fade-in border border-white/10"
-            onClick={() => content.trim() && setMode('smash')}
+            onClick={() => setMode('smash')}
             style={{ animationDelay: '0.1s' }}
           >
             <div className="text-center space-y-6">
@@ -170,10 +169,9 @@ const LetItGo = () => {
                 </p>
               </div>
               <Button
-                disabled={!content.trim()}
-                className="w-full bg-gradient-to-r from-yellow-500 to-orange-500 hover:from-yellow-600 hover:to-orange-600 text-white border-0 disabled:opacity-50"
+                className="w-full bg-yellow-600 hover:bg-yellow-700 text-white font-medium border-0"
               >
-                Choose Mode
+                Start Smashing
               </Button>
             </div>
           </Card>
@@ -181,7 +179,7 @@ const LetItGo = () => {
           {/* Scream Mode */}
           <Card 
             className="glass p-8 hover:scale-105 transition-all duration-300 cursor-pointer group hover:ring-2 hover:ring-blue-500/20 animate-fade-in border border-white/10"
-            onClick={() => content.trim() && setMode('scream')}
+            onClick={() => setMode('scream')}
             style={{ animationDelay: '0.2s' }}
           >
             <div className="text-center space-y-6">
@@ -195,10 +193,9 @@ const LetItGo = () => {
                 </p>
               </div>
               <Button
-                disabled={!content.trim()}
-                className="w-full bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 text-white border-0 disabled:opacity-50"
+                className="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium border-0"
               >
-                Choose Mode
+                Start Screaming
               </Button>
             </div>
           </Card>
