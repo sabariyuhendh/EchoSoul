@@ -2,21 +2,20 @@
 import { useState } from 'react';
 import { Link, useLocation } from 'wouter';
 import { Button } from '@/components/ui/button';
-import { Heart, BookOpen, MessageCircle, Flame, TrendingUp, Mic, Users, Sparkles, Menu, X } from 'lucide-react';
 
 const Navigation = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [location] = useLocation();
 
   const navItems = [
-    { icon: BookOpen, title: "Vault", path: "/vault", color: "calm" },
-    { icon: MessageCircle, title: "Letters", path: "/letters", color: "sage" },
-    { icon: Flame, title: "Let It Go", path: "/letitgo", color: "amber" },
-    { icon: TrendingUp, title: "Mood", path: "/mood", color: "rose" },
-    { icon: Mic, title: "Whisper", path: "/whisper", color: "lavender" },
-    { icon: Heart, title: "Soulmate", path: "/soulmate", color: "calm" },
-    { icon: Users, title: "Feed", path: "/feed", color: "sage" },
-    { icon: Sparkles, title: "Calm Space", path: "/calm", color: "lavender" }
+    { title: "Vault", path: "/vault", color: "calm" },
+    { title: "Letters", path: "/letters", color: "sage" },
+    { title: "Let It Go", path: "/letitgo", color: "amber" },
+    { title: "Mood", path: "/mood", color: "rose" },
+    { title: "Whisper", path: "/whisper", color: "lavender" },
+    { title: "Soulmate", path: "/soulmate", color: "calm" },
+    { title: "Feed", path: "/feed", color: "sage" },
+    { title: "Calm Space", path: "/calm", color: "lavender" }
   ];
 
   const isActive = (path: string) => location === path;
@@ -26,10 +25,8 @@ const Navigation = () => {
       <div className="max-w-7xl mx-auto px-6 py-4">
         <div className="flex items-center justify-between">
           <Link to="/" className="flex items-center space-x-3">
-            <div className="w-8 h-8 bg-gradient-to-br from-calm-400 to-sage-400 rounded-full flex items-center justify-center breathe">
-              <Heart className="w-4 h-4 text-white" />
-            </div>
-            <h1 className="text-xl font-semibold tracking-tight text-gradient-wellness">EchoSoul</h1>
+            <div className="w-8 h-8 bg-gradient-to-br from-blue-400 to-green-400 rounded-full"></div>
+            <h1 className="text-xl font-semibold tracking-tight text-white">EchoSoul</h1>
           </Link>
 
           {/* Desktop Navigation */}
@@ -38,13 +35,12 @@ const Navigation = () => {
               <Link key={item.path} to={item.path}>
                 <Button
                   variant="ghost"
-                  className={`apple-button px-4 py-2 transition-all duration-300 ${
+                  className={`px-4 py-2 transition-all duration-300 ${
                     isActive(item.path)
-                      ? `bg-gradient-to-r from-${item.color}-500/20 to-${item.color}-600/20 text-${item.color}-400 border border-${item.color}-500/30`
-                      : 'text-gray-300 hover:text-white hover:bg-white/5'
+                      ? 'bg-white/20 text-white border border-white/30'
+                      : 'text-gray-300 hover:text-white hover:bg-white/10'
                   }`}
                 >
-                  <item.icon className="w-4 h-4 mr-2" />
                   {item.title}
                 </Button>
               </Link>
@@ -57,7 +53,7 @@ const Navigation = () => {
             className="md:hidden text-white"
             onClick={() => setIsOpen(!isOpen)}
           >
-            {isOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+            {isOpen ? "✕" : "☰"}
           </Button>
         </div>
 
@@ -69,13 +65,12 @@ const Navigation = () => {
                 <Link key={item.path} to={item.path} onClick={() => setIsOpen(false)}>
                   <Button
                     variant="ghost"
-                    className={`w-full justify-start apple-button transition-all duration-300 ${
+                    className={`w-full justify-start transition-all duration-300 ${
                       isActive(item.path)
-                        ? `bg-gradient-to-r from-${item.color}-500/20 to-${item.color}-600/20 text-${item.color}-400`
-                        : 'text-gray-300 hover:text-white hover:bg-white/5'
+                        ? 'bg-white/20 text-white border border-white/30'
+                        : 'text-gray-300 hover:text-white hover:bg-white/10'
                     }`}
                   >
-                    <item.icon className="w-4 h-4 mr-2" />
                     {item.title}
                   </Button>
                 </Link>

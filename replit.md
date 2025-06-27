@@ -42,7 +42,9 @@ The application implements a client-server architecture where:
 4. Form validation through React Hook Form + Zod schemas
 
 ### Authentication & Storage
-- User authentication system with username/password (schema defined in `shared/schema.ts`)
+- **PostgreSQL**: User authentication system with username/password (schema defined in `shared/schema.ts`)
+- **MongoDB**: General application data storage for user content, posts, mood tracking, etc.
+- **Cloudinary**: Voice file storage for Whisper functionality
 - Configurable storage layer with in-memory implementation for development
 - Database-ready with Drizzle ORM configured for PostgreSQL
 
