@@ -1,12 +1,12 @@
 
 import { useState } from 'react';
-import { Link, useLocation } from 'react-router-dom';
+import { Link, useLocation } from 'wouter';
 import { Button } from '@/components/ui/button';
 import { Heart, BookOpen, MessageCircle, Flame, TrendingUp, Mic, Users, Sparkles, Menu, X } from 'lucide-react';
 
 const Navigation = () => {
   const [isOpen, setIsOpen] = useState(false);
-  const location = useLocation();
+  const [location] = useLocation();
 
   const navItems = [
     { icon: BookOpen, title: "Vault", path: "/vault", color: "calm" },
@@ -19,7 +19,7 @@ const Navigation = () => {
     { icon: Sparkles, title: "Calm Space", path: "/calm", color: "lavender" }
   ];
 
-  const isActive = (path: string) => location.pathname === path;
+  const isActive = (path: string) => location === path;
 
   return (
     <nav className="fixed top-0 left-0 right-0 z-50 backdrop-blur-xl bg-black/90 border-b border-white/10">

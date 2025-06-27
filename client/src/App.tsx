@@ -3,7 +3,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { Router, Route, Switch } from "wouter";
 import Navigation from "./components/Navigation";
 import Index from "./pages/Index";
 import Vault from "./pages/Vault";
@@ -23,23 +23,23 @@ const App = () => (
     <TooltipProvider>
       <Toaster />
       <Sonner />
-      <BrowserRouter>
+      <Router>
         <div className="min-h-screen bg-black">
           <Navigation />
-          <Routes>
-            <Route path="/" element={<Index />} />
-            <Route path="/vault" element={<Vault />} />
-            <Route path="/letters" element={<Letters />} />
-            <Route path="/letitgo" element={<LetItGo />} />
-            <Route path="/mood" element={<Mood />} />
-            <Route path="/whisper" element={<Whisper />} />
-            <Route path="/soulmate" element={<Soulmate />} />
-            <Route path="/feed" element={<Feed />} />
-            <Route path="/calm" element={<CalmSpace />} />
-            <Route path="*" element={<NotFound />} />
-          </Routes>
+          <Switch>
+            <Route path="/" component={Index} />
+            <Route path="/vault" component={Vault} />
+            <Route path="/letters" component={Letters} />
+            <Route path="/letitgo" component={LetItGo} />
+            <Route path="/mood" component={Mood} />
+            <Route path="/whisper" component={Whisper} />
+            <Route path="/soulmate" component={Soulmate} />
+            <Route path="/feed" component={Feed} />
+            <Route path="/calm" component={CalmSpace} />
+            <Route component={NotFound} />
+          </Switch>
         </div>
-      </BrowserRouter>
+      </Router>
     </TooltipProvider>
   </QueryClientProvider>
 );

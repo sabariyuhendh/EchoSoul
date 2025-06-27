@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Textarea } from '@/components/ui/textarea';
 import { ArrowLeft, Flame, Zap, Mic, Timer } from 'lucide-react';
-import { Link } from 'react-router-dom';
+import { Link } from 'wouter';
 import BurnMode from '@/components/BurnMode';
 import SmashMode from '@/components/SmashMode';
 import ScreamMode from '@/components/ScreamMode';

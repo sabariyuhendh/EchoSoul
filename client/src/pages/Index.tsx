@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Heart, MessageCircle, BookOpen, Mic, TrendingUp, Sparkles, Shield, Clock, ArrowRight, Flame, Users } from 'lucide-react';
-import { Link } from 'react-router-dom';
+import { Link } from 'wouter';
 
 const Index = () => {
   const [mounted, setMounted] = useState(false);
