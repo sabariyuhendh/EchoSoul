@@ -61,7 +61,7 @@ const BurnMode = ({ content, onBack, onComplete }: BurnModeProps) => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-orange-900 via-red-900 to-black text-white relative overflow-hidden">
+    <div className="min-h-screen bg-black text-white relative overflow-hidden">
       {/* Fire Effects */}
       {isIgnited && (
         <div className="absolute inset-0 z-10">

@@ -93,7 +93,7 @@ const ScreamMode = ({ content, onBack, onComplete }: ScreamModeProps) => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-indigo-900 via-purple-900 to-black text-white relative overflow-hidden">
+    <div className="min-h-screen bg-black text-white relative overflow-hidden">
       {/* Sound Wave Effects */}
       {isListening && (
         <div className="absolute inset-0 flex items-center justify-center">

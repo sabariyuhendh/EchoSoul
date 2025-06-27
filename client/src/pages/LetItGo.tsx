@@ -5,6 +5,8 @@ import { Card } from '@/components/ui/card';
 import { Textarea } from '@/components/ui/textarea';
 import { ArrowLeft, Flame, Zap, Mic, Timer } from 'lucide-react';
 import { Link } from 'wouter';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { apiRequest } from '@/lib/queryClient';
 import BurnMode from '@/components/BurnMode';
 import SmashMode from '@/components/SmashMode';
 import ScreamMode from '@/components/ScreamMode';
@@ -15,6 +17,19 @@ const LetItGo = () => {
   const [mode, setMode] = useState<ReleaseMode | null>(null);
   const [content, setContent] = useState('');
   const [timeLeft, setTimeLeft] = useState(3600);
+  const queryClient = useQueryClient();
+
+  const createEntryMutation = useMutation({
+    mutationFn: async ({ content, mode }: { content: string; mode: ReleaseMode }) => {
+      return apiRequest('/api/letitgo', {
+        method: 'POST',
+        body: JSON.stringify({ content, mode }),
+      });
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['/api/letitgo'] });
+    },
+  });
 
   useEffect(() => {
     let interval: NodeJS.Timeout;
@@ -33,7 +48,10 @@ const LetItGo = () => {
     return `${hrs}:${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
   };
 
-  const handleModeComplete = () => {
+  const handleModeComplete = async () => {
+    if (content.trim() && mode) {
+      await createEntryMutation.mutateAsync({ content: content.trim(), mode });
+    }
     setMode(null);
     setContent('');
   };
@@ -74,15 +92,15 @@ const LetItGo = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-black p-6">
+    <div className="min-h-screen bg-black text-white p-6">
       <div className="max-w-6xl mx-auto">
         {/* Header */}
         <div className="flex items-center justify-between mb-8">
-          <Link to="/" className="flex items-center space-x-2 text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200 transition-colors">
+          <Link to="/" className="flex items-center space-x-2 text-gray-400 hover:text-white transition-colors">
             <ArrowLeft className="w-5 h-5" />
             <span>Back to Home</span>
           </Link>
-          <div className="flex items-center space-x-2 text-gray-600 dark:text-gray-400">
+          <div className="flex items-center space-x-2 text-gray-400">
             <Timer className="w-4 h-4" />
             <span className="text-sm">{formatTime(timeLeft)}</span>
           </div>
@@ -93,19 +111,19 @@ const LetItGo = () => {
           <div className="w-20 h-20 bg-gradient-to-br from-orange-400 to-red-500 rounded-full flex items-center justify-center mx-auto mb-6 animate-pulse-glow">
             <Flame className="w-10 h-10 text-white" />
           </div>
-          <h1 className="text-4xl font-bold text-gray-800 dark:text-white mb-4">Let It Go Room</h1>
-          <p className="text-gray-600 dark:text-gray-400 text-lg max-w-2xl mx-auto">
+          <h1 className="text-4xl font-bold text-white mb-4">Let It Go Room</h1>
+          <p className="text-gray-400 text-lg max-w-2xl mx-auto">
             A safe space to release your emotions. Choose how you want to let it go – nothing is saved, everything disappears.
           </p>
         </div>
 
         {/* Writing Area */}
-        <Card className="bg-white dark:bg-gray-900 shadow-sm border border-gray-200 dark:border-gray-700 p-8 mb-12 animate-fade-in">
+        <Card className="glass p-8 mb-12 animate-fade-in border border-white/10">
           <Textarea
             value={content}
             onChange={(e) => setContent(e.target.value)}
             placeholder="Write everything you want to release... your anger, frustration, pain. Choose how you want to let it go."
-            className="min-h-48 bg-transparent border-none text-lg resize-none focus:ring-0 text-gray-800 dark:text-gray-200 placeholder-gray-400 dark:placeholder-gray-600"
+            className="min-h-48 bg-transparent border-none text-lg resize-none focus:ring-0 text-white placeholder-gray-500"
           />
         </Card>
 
@@ -113,7 +131,7 @@ const LetItGo = () => {
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-8">
           {/* Burn Mode */}
           <Card 
-            className="bg-white dark:bg-gray-900 shadow-sm border border-gray-200 dark:border-gray-700 p-8 hover:shadow-xl dark:hover:shadow-2xl hover:scale-105 transition-all duration-300 cursor-pointer group hover:ring-2 hover:ring-red-500/20 animate-fade-in"
+            className="glass p-8 hover:scale-105 transition-all duration-300 cursor-pointer group hover:ring-2 hover:ring-red-500/20 animate-fade-in border border-white/10"
             onClick={() => content.trim() && setMode('burn')}
           >
             <div className="text-center space-y-6">
@@ -121,8 +139,8 @@ const LetItGo = () => {
                 🔥
               </div>
               <div>
-                <h3 className="text-xl font-semibold text-gray-800 dark:text-white mb-2">Burn Mode</h3>
-                <p className="text-gray-600 dark:text-gray-400 text-sm leading-relaxed">
+                <h3 className="text-xl font-semibold text-white mb-2">Burn Mode</h3>
+                <p className="text-gray-400 text-sm leading-relaxed">
                   Write what's bothering you and watch it burn away in flames.
                 </p>
               </div>
@@ -137,7 +155,7 @@ const LetItGo = () => {
 
           {/* Smash Mode */}
           <Card 
-            className="bg-white dark:bg-gray-900 shadow-sm border border-gray-200 dark:border-gray-700 p-8 hover:shadow-xl dark:hover:shadow-2xl hover:scale-105 transition-all duration-300 cursor-pointer group hover:ring-2 hover:ring-yellow-500/20 animate-fade-in"
+            className="glass p-8 hover:scale-105 transition-all duration-300 cursor-pointer group hover:ring-2 hover:ring-yellow-500/20 animate-fade-in border border-white/10"
             onClick={() => content.trim() && setMode('smash')}
             style={{ animationDelay: '0.1s' }}
           >
@@ -146,8 +164,8 @@ const LetItGo = () => {
                 💥
               </div>
               <div>
-                <h3 className="text-xl font-semibold text-gray-800 dark:text-white mb-2">Smash Mode</h3>
-                <p className="text-gray-600 dark:text-gray-400 text-sm leading-relaxed">
+                <h3 className="text-xl font-semibold text-white mb-2">Smash Mode</h3>
+                <p className="text-gray-400 text-sm leading-relaxed">
                   Break virtual objects to release your frustration safely.
                 </p>
               </div>
@@ -162,7 +180,7 @@ const LetItGo = () => {
 
           {/* Scream Mode */}
           <Card 
-            className="bg-white dark:bg-gray-900 shadow-sm border border-gray-200 dark:border-gray-700 p-8 hover:shadow-xl dark:hover:shadow-2xl hover:scale-105 transition-all duration-300 cursor-pointer group hover:ring-2 hover:ring-blue-500/20 animate-fade-in"
+            className="glass p-8 hover:scale-105 transition-all duration-300 cursor-pointer group hover:ring-2 hover:ring-blue-500/20 animate-fade-in border border-white/10"
             onClick={() => content.trim() && setMode('scream')}
             style={{ animationDelay: '0.2s' }}
           >
@@ -171,8 +189,8 @@ const LetItGo = () => {
                 🎤
               </div>
               <div>
-                <h3 className="text-xl font-semibold text-gray-800 dark:text-white mb-2">Scream Mode</h3>
-                <p className="text-gray-600 dark:text-gray-400 text-sm leading-relaxed">
+                <h3 className="text-xl font-semibold text-white mb-2">Scream Mode</h3>
+                <p className="text-gray-400 text-sm leading-relaxed">
                   Let it all out vocally – shatter glass with the power of your voice.
                 </p>
               </div>
@@ -188,7 +206,7 @@ const LetItGo = () => {
 
         {/* Privacy Note */}
         <div className="text-center mt-8 animate-fade-in" style={{ animationDelay: '0.3s' }}>
-          <p className="text-gray-500 dark:text-gray-400 text-sm">
+          <p className="text-gray-400 text-sm">
             <Timer className="w-4 h-4 inline mr-1" />
             All entries auto-delete after 1 hour for your privacy
           </p>

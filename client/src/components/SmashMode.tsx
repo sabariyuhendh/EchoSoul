@@ -70,7 +70,7 @@ const SmashMode = ({ content, onBack, onComplete }: SmashModeProps) => {
   }, [smashedCount, onComplete]);
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-gray-800 via-slate-700 to-gray-900 text-white relative overflow-hidden">
+    <div className="min-h-screen bg-black text-white relative overflow-hidden">
       {/* Destruction Environment */}
       <div className="absolute inset-0">
         {/* Crack effects */}

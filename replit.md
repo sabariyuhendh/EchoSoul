@@ -104,6 +104,12 @@ The application is configured for deployment on Replit's infrastructure with:
 ```
 Changelog:
 - June 27, 2025. Initial setup
+- June 27, 2025. Migration from Lovable to Replit completed:
+  * Converted routing from React Router to Wouter
+  * Fixed dark mode styling for Let It Go Room
+  * Implemented backend API for Let It Go functionality with ephemeral storage
+  * Added proper component styling and glassmorphism effects
+  * Completed all interactive mode components (Burn, Smash, Scream)
 ```
 
 ## User Preferences
