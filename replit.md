@@ -112,6 +112,13 @@ Changelog:
   * Implemented backend API for Let It Go functionality with ephemeral storage
   * Added proper component styling and glassmorphism effects
   * Completed all interactive mode components (Burn, Smash, Scream)
+  * Removed icons from navbar, switched to plain text navigation
+  * Fixed button text visibility issues with proper contrast
+- June 27, 2025. Database integration completed:
+  * Added PostgreSQL database with Drizzle ORM
+  * Migrated from MemStorage to DatabaseStorage implementation
+  * Successfully pushed schema to database with users and letItGoEntries tables
+  * Database connection established and verified
 ```
 
 ## User Preferences

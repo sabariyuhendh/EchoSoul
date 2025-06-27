@@ -1,4 +1,6 @@
 import { users, letItGoEntries, type User, type InsertUser, type LetItGoEntry, type InsertLetItGoEntry } from "@shared/schema";
+import { db } from "./db";
+import { eq, lt } from "drizzle-orm";
 
 // modify the interface with any CRUD methods
 // you might need
@@ -86,4 +88,58 @@ export class MemStorage implements IStorage {
   }
 }
 
-export const storage = new MemStorage();
+export class DatabaseStorage implements IStorage {
+  async getUser(id: number): Promise<User | undefined> {
+    const [user] = await db.select().from(users).where(eq(users.id, id));
+    return user || undefined;
+  }
+
+  async getUserByUsername(username: string): Promise<User | undefined> {
+    const [user] = await db.select().from(users).where(eq(users.username, username));
+    return user || undefined;
+  }
+
+  async createUser(insertUser: InsertUser): Promise<User> {
+    const [user] = await db
+      .insert(users)
+      .values(insertUser)
+      .returning();
+    return user;
+  }
+
+  async createLetItGoEntry(insertEntry: InsertLetItGoEntry): Promise<LetItGoEntry> {
+    const expiresAt = new Date();
+    expiresAt.setHours(expiresAt.getHours() + 24); // Expire after 24 hours
+    
+    const entryData = {
+      userId: insertEntry.userId,
+      content: insertEntry.content,
+      mode: insertEntry.mode,
+      expiresAt: expiresAt
+    };
+    
+    const [entry] = await db
+      .insert(letItGoEntries)
+      .values(entryData)
+      .returning();
+    return entry;
+  }
+
+  async getUserLetItGoEntries(userId: number): Promise<LetItGoEntry[]> {
+    return await db
+      .select()
+      .from(letItGoEntries)
+      .where(eq(letItGoEntries.userId, userId));
+  }
+
+  async deleteExpiredLetItGoEntries(): Promise<void> {
+    const expiryTime = new Date();
+    expiryTime.setHours(expiryTime.getHours() - 24);
+    
+    await db
+      .delete(letItGoEntries)
+      .where(lt(letItGoEntries.createdAt, expiryTime));
+  }
+}
+
+export const storage = new DatabaseStorage();
