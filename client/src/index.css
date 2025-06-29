@@ -132,82 +132,165 @@
     border: 1px solid rgba(255, 255, 255, 0.1);
   }
   
-  /* Fix navbar overlap issue - add padding for fixed navbar */
+  /* Universal navbar spacing fix - applies to all pages */
   .page-content {
-    padding-top: 90px; /* Adjust based on navbar height */
-    min-height: calc(100vh - 90px);
+    padding-top: 100px !important; /* Increased for better clearance */
+    min-height: calc(100vh - 100px);
   }
   
-  /* Premium, elegant, minimal button styling */
+  /* Global container spacing for pages without page-content class */
+  .min-h-screen {
+    padding-top: 100px !important;
+  }
+  
+  /* Ensure main content containers have proper spacing */
+  main, .main-content, [data-main-content] {
+    padding-top: 100px !important;
+  }
+  
+  /* Global high-contrast button styling for all themes */
   button {
-    color: #ffffff !important;
+    color: #f5f5f5 !important;
     font-weight: 500 !important;
     letter-spacing: 0.025em;
-    transition: all 0.2s ease;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+    overflow: hidden;
   }
   
   button * {
     color: inherit !important;
+    z-index: 2;
+    position: relative;
   }
   
   button:hover {
-    transform: translateY(-1px);
+    transform: translateY(-2px) scale(1.02);
+    filter: brightness(1.1);
+  }
+  
+  button:active {
+    transform: translateY(0) scale(0.98);
   }
   
   button:disabled {
-    color: rgba(255, 255, 255, 0.4) !important;
-    opacity: 0.6;
+    color: rgba(245, 245, 245, 0.4) !important;
+    opacity: 0.5;
     transform: none;
+    filter: none;
+    cursor: not-allowed;
   }
   
-  /* Gradient buttons with premium styling */
+  /* Premium glassmorphism buttons with high contrast */
   .bg-gradient-to-r, .bg-gradient-to-l, .bg-gradient-to-t, .bg-gradient-to-b,
   .bg-gradient-to-br, .bg-gradient-to-bl, .bg-gradient-to-tr, .bg-gradient-to-tl {
-    color: #ffffff !important;
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3), 
-                0 1px 3px rgba(255, 255, 255, 0.1) inset;
+    color: #f5f5f5 !important;
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.15) 0%, rgba(255, 255, 255, 0.05) 100%) !important;
+    border: 1px solid rgba(255, 255, 255, 0.18) !important;
+    backdrop-filter: blur(20px) !important;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4), 
+                0 2px 8px rgba(255, 255, 255, 0.1) inset,
+                0 0 0 1px rgba(255, 255, 255, 0.05) inset !important;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.8) !important;
   }
   
   .bg-gradient-to-r:hover, .bg-gradient-to-l:hover, .bg-gradient-to-t:hover, .bg-gradient-to-b:hover,
   .bg-gradient-to-br:hover, .bg-gradient-to-bl:hover, .bg-gradient-to-tr:hover, .bg-gradient-to-tl:hover {
-    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4), 
-                0 1px 3px rgba(255, 255, 255, 0.15) inset;
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.25) 0%, rgba(255, 255, 255, 0.1) 100%) !important;
+    border: 1px solid rgba(255, 255, 255, 0.3) !important;
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.5), 
+                0 4px 12px rgba(255, 255, 255, 0.15) inset,
+                0 0 0 1px rgba(255, 255, 255, 0.1) inset !important;
   }
   
-  /* Apple button styling - premium minimal design */
+  /* Apple button styling - premium glassmorphism with high contrast */
   .apple-button {
-    color: #ffffff !important;
-    font-weight: 500 !important;
-    border: 1px solid rgba(255, 255, 255, 0.08) !important;
-    backdrop-filter: blur(16px);
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2),
-                0 1px 2px rgba(255, 255, 255, 0.05) inset;
+    color: #f5f5f5 !important;
+    font-weight: 600 !important;
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.12) 0%, rgba(255, 255, 255, 0.04) 100%) !important;
+    border: 1px solid rgba(255, 255, 255, 0.15) !important;
+    backdrop-filter: blur(24px) !important;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3),
+                0 1px 4px rgba(255, 255, 255, 0.08) inset,
+                0 0 0 1px rgba(255, 255, 255, 0.03) inset !important;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.8) !important;
   }
   
   .apple-button:hover {
-    border: 1px solid rgba(255, 255, 255, 0.12) !important;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3),
-                0 1px 3px rgba(255, 255, 255, 0.08) inset;
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.2) 0%, rgba(255, 255, 255, 0.08) 100%) !important;
+    border: 1px solid rgba(255, 255, 255, 0.25) !important;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4),
+                0 2px 8px rgba(255, 255, 255, 0.12) inset,
+                0 0 0 1px rgba(255, 255, 255, 0.06) inset !important;
   }
   
   .apple-button:disabled {
-    color: rgba(255, 255, 255, 0.4) !important;
-    opacity: 0.6;
-    box-shadow: none;
+    color: rgba(245, 245, 245, 0.3) !important;
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.05) 0%, rgba(255, 255, 255, 0.02) 100%) !important;
+    border: 1px solid rgba(255, 255, 255, 0.05) !important;
+    box-shadow: none !important;
+    text-shadow: none !important;
   }
   
-  /* Minimal shadcn overrides for consistency */
+  /* Light theme button overrides */
+  .light button {
+    color: #111111 !important;
+    text-shadow: 0 1px 2px rgba(255, 255, 255, 0.8) !important;
+  }
+  
+  .light .apple-button {
+    color: #111111 !important;
+    background: linear-gradient(135deg, rgba(0, 0, 0, 0.08) 0%, rgba(0, 0, 0, 0.03) 100%) !important;
+    border: 1px solid rgba(0, 0, 0, 0.12) !important;
+    text-shadow: 0 1px 2px rgba(255, 255, 255, 0.8) !important;
+  }
+  
+  /* Ensure button variants have high contrast */
+  [class*="bg-"], [class*="border-"], .variant-default, .variant-outline, .variant-secondary {
+    color: #f5f5f5 !important;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.8) !important;
+  }
+  
+  /* Comprehensive modal and form styling */
+  .modal, .dialog, .sheet, .popover, .dropdown {
+    padding-top: 20px !important;
+  }
+  
+  /* Global form button consistency */
+  form button, .form button, [role="dialog"] button, [role="menu"] button {
+    color: #f5f5f5 !important;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.8) !important;
+  }
+  
+  /* Shadcn overrides for high contrast */
   .text-primary-foreground {
-    color: #000000 !important;
+    color: #111111 !important;
+    text-shadow: 0 1px 2px rgba(255, 255, 255, 0.8) !important;
   }
   
-  .text-secondary-foreground {
-    color: #ffffff !important;
+  .text-secondary-foreground, .text-destructive-foreground {
+    color: #f5f5f5 !important;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.8) !important;
   }
   
-  .text-destructive-foreground {
-    color: #ffffff !important;
+  /* Additional global spacing fixes */
+  .container, .max-w-7xl, .max-w-6xl, .max-w-4xl, .max-w-2xl {
+    margin-top: 20px !important;
+  }
+  
+  /* Ensure no content gets cut off by navbar */
+  body > div:first-child, #root > div:first-child {
+    padding-top: 80px !important;
+  }
+  
+  /* Fix any remaining navbar overlap issues */
+  [class*="fixed"][class*="top-0"], [class*="sticky"][class*="top-"] {
+    z-index: 9999 !important;
+  }
+  
+  /* Ensure all content starts below navbar */
+  section:first-child, article:first-child, .hero, .landing {
+    margin-top: 100px !important;
   }
   
   /* Page layout fixes for navbar spacing */
