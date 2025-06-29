@@ -61,6 +61,26 @@ export default {
           border: "hsl(var(--sidebar-border))",
           ring: "hsl(var(--sidebar-ring))",
         },
+        calm: {
+          DEFAULT: "hsl(var(--calm-primary))",
+          400: "hsl(var(--calm-primary))",
+        },
+        sage: {
+          DEFAULT: "hsl(var(--sage-primary))",
+          400: "hsl(var(--sage-primary))",
+        },
+        lavender: {
+          DEFAULT: "hsl(var(--lavender-primary))",
+          400: "hsl(var(--lavender-primary))",
+        },
+        rose: {
+          DEFAULT: "hsl(var(--rose-primary))",
+          400: "hsl(var(--rose-primary))",
+        },
+        amber: {
+          DEFAULT: "hsl(var(--amber-primary))",
+          400: "hsl(var(--amber-primary))",
+        },
       },
       keyframes: {
         "accordion-down": {
