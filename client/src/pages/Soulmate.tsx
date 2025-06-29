@@ -78,7 +78,7 @@ const Soulmate = () => {
   };
 
   return (
-    <div className="min-h-screen bg-black text-white flex flex-col">
+    <div className="min-h-screen bg-black text-white page-content flex flex-col">
       <div className="max-w-4xl mx-auto w-full flex flex-col h-screen">
         {/* Header */}
         <div className="flex items-center justify-between p-6 border-b border-white/10">

@@ -51,7 +51,7 @@ const Vault = () => {
   const progress = ((480 - timeLeft) / 480) * 100;
 
   return (
-    <div className="min-h-screen bg-black text-white p-6 pt-24">
+    <div className="min-h-screen bg-black text-white page-content p-6">
       {/* Header */}
       <div className="max-w-4xl mx-auto mb-8">
         <div className="text-center mb-6">

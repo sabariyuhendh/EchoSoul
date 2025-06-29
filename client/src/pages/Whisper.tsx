@@ -107,7 +107,7 @@ const Whisper = () => {
   };
 
   return (
-    <div className="min-h-screen bg-black text-white p-6">
+    <div className="min-h-screen bg-black text-white page-content p-6">
       <div className="max-w-4xl mx-auto">
         {/* Hidden Audio Element */}
         <audio ref={audioRef} className="hidden" />

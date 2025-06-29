@@ -1,5 +1,6 @@
 import * as client from "openid-client";
 import { Strategy, type VerifyFunction } from "openid-client/passport";
+import { Strategy as GoogleStrategy } from "passport-google-oauth20";
 
 import passport from "passport";
 import session from "express-session";
@@ -88,6 +89,53 @@ export async function setupAuth(app: Express) {
     verified(null, user);
   };
 
+  // Google OAuth Strategy
+  if (process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET) {
+    passport.use(new GoogleStrategy({
+      clientID: process.env.GOOGLE_CLIENT_ID,
+      clientSecret: process.env.GOOGLE_CLIENT_SECRET,
+      callbackURL: "/api/auth/google/callback"
+    },
+    async (accessToken, refreshToken, profile, done) => {
+      try {
+        const email = profile.emails?.[0]?.value || '';
+        
+        // Find existing user by email
+        let user = await storage.getUserByEmail(email);
+        
+        if (!user) {
+          // Create new user with Google data
+          const newUserId = `google_${profile.id}_${Date.now()}`;
+          const userData = {
+            id: newUserId,
+            email,
+            firstName: profile.name?.givenName || '',
+            lastName: profile.name?.familyName || '',
+            profileImageUrl: profile.photos?.[0]?.value || '',
+            googleId: profile.id
+          };
+          user = await storage.upsertUser(userData);
+        } else {
+          // Update existing user with Google data if needed
+          const updateData = {
+            id: user.id,
+            email: user.email,
+            firstName: user.firstName || profile.name?.givenName || '',
+            lastName: user.lastName || profile.name?.familyName || '',
+            profileImageUrl: user.profileImageUrl || profile.photos?.[0]?.value || '',
+            googleId: profile.id
+          };
+          user = await storage.upsertUser(updateData);
+        }
+
+        return done(null, user);
+      } catch (error) {
+        return done(error as Error, false);
+      }
+    }));
+  }
+
+  // Replit OAuth for fallback
   for (const domain of process.env
     .REPLIT_DOMAINS!.split(",")) {
     const strategy = new Strategy(
@@ -105,7 +153,27 @@ export async function setupAuth(app: Express) {
   passport.serializeUser((user: Express.User, cb) => cb(null, user));
   passport.deserializeUser((user: Express.User, cb) => cb(null, user));
 
+  // Google OAuth routes
+  app.get("/api/auth/google", 
+    passport.authenticate("google", { scope: ["profile", "email"] })
+  );
+
+  app.get("/api/auth/google/callback", 
+    passport.authenticate("google", { failureRedirect: "/login" }),
+    (req, res) => {
+      // Successful authentication, redirect to home.
+      res.redirect("/");
+    }
+  );
+
+  // Original Replit login (keep as fallback)
   app.get("/api/login", (req, res, next) => {
+    // Try Google OAuth first if configured
+    if (process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET) {
+      return res.redirect("/api/auth/google");
+    }
+    
+    // Fall back to Replit OAuth
     passport.authenticate(`replitauth:${req.hostname}`, {
       prompt: "login consent",
       scope: ["openid", "email", "profile", "offline_access"],

@@ -102,7 +102,7 @@ const Feed = () => {
   };
 
   return (
-    <div className="min-h-screen bg-black text-white">
+    <div className="min-h-screen bg-black text-white page-content">
       <div className="max-w-2xl mx-auto">
         {/* Header */}
         <div className="sticky top-0 bg-black/80 backdrop-blur-xl border-b border-white/10 p-6 z-10">
