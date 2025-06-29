@@ -35,12 +35,12 @@
     --sidebar-border: 0 0% 15%;
     --sidebar-ring: 0 0% 83%;
     
-    /* Calming color accents - enhanced for better contrast */
-    --calm-primary: 199 89% 55%;
-    --sage-primary: 142 76% 45%;
-    --lavender-primary: 262 83% 65%;
-    --rose-primary: 347 77% 60%;
-    --amber-primary: 38 92% 60%;
+    /* Calming color accents - premium minimal palette */
+    --calm-primary: 199 89% 48%;
+    --sage-primary: 142 76% 36%;
+    --lavender-primary: 262 83% 58%;
+    --rose-primary: 347 77% 50%;
+    --amber-primary: 38 92% 50%;
   }
 }
 
@@ -132,122 +132,72 @@
     border: 1px solid rgba(255, 255, 255, 0.1);
   }
   
-  /* Comprehensive button styling fixes for maximum visibility */
+  /* Fix navbar overlap issue - add padding for fixed navbar */
+  .page-content {
+    padding-top: 90px; /* Adjust based on navbar height */
+    min-height: calc(100vh - 90px);
+  }
+  
+  /* Premium, elegant, minimal button styling */
   button {
     color: #ffffff !important;
-    font-weight: 600 !important;
-    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.8) !important;
+    font-weight: 500 !important;
+    letter-spacing: 0.025em;
+    transition: all 0.2s ease;
   }
   
   button * {
-    color: #ffffff !important;
+    color: inherit !important;
   }
   
   button:hover {
-    color: #ffffff !important;
-  }
-  
-  button:hover * {
-    color: #ffffff !important;
+    transform: translateY(-1px);
   }
   
   button:disabled {
-    color: rgba(255, 255, 255, 0.7) !important;
+    color: rgba(255, 255, 255, 0.4) !important;
+    opacity: 0.6;
+    transform: none;
   }
   
-  button:disabled * {
-    color: rgba(255, 255, 255, 0.7) !important;
-  }
-  
-  /* Ensure all background color variants have white text */
-  .bg-red-600, .bg-red-500, .bg-yellow-600, .bg-yellow-500,
-  .bg-blue-600, .bg-blue-500, .bg-green-600, .bg-green-500,
-  .bg-purple-600, .bg-purple-500, .bg-pink-600, .bg-pink-500,
-  .bg-gray-600, .bg-gray-500, .bg-calm-500, .bg-sage-500,
-  .bg-lavender-500, .bg-rose-500, .bg-amber-500 {
-    color: #ffffff !important;
-    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.8) !important;
-  }
-  
-  .bg-red-600 *, .bg-red-500 *, .bg-yellow-600 *, .bg-yellow-500 *,
-  .bg-blue-600 *, .bg-blue-500 *, .bg-green-600 *, .bg-green-500 *,
-  .bg-purple-600 *, .bg-purple-500 *, .bg-pink-600 *, .bg-pink-500 *,
-  .bg-gray-600 *, .bg-gray-500 *, .bg-calm-500 *, .bg-sage-500 *,
-  .bg-lavender-500 *, .bg-rose-500 *, .bg-amber-500 * {
-    color: #ffffff !important;
-  }
-  
-  /* Gradient buttons with enhanced visibility */
+  /* Gradient buttons with premium styling */
   .bg-gradient-to-r, .bg-gradient-to-l, .bg-gradient-to-t, .bg-gradient-to-b,
   .bg-gradient-to-br, .bg-gradient-to-bl, .bg-gradient-to-tr, .bg-gradient-to-tl {
     color: #ffffff !important;
-    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.9) !important;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3), 
+                0 1px 3px rgba(255, 255, 255, 0.1) inset;
   }
   
-  .bg-gradient-to-r *, .bg-gradient-to-l *, .bg-gradient-to-t *, .bg-gradient-to-b *,
-  .bg-gradient-to-br *, .bg-gradient-to-bl *, .bg-gradient-to-tr *, .bg-gradient-to-tl * {
-    color: #ffffff !important;
+  .bg-gradient-to-r:hover, .bg-gradient-to-l:hover, .bg-gradient-to-t:hover, .bg-gradient-to-b:hover,
+  .bg-gradient-to-br:hover, .bg-gradient-to-bl:hover, .bg-gradient-to-tr:hover, .bg-gradient-to-tl:hover {
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4), 
+                0 1px 3px rgba(255, 255, 255, 0.15) inset;
   }
   
-  /* Apple button styling with enhanced contrast */
+  /* Apple button styling - premium minimal design */
   .apple-button {
     color: #ffffff !important;
-    font-weight: 700 !important;
-    border: none !important;
-    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.9) !important;
-  }
-  
-  .apple-button * {
-    color: #ffffff !important;
+    font-weight: 500 !important;
+    border: 1px solid rgba(255, 255, 255, 0.08) !important;
+    backdrop-filter: blur(16px);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2),
+                0 1px 2px rgba(255, 255, 255, 0.05) inset;
   }
   
   .apple-button:hover {
-    color: #ffffff !important;
-    opacity: 0.9;
-  }
-  
-  .apple-button:hover * {
-    color: #ffffff !important;
+    border: 1px solid rgba(255, 255, 255, 0.12) !important;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3),
+                0 1px 3px rgba(255, 255, 255, 0.08) inset;
   }
   
   .apple-button:disabled {
-    color: rgba(255, 255, 255, 0.7) !important;
-    opacity: 0.5;
+    color: rgba(255, 255, 255, 0.4) !important;
+    opacity: 0.6;
+    box-shadow: none;
   }
   
-  .apple-button:disabled * {
-    color: rgba(255, 255, 255, 0.7) !important;
-  }
-  
-  /* Shadcn button variants with proper text contrast */
-  [data-variant="default"] {
-    color: #000000 !important;
-    background-color: #ffffff !important;
-  }
-  
-  [data-variant="default"] * {
-    color: #000000 !important;
-  }
-  
-  [data-variant="outline"] {
-    color: #ffffff !important;
-    border-color: rgba(255, 255, 255, 0.3) !important;
-  }
-  
-  [data-variant="outline"] * {
-    color: #ffffff !important;
-  }
-  
-  [data-variant="secondary"] {
-    color: #ffffff !important;
-    background-color: rgba(255, 255, 255, 0.1) !important;
-  }
-  
-  [data-variant="secondary"] * {
-    color: #ffffff !important;
-  }
-  
-  /* Additional button text visibility fixes */
+  /* Minimal shadcn overrides for consistency */
   .text-primary-foreground {
     color: #000000 !important;
   }
