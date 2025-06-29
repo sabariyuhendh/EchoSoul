@@ -44,6 +44,93 @@ const SmashMode = ({ content, onBack, onComplete }: SmashModeProps) => {
   const [isCharging, setIsCharging] = useState(false);
   const animationRef = useRef<number>();
   const sceneRef = useRef<HTMLDivElement>(null);
+  const audioContextRef = useRef<AudioContext | null>(null);
+  
+  // Initialize audio context
+  useEffect(() => {
+    audioContextRef.current = new (window.AudioContext || (window as any).webkitAudioContext)();
+    return () => {
+      audioContextRef.current?.close();
+    };
+  }, []);
+  
+  // Play realistic destruction sound based on material
+  const playDestructionSound = (material: string, power: number) => {
+    if (!audioContextRef.current) return;
+    
+    const ctx = audioContextRef.current;
+    const now = ctx.currentTime;
+    
+    // Create oscillators and noise for realistic material sounds
+    if (material === 'glass' || material === 'crystal') {
+      // High-pitched glass breaking sound
+      for (let i = 0; i < 5; i++) {
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+        
+        osc.frequency.setValueAtTime(2000 + Math.random() * 3000, now);
+        osc.frequency.exponentialRampToValueAtTime(200, now + 0.3);
+        
+        gain.gain.setValueAtTime((power / 100) * 0.3, now);
+        gain.gain.exponentialRampToValueAtTime(0.001, now + 0.5);
+        
+        osc.start(now + i * 0.02);
+        osc.stop(now + 0.5);
+      }
+    } else if (material === 'wood') {
+      // Low crack sound for wood
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      const filter = ctx.createBiquadFilter();
+      
+      osc.connect(filter);
+      filter.connect(gain);
+      gain.connect(ctx.destination);
+      
+      filter.type = 'lowpass';
+      filter.frequency.setValueAtTime(800, now);
+      
+      osc.frequency.setValueAtTime(150, now);
+      osc.frequency.exponentialRampToValueAtTime(50, now + 0.2);
+      
+      gain.gain.setValueAtTime((power / 100) * 0.5, now);
+      gain.gain.exponentialRampToValueAtTime(0.001, now + 0.3);
+      
+      osc.start(now);
+      osc.stop(now + 0.3);
+    } else {
+      // Generic impact sound for stone/metal
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+      
+      osc.frequency.setValueAtTime(100, now);
+      gain.gain.setValueAtTime((power / 100) * 0.4, now);
+      gain.gain.exponentialRampToValueAtTime(0.001, now + 0.2);
+      
+      osc.start(now);
+      osc.stop(now + 0.2);
+    }
+    
+    // Add impact thud
+    const thud = ctx.createOscillator();
+    const thudGain = ctx.createGain();
+    
+    thud.connect(thudGain);
+    thudGain.connect(ctx.destination);
+    
+    thud.frequency.setValueAtTime(60, now);
+    thudGain.gain.setValueAtTime((power / 100) * 0.6, now);
+    thudGain.gain.exponentialRampToValueAtTime(0.001, now + 0.1);
+    
+    thud.start(now);
+    thud.stop(now + 0.1);
+  };
 
   useEffect(() => {
     // Initialize 3D objects with realistic materials
@@ -189,7 +276,10 @@ const SmashMode = ({ content, onBack, onComplete }: SmashModeProps) => {
 
         setSmashedCount(prev => prev + 1);
         
-        // Play impact sound effect (you can add actual audio here)
+        // Play realistic sound effect
+        playDestructionSound(obj.material, power);
+        
+        // Screen shake effect
         if (sceneRef.current) {
           sceneRef.current.style.animation = 'shake 0.3s ease-out';
           setTimeout(() => {

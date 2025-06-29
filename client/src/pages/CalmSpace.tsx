@@ -78,114 +78,241 @@ const CalmSpace = () => {
 
   return (
     <div className="min-h-screen bg-black text-white page-content relative overflow-hidden">
-      {/* Interstellar Black Hole Background */}
+      {/* Immersive Interstellar Black Hole Background */}
       <div className="absolute inset-0 z-0 overflow-hidden bg-black">
-        {/* Stars field */}
+        {/* Deep space gradient */}
+        <div className="absolute inset-0 bg-gradient-to-b from-black via-purple-900/5 to-black"></div>
+        
+        {/* Parallax star layers */}
         <div className="absolute inset-0">
-          {[...Array(200)].map((_, i) => (
+          {/* Far stars - small and dim */}
+          {[...Array(300)].map((_, i) => (
             <div
-              key={`star-${i}`}
+              key={`far-star-${i}`}
               className="absolute rounded-full"
               style={{
-                width: `${Math.random() * 3}px`,
-                height: `${Math.random() * 3}px`,
+                width: `${0.5 + Math.random() * 1}px`,
+                height: `${0.5 + Math.random() * 1}px`,
                 left: `${Math.random() * 100}%`,
                 top: `${Math.random() * 100}%`,
-                backgroundColor: `rgba(255, 255, 255, ${0.3 + Math.random() * 0.7})`,
-                animation: `twinkle ${2 + Math.random() * 4}s infinite`,
+                backgroundColor: `rgba(255, 255, 255, ${0.2 + Math.random() * 0.3})`,
+                animation: `twinkle ${3 + Math.random() * 4}s infinite`,
                 animationDelay: `${Math.random() * 5}s`
               }}
             />
           ))}
+          
+          {/* Near stars - larger and brighter */}
+          {[...Array(100)].map((_, i) => (
+            <div
+              key={`near-star-${i}`}
+              className="absolute rounded-full"
+              style={{
+                width: `${1.5 + Math.random() * 2}px`,
+                height: `${1.5 + Math.random() * 2}px`,
+                left: `${Math.random() * 100}%`,
+                top: `${Math.random() * 100}%`,
+                backgroundColor: `rgba(255, 255, 255, ${0.5 + Math.random() * 0.5})`,
+                animation: `twinkle ${2 + Math.random() * 3}s infinite`,
+                animationDelay: `${Math.random() * 3}s`,
+                boxShadow: `0 0 ${2 + Math.random() * 3}px rgba(255, 255, 255, 0.5)`
+              }}
+            />
+          ))}
+          
+          {/* Nebula clouds */}
+          <div 
+            className="absolute top-20 right-20 w-96 h-96 rounded-full opacity-30"
+            style={{
+              background: 'radial-gradient(circle at center, rgba(138, 43, 226, 0.2), transparent 70%)',
+              filter: 'blur(40px)',
+              animation: 'float 30s ease-in-out infinite'
+            }}
+          />
+          <div 
+            className="absolute bottom-20 left-20 w-80 h-80 rounded-full opacity-30"
+            style={{
+              background: 'radial-gradient(circle at center, rgba(30, 144, 255, 0.2), transparent 70%)',
+              filter: 'blur(40px)',
+              animation: 'float 35s ease-in-out infinite reverse'
+            }}
+          />
         </div>
 
-        {/* Black hole system */}
+        {/* Ultra-realistic Black Hole System */}
         <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
-          {/* Accretion disk */}
+          {/* Outer accretion disk with doppler shift */}
           <div 
-            className="absolute w-[600px] h-[600px] rounded-full"
+            className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] rounded-full"
             style={{
               background: `conic-gradient(from 0deg at 50% 50%, 
-                transparent 0deg,
-                rgba(255, 140, 0, 0.1) 45deg,
-                rgba(255, 215, 0, 0.2) 90deg,
-                rgba(255, 255, 255, 0.3) 135deg,
-                rgba(135, 206, 235, 0.2) 180deg,
-                rgba(138, 43, 226, 0.1) 225deg,
+                rgba(255, 20, 0, 0.1) 0deg,
+                rgba(255, 69, 0, 0.2) 30deg,
+                rgba(255, 140, 0, 0.3) 60deg,
+                rgba(255, 215, 0, 0.4) 90deg,
+                rgba(255, 255, 255, 0.5) 120deg,
+                rgba(135, 206, 235, 0.4) 150deg,
+                rgba(30, 144, 255, 0.3) 180deg,
+                rgba(138, 43, 226, 0.2) 210deg,
+                rgba(75, 0, 130, 0.1) 240deg,
                 transparent 270deg,
                 transparent 360deg)`,
-              animation: 'rotate-slow 30s linear infinite',
-              filter: 'blur(3px)',
-              transform: 'rotateX(75deg)'
+              animation: 'rotate-slow 40s linear infinite',
+              filter: 'blur(5px)',
+              transform: 'rotateX(75deg) rotateZ(25deg)',
+              mixBlendMode: 'screen'
             }}
           />
           
-          {/* Inner accretion disk */}
+          {/* Mid accretion disk with intense heat */}
+          <div 
+            className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] rounded-full"
+            style={{
+              background: `conic-gradient(from 45deg at 50% 50%, 
+                rgba(255, 69, 0, 0.6) 0deg,
+                rgba(255, 140, 0, 0.8) 60deg,
+                rgba(255, 215, 0, 0.9) 120deg,
+                rgba(255, 255, 255, 1) 180deg,
+                rgba(255, 215, 0, 0.9) 240deg,
+                rgba(255, 140, 0, 0.8) 300deg,
+                rgba(255, 69, 0, 0.6) 360deg)`,
+              animation: 'rotate-fast 20s linear infinite reverse',
+              filter: 'blur(3px)',
+              transform: 'rotateX(75deg) rotateZ(-15deg)',
+              boxShadow: '0 0 100px rgba(255, 140, 0, 0.5)',
+              mixBlendMode: 'screen'
+            }}
+          />
+          
+          {/* Inner accretion disk - ultra hot */}
           <div 
             className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[400px] h-[400px] rounded-full"
             style={{
-              background: `conic-gradient(from 180deg at 50% 50%, 
-                rgba(255, 69, 0, 0.4),
-                rgba(255, 140, 0, 0.6),
-                rgba(255, 215, 0, 0.4),
-                rgba(255, 69, 0, 0.4))`,
-              animation: 'rotate-fast 15s linear infinite reverse',
-              filter: 'blur(2px)',
-              transform: 'rotateX(75deg)'
+              background: `conic-gradient(from 90deg at 50% 50%, 
+                rgba(255, 255, 255, 0.9),
+                rgba(135, 206, 235, 1),
+                rgba(255, 255, 255, 0.9),
+                rgba(135, 206, 235, 1))`,
+              animation: 'rotate-fast 10s linear infinite',
+              filter: 'blur(2px) brightness(1.5)',
+              transform: 'rotateX(75deg)',
+              boxShadow: '0 0 150px rgba(135, 206, 235, 0.8)'
             }}
           />
           
-          {/* Photon sphere */}
+          {/* Photon sphere with relativistic effects */}
           <div 
-            className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[250px] h-[250px] rounded-full"
+            className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[300px] h-[300px] rounded-full"
             style={{
-              background: 'radial-gradient(circle at 50% 50%, transparent 40%, rgba(255, 255, 255, 0.1) 50%, transparent 60%)',
-              animation: 'pulse-slow 4s ease-in-out infinite',
-              boxShadow: '0 0 100px rgba(255, 215, 0, 0.3)'
-            }}
-          />
-          
-          {/* Event horizon */}
-          <div 
-            className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[150px] h-[150px] rounded-full"
-            style={{
-              background: 'radial-gradient(circle at 30% 30%, rgba(0, 0, 0, 0.95), black)',
-              boxShadow: `inset 0 0 50px rgba(0, 0, 0, 0.9),
-                          0 0 100px rgba(0, 0, 0, 0.8),
-                          0 0 150px rgba(138, 43, 226, 0.3)`,
-              animation: 'wobble 20s ease-in-out infinite'
-            }}
-          />
-          
-          {/* Gravitational lensing effect */}
-          <div 
-            className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] rounded-full pointer-events-none"
-            style={{
-              background: 'radial-gradient(circle at 50% 50%, transparent 20%, rgba(255, 255, 255, 0.05) 40%, transparent 60%)',
-              animation: 'lens-distort 10s ease-in-out infinite',
+              background: `radial-gradient(circle at 50% 50%, 
+                transparent 35%,
+                rgba(255, 255, 255, 0.8) 40%,
+                rgba(255, 255, 255, 0.4) 45%,
+                transparent 50%)`,
+              animation: 'pulse-slow 3s ease-in-out infinite',
+              boxShadow: `0 0 50px rgba(255, 255, 255, 0.6),
+                          0 0 100px rgba(255, 215, 0, 0.4),
+                          0 0 200px rgba(135, 206, 235, 0.3)`,
               filter: 'blur(1px)'
             }}
           />
           
-          {/* Jet streams */}
+          {/* Event horizon - the point of no return */}
           <div 
-            className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-full w-4 h-[300px]"
+            className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[200px] h-[200px] rounded-full"
             style={{
-              background: 'linear-gradient(to top, transparent, rgba(147, 112, 219, 0.3), transparent)',
-              filter: 'blur(4px)',
-              animation: 'jet-pulse 3s ease-in-out infinite'
+              background: 'radial-gradient(circle at 35% 35%, rgba(0, 0, 0, 0.9), black)',
+              boxShadow: `inset 0 0 80px rgba(0, 0, 0, 1),
+                          inset 0 0 120px rgba(0, 0, 0, 0.9),
+                          0 0 200px rgba(0, 0, 0, 0.8),
+                          0 0 300px rgba(138, 43, 226, 0.4)`,
+              animation: 'wobble 25s ease-in-out infinite',
+              filter: 'contrast(2)'
+            }}
+          >
+            {/* Singularity core */}
+            <div 
+              className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[50px] h-[50px] rounded-full"
+              style={{
+                background: 'radial-gradient(circle at center, black, rgba(0, 0, 0, 0.95))',
+                boxShadow: 'inset 0 0 50px black',
+                animation: 'pulse-slow 2s ease-in-out infinite'
+              }}
+            />
+          </div>
+          
+          {/* Gravitational lensing rings */}
+          <div 
+            className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[700px] h-[700px] rounded-full pointer-events-none"
+            style={{
+              background: `radial-gradient(circle at 50% 50%, 
+                transparent 15%,
+                rgba(255, 255, 255, 0.1) 25%,
+                transparent 30%,
+                rgba(255, 255, 255, 0.05) 40%,
+                transparent 50%)`,
+              animation: 'lens-distort 15s ease-in-out infinite',
+              filter: 'blur(2px)'
+            }}
+          />
+          
+          {/* Relativistic jets */}
+          <div 
+            className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-full w-8 h-[500px]"
+            style={{
+              background: `linear-gradient(to top, 
+                transparent,
+                rgba(135, 206, 235, 0.2) 20%,
+                rgba(147, 112, 219, 0.5) 50%,
+                rgba(255, 255, 255, 0.3) 80%,
+                transparent)`,
+              filter: 'blur(6px)',
+              animation: 'jet-pulse 4s ease-in-out infinite',
+              transformOrigin: 'bottom center'
             }}
           />
           <div 
-            className="absolute top-1/2 left-1/2 transform -translate-x-1/2 w-4 h-[300px]"
+            className="absolute top-1/2 left-1/2 transform -translate-x-1/2 w-8 h-[500px]"
             style={{
-              background: 'linear-gradient(to bottom, transparent, rgba(147, 112, 219, 0.3), transparent)',
-              filter: 'blur(4px)',
-              animation: 'jet-pulse 3s ease-in-out infinite',
-              animationDelay: '1.5s'
+              background: `linear-gradient(to bottom, 
+                transparent,
+                rgba(135, 206, 235, 0.2) 20%,
+                rgba(147, 112, 219, 0.5) 50%,
+                rgba(255, 255, 255, 0.3) 80%,
+                transparent)`,
+              filter: 'blur(6px)',
+              animation: 'jet-pulse 4s ease-in-out infinite',
+              animationDelay: '2s',
+              transformOrigin: 'top center'
+            }}
+          />
+          
+          {/* Hawking radiation effect */}
+          <div 
+            className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[220px] h-[220px] rounded-full"
+            style={{
+              background: 'transparent',
+              border: '1px solid rgba(255, 255, 255, 0.1)',
+              animation: 'pulse-slow 5s ease-in-out infinite',
+              boxShadow: '0 0 30px rgba(255, 255, 255, 0.1)'
             }}
           />
         </div>
+        
+        {/* Ambient particles being pulled in */}
+        {[...Array(20)].map((_, i) => (
+          <div
+            key={`particle-${i}`}
+            className="absolute w-1 h-1 bg-white rounded-full"
+            style={{
+              left: `${Math.random() * 100}%`,
+              top: `${Math.random() * 100}%`,
+              animation: `float ${10 + Math.random() * 20}s ease-in-out infinite`,
+              animationDelay: `${Math.random() * 10}s`,
+              opacity: 0.8
+            }}
+          />
+        ))}
       </div>
 
       <div className="relative z-10 p-6 pt-24">

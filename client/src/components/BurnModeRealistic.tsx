@@ -162,20 +162,22 @@ const BurnMode = ({ content, onBack, onComplete }: BurnModeProps) => {
             
             {/* Text content with burning effect */}
             <div className="relative z-10">
-              <p className="text-2xl font-handwriting leading-relaxed">
+              <p className="text-2xl font-medium leading-relaxed">
                 {textChars.map((charObj, i) => (
                   <span
                     key={charObj.id}
                     className="transition-all duration-300 inline-block"
                     style={{
-                      color: charObj.burned ? 'transparent' : '#2C1810',
+                      color: charObj.burned ? 'transparent' : '#1a1a1a',
+                      fontWeight: 600,
                       textShadow: charObj.burned 
-                        ? '0 0 5px rgba(255, 100, 0, 0.8)' 
-                        : 'none',
+                        ? '0 0 8px rgba(255, 100, 0, 0.9), 0 0 15px rgba(255, 69, 0, 0.6)' 
+                        : '0 1px 2px rgba(0, 0, 0, 0.1)',
                       transform: charObj.burned 
                         ? `translateY(-${Math.random() * 10}px) scale(0.8)` 
                         : 'none',
-                      opacity: charObj.burned ? 0 : 1
+                      opacity: charObj.burned ? 0 : 1,
+                      letterSpacing: '0.02em'
                     }}
                   >
                     {charObj.char}

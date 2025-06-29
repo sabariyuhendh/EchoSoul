@@ -293,53 +293,100 @@
   
   /* Premium text styling - clean and legible */
   h1, h2, h3, h4, h5, h6, p, span {
-    color: #ffffff !important;
+    color: #ffffff;
+    text-shadow: none;
+  }
+  
+  /* Beautiful gradient text styling - properly defined */
+  .text-gradient-wellness {
+    background: linear-gradient(135deg, #38bdf8 0%, #4ade80 25%, #c084fc 50%, #fda4af 75%, #fcd34d 100%) !important;
+    background-clip: text !important;
+    -webkit-background-clip: text !important;
+    -webkit-text-fill-color: transparent !important;
+    -webkit-box-decoration-break: clone !important;
+    box-decoration-break: clone !important;
+    color: transparent !important;
+    display: inline-block !important;
+    font-weight: 600 !important;
     text-shadow: none !important;
   }
   
-  /* Text gradient styling without backgrounds */
-  .text-gradient-wellness {
-    background: linear-gradient(135deg, #38b2f2 0%, #4ade80 100%);
-    background-clip: text;
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    color: transparent !important;
-  }
-  
   .text-gradient-calm {
-    background: linear-gradient(135deg, #3b82f6 0%, #06b6d4 100%);
-    background-clip: text;
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
+    background: linear-gradient(135deg, #3b82f6 0%, #38bdf8 50%, #06b6d4 100%) !important;
+    background-clip: text !important;
+    -webkit-background-clip: text !important;
+    -webkit-text-fill-color: transparent !important;
+    -webkit-box-decoration-break: clone !important;
+    box-decoration-break: clone !important;
     color: transparent !important;
+    display: inline-block !important;
+    font-weight: 600 !important;
+    text-shadow: none !important;
   }
   
   .text-gradient-sage {
-    background: linear-gradient(135deg, #10b981 0%, #059669 100%);
-    background-clip: text;
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
+    background: linear-gradient(135deg, #10b981 0%, #22c55e 50%, #34d399 100%) !important;
+    background-clip: text !important;
+    -webkit-background-clip: text !important;
+    -webkit-text-fill-color: transparent !important;
+    -webkit-box-decoration-break: clone !important;
+    box-decoration-break: clone !important;
     color: transparent !important;
+    display: inline-block !important;
+    font-weight: 600 !important;
+    text-shadow: none !important;
   }
   
   .text-gradient-lavender {
-    background: linear-gradient(135deg, #8b5cf6 0%, #a855f7 100%);
-    background-clip: text;
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
+    background: linear-gradient(135deg, #8b5cf6 0%, #a855f7 50%, #c084fc 100%) !important;
+    background-clip: text !important;
+    -webkit-background-clip: text !important;
+    -webkit-text-fill-color: transparent !important;
+    -webkit-box-decoration-break: clone !important;
+    box-decoration-break: clone !important;
     color: transparent !important;
+    display: inline-block !important;
+    font-weight: 600 !important;
+    text-shadow: none !important;
   }
   
   .text-gradient-rose {
-    background: linear-gradient(135deg, #f43f5e 0%, #e11d48 100%);
-    background-clip: text;
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
+    background: linear-gradient(135deg, #f43f5e 0%, #e11d48 50%, #fda4af 100%) !important;
+    background-clip: text !important;
+    -webkit-background-clip: text !important;
+    -webkit-text-fill-color: transparent !important;
+    -webkit-box-decoration-break: clone !important;
+    box-decoration-break: clone !important;
     color: transparent !important;
+    display: inline-block !important;
+    font-weight: 600 !important;
+    text-shadow: none !important;
+  }
+  
+  .text-gradient-amber {
+    background: linear-gradient(135deg, #f59e0b 0%, #fbbf24 50%, #fcd34d 100%) !important;
+    background-clip: text !important;
+    -webkit-background-clip: text !important;
+    -webkit-text-fill-color: transparent !important;
+    -webkit-box-decoration-break: clone !important;
+    box-decoration-break: clone !important;
+    color: transparent !important;
+    display: inline-block !important;
+    font-weight: 600 !important;
+    text-shadow: none !important;
   }
   
   .text-gradient-white {
-    color: #ffffff !important;
+    background: linear-gradient(135deg, #ffffff 0%, #f0f0f0 50%, #ffffff 100%) !important;
+    background-clip: text !important;
+    -webkit-background-clip: text !important;
+    -webkit-text-fill-color: transparent !important;
+    -webkit-box-decoration-break: clone !important;
+    box-decoration-break: clone !important;
+    color: transparent !important;
+    display: inline-block !important;
+    font-weight: 600 !important;
+    text-shadow: none !important;
   }
   
   /* Modal and form styling */
@@ -379,22 +426,32 @@
   }
   
   /* Remove any unwanted opacity or wash-out effects */
-  * {
-    opacity: 1 !important;
+  .opacity-50 {
+    opacity: 0.5 !important;
   }
   
-  .opacity-50, .opacity-60, .opacity-70 {
+  .opacity-60 {
+    opacity: 0.6 !important;
+  }
+  
+  .opacity-70 {
+    opacity: 0.7 !important;
+  }
+  
+  .opacity-80 {
     opacity: 0.8 !important;
   }
   
   .opacity-90 {
-    opacity: 0.95 !important;
+    opacity: 0.9 !important;
   }
   
-  /* Page layout fixes for navbar spacing */
+  /* Page layout fixes for navbar spacing - prevent scrolling issues */
   .page-content {
-    padding-top: 80px;
+    padding-top: 85px;
     min-height: 100vh;
+    overflow-x: hidden;
+    position: relative;
   }
   
   /* Animation fixes */
@@ -440,6 +497,39 @@
     }
   }
   
+  @keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    10% { transform: translateX(-10px); }
+    20% { transform: translateX(10px); }
+    30% { transform: translateX(-10px); }
+    40% { transform: translateX(10px); }
+    50% { transform: translateX(-5px); }
+    60% { transform: translateX(5px); }
+    70% { transform: translateX(-2px); }
+    80% { transform: translateX(2px); }
+    90% { transform: translateX(0); }
+  }
+  
+  @keyframes flicker {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.8; }
+  }
+  
+  @keyframes flame {
+    0% { 
+      transform: scaleY(1) scaleX(1);
+      opacity: 0.8;
+    }
+    50% { 
+      transform: scaleY(1.1) scaleX(0.9);
+      opacity: 1;
+    }
+    100% { 
+      transform: scaleY(0.9) scaleX(1.1);
+      opacity: 0.8;
+    }
+  }
+  
   .glass-calm {
     backdrop-filter: blur(20px) saturate(180%);
     background: rgba(14, 165, 233, 0.05);
@@ -458,47 +548,18 @@
     border: 1px solid rgba(168, 85, 247, 0.1);
   }
   
-  /* Calming text gradients */
-  .text-gradient-calm {
-    background: linear-gradient(135deg, #38bdf8 0%, #0ea5e9 100%);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-  }
-  
-  .text-gradient-sage {
-    background: linear-gradient(135deg, #4ade80 0%, #22c55e 100%);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-  }
-  
-  .text-gradient-lavender {
-    background: linear-gradient(135deg, #c084fc 0%, #a855f7 100%);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-  }
-  
-  .text-gradient-wellness {
-    background: linear-gradient(135deg, #38bdf8 0%, #4ade80 25%, #c084fc 50%, #fda4af 75%, #fcd34d 100%);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-  }
-  
-  .text-gradient-white {
-    background: linear-gradient(135deg, #ffffff 0%, #f0f0f0 100%);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-  }
-  
+  /* Additional gradient utility - gray gradient */
   .text-gradient-gray {
-    background: linear-gradient(135deg, #a0a0a0 0%, #606060 100%);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
+    background: linear-gradient(135deg, #a0a0a0 0%, #606060 100%) !important;
+    background-clip: text !important;
+    -webkit-background-clip: text !important;
+    -webkit-text-fill-color: transparent !important;
+    -webkit-box-decoration-break: clone !important;
+    box-decoration-break: clone !important;
+    color: transparent !important;
+    display: inline-block !important;
+    font-weight: 600 !important;
+    text-shadow: none !important;
   }
   
   /* Custom scrollbar - Apple style */

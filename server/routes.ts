@@ -30,6 +30,28 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Mock signup route for development
+  app.post('/api/signup', async (req: any, res) => {
+    try {
+      // In development, just redirect to Google OAuth
+      res.json({ redirectUrl: '/api/login' });
+    } catch (error) {
+      console.error("Error during signup:", error);
+      res.status(500).json({ message: "Failed to sign up" });
+    }
+  });
+
+  // Mock auth signup route for development
+  app.post('/api/auth/signup', async (req: any, res) => {
+    try {
+      // In development, just return success
+      res.json({ success: true, message: "Please use Google OAuth to sign in" });
+    } catch (error) {
+      console.error("Error during signup:", error);
+      res.status(500).json({ message: "Failed to sign up" });
+    }
+  });
+
   // Let It Go Room API endpoints
   app.post("/api/letitgo", async (req: any, res) => {
     try {
