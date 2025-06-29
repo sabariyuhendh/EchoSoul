@@ -102,9 +102,9 @@ const Letters = () => {
                     key={style.id}
                     variant={selectedStyle === style.id ? "default" : "outline"}
                     onClick={() => setSelectedStyle(style.id as Letter['style'])}
-                    className={`text-xs py-2 font-medium transition-all duration-200 ${selectedStyle === style.id ? 
-                      `bg-gradient-to-r from-${style.color}-500 to-${style.color}-600 text-white border-transparent shadow-lg` : 
-                      'border-white/20 text-white bg-black/40 hover:bg-white/10 hover:text-white hover:border-white/40'}`}
+                    className={`btn-force-white text-xs py-2 font-medium transition-all duration-200 ${selectedStyle === style.id ? 
+                      `bg-gradient-to-r from-${style.color}-500 to-${style.color}-600 border-transparent shadow-lg` : 
+                      'border-white/20 bg-black/40 hover:bg-white/10 hover:border-white/40'}`}
                   >
                     {style.name}
                   </Button>
@@ -117,7 +117,7 @@ const Letters = () => {
               <Button
                 onClick={stylizeContent}
                 disabled={!content.trim() || selectedStyle === 'original'}
-                className="bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white font-medium flex-1 py-3 px-6 border-none shadow-lg transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+                className="btn-force-white bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 font-medium flex-1 py-3 px-6 border-none shadow-lg transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 <Sparkles className="w-4 h-4 mr-2" />
                 Stylize with AI
@@ -125,7 +125,7 @@ const Letters = () => {
               <Button
                 onClick={saveLetter}
                 disabled={!to.trim() || !content.trim()}
-                className="bg-gradient-to-r from-green-500 to-blue-500 hover:from-green-600 hover:to-blue-600 text-white font-medium flex-1 py-3 px-6 border-none shadow-lg transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+                className="btn-force-white bg-gradient-to-r from-green-500 to-blue-500 hover:from-green-600 hover:to-blue-600 font-medium flex-1 py-3 px-6 border-none shadow-lg transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 <Heart className="w-4 h-4 mr-2" />
                 Save Letter

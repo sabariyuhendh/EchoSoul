@@ -167,9 +167,26 @@
     outline-offset: 2px;
   }
   
+  /* Force white text on all buttons */
+  .btn-force-white {
+    color: white !important;
+  }
+  
+  .btn-force-white:hover {
+    color: white !important;
+  }
+  
+  .btn-force-white:focus {
+    color: white !important;
+  }
+  
+  .btn-force-white:active {
+    color: white !important;
+  }
+  
   /* Page layout fixes for navbar spacing */
   .page-content {
-    padding-top: 80px;
+    padding-top: 100px;
     min-height: 100vh;
   }
   
