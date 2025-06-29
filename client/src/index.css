@@ -132,165 +132,227 @@
     border: 1px solid rgba(255, 255, 255, 0.1);
   }
   
-  /* Universal navbar spacing fix - applies to all pages */
+  /* Universal navbar spacing fix - consistent across all pages */
   .page-content {
-    padding-top: 100px !important; /* Increased for better clearance */
-    min-height: calc(100vh - 100px);
+    padding-top: 85px !important;
+    min-height: calc(100vh - 85px);
   }
   
-  /* Global container spacing for pages without page-content class */
+  /* Global container spacing for all page types */
   .min-h-screen {
-    padding-top: 100px !important;
+    padding-top: 85px !important;
   }
   
-  /* Ensure main content containers have proper spacing */
+  /* Additional container spacing */
   main, .main-content, [data-main-content] {
-    padding-top: 100px !important;
+    padding-top: 85px !important;
   }
   
-  /* Global high-contrast button styling for all themes */
+  /* Remove any unintended borders/outlines from headings */
+  h1, h2, h3, h4, h5, h6 {
+    border: none !important;
+    outline: none !important;
+    backdrop-filter: none !important;
+    background: transparent !important;
+    box-shadow: none !important;
+  }
+  
+  /* Clean text gradient styles without borders */
+  .text-gradient-wellness, .text-gradient-calm, .text-gradient-sage, 
+  .text-gradient-lavender, .text-gradient-rose, .text-gradient-white {
+    border: none !important;
+    backdrop-filter: none !important;
+    background: transparent !important;
+    box-shadow: none !important;
+  }
+  
+  /* Premium high-contrast button styling - consistent across all pages */
   button {
-    color: #f5f5f5 !important;
-    font-weight: 500 !important;
+    color: #ffffff !important;
+    font-weight: 600 !important;
     letter-spacing: 0.025em;
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
     position: relative;
     overflow: hidden;
+    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.8) !important;
+    border: none !important;
   }
   
   button * {
-    color: inherit !important;
-    z-index: 2;
-    position: relative;
+    color: #ffffff !important;
+    text-shadow: inherit !important;
   }
   
   button:hover {
-    transform: translateY(-2px) scale(1.02);
-    filter: brightness(1.1);
+    transform: translateY(-1px) scale(1.02);
+    filter: brightness(1.15) saturate(1.1);
   }
   
   button:active {
     transform: translateY(0) scale(0.98);
+    filter: brightness(0.95);
   }
   
   button:disabled {
-    color: rgba(245, 245, 245, 0.4) !important;
-    opacity: 0.5;
+    color: rgba(255, 255, 255, 0.3) !important;
+    opacity: 0.4;
     transform: none;
     filter: none;
     cursor: not-allowed;
-  }
-  
-  /* Premium glassmorphism buttons with high contrast */
-  .bg-gradient-to-r, .bg-gradient-to-l, .bg-gradient-to-t, .bg-gradient-to-b,
-  .bg-gradient-to-br, .bg-gradient-to-bl, .bg-gradient-to-tr, .bg-gradient-to-tl {
-    color: #f5f5f5 !important;
-    background: linear-gradient(135deg, rgba(255, 255, 255, 0.15) 0%, rgba(255, 255, 255, 0.05) 100%) !important;
-    border: 1px solid rgba(255, 255, 255, 0.18) !important;
-    backdrop-filter: blur(20px) !important;
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4), 
-                0 2px 8px rgba(255, 255, 255, 0.1) inset,
-                0 0 0 1px rgba(255, 255, 255, 0.05) inset !important;
-    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.8) !important;
-  }
-  
-  .bg-gradient-to-r:hover, .bg-gradient-to-l:hover, .bg-gradient-to-t:hover, .bg-gradient-to-b:hover,
-  .bg-gradient-to-br:hover, .bg-gradient-to-bl:hover, .bg-gradient-to-tr:hover, .bg-gradient-to-tl:hover {
-    background: linear-gradient(135deg, rgba(255, 255, 255, 0.25) 0%, rgba(255, 255, 255, 0.1) 100%) !important;
-    border: 1px solid rgba(255, 255, 255, 0.3) !important;
-    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.5), 
-                0 4px 12px rgba(255, 255, 255, 0.15) inset,
-                0 0 0 1px rgba(255, 255, 255, 0.1) inset !important;
-  }
-  
-  /* Apple button styling - premium glassmorphism with high contrast */
-  .apple-button {
-    color: #f5f5f5 !important;
-    font-weight: 600 !important;
-    background: linear-gradient(135deg, rgba(255, 255, 255, 0.12) 0%, rgba(255, 255, 255, 0.04) 100%) !important;
-    border: 1px solid rgba(255, 255, 255, 0.15) !important;
-    backdrop-filter: blur(24px) !important;
-    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3),
-                0 1px 4px rgba(255, 255, 255, 0.08) inset,
-                0 0 0 1px rgba(255, 255, 255, 0.03) inset !important;
-    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.8) !important;
-  }
-  
-  .apple-button:hover {
-    background: linear-gradient(135deg, rgba(255, 255, 255, 0.2) 0%, rgba(255, 255, 255, 0.08) 100%) !important;
-    border: 1px solid rgba(255, 255, 255, 0.25) !important;
-    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4),
-                0 2px 8px rgba(255, 255, 255, 0.12) inset,
-                0 0 0 1px rgba(255, 255, 255, 0.06) inset !important;
-  }
-  
-  .apple-button:disabled {
-    color: rgba(245, 245, 245, 0.3) !important;
-    background: linear-gradient(135deg, rgba(255, 255, 255, 0.05) 0%, rgba(255, 255, 255, 0.02) 100%) !important;
-    border: 1px solid rgba(255, 255, 255, 0.05) !important;
-    box-shadow: none !important;
     text-shadow: none !important;
   }
   
-  /* Light theme button overrides */
-  .light button {
-    color: #111111 !important;
-    text-shadow: 0 1px 2px rgba(255, 255, 255, 0.8) !important;
+  button:disabled * {
+    color: rgba(255, 255, 255, 0.3) !important;
+    text-shadow: none !important;
   }
   
-  .light .apple-button {
-    color: #111111 !important;
-    background: linear-gradient(135deg, rgba(0, 0, 0, 0.08) 0%, rgba(0, 0, 0, 0.03) 100%) !important;
-    border: 1px solid rgba(0, 0, 0, 0.12) !important;
-    text-shadow: 0 1px 2px rgba(255, 255, 255, 0.8) !important;
+  /* Premium glassmorphism for cards and action buttons only */
+  .apple-card, .calm-card, .sage-card, .lavender-card, .rose-card, .amber-card {
+    backdrop-filter: blur(20px) !important;
+    background: rgba(0, 0, 0, 0.4) !important;
+    border: 1px solid rgba(255, 255, 255, 0.1) !important;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3), 
+                0 1px 3px rgba(255, 255, 255, 0.05) inset !important;
+    transition: all 0.3s ease !important;
   }
   
-  /* Ensure button variants have high contrast */
-  [class*="bg-"], [class*="border-"], .variant-default, .variant-outline, .variant-secondary {
-    color: #f5f5f5 !important;
-    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.8) !important;
+  .apple-card:hover, .calm-card:hover, .sage-card:hover, 
+  .lavender-card:hover, .rose-card:hover, .amber-card:hover {
+    background: rgba(0, 0, 0, 0.5) !important;
+    border: 1px solid rgba(255, 255, 255, 0.15) !important;
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.4), 
+                0 2px 6px rgba(255, 255, 255, 0.08) inset !important;
+    transform: translateY(-2px);
   }
   
-  /* Comprehensive modal and form styling */
+  /* Premium button styling with proper glassmorphism */
+  .apple-button, .bg-gradient-to-r, .bg-gradient-to-l, .bg-gradient-to-t, .bg-gradient-to-b,
+  .bg-gradient-to-br, .bg-gradient-to-bl, .bg-gradient-to-tr, .bg-gradient-to-tl {
+    color: #ffffff !important;
+    font-weight: 600 !important;
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.15) 0%, rgba(255, 255, 255, 0.05) 100%) !important;
+    border: 1px solid rgba(255, 255, 255, 0.2) !important;
+    backdrop-filter: blur(16px) !important;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3),
+                0 1px 3px rgba(255, 255, 255, 0.1) inset !important;
+    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.8) !important;
+  }
+  
+  .apple-button:hover, .bg-gradient-to-r:hover, .bg-gradient-to-l:hover, .bg-gradient-to-t:hover, .bg-gradient-to-b:hover,
+  .bg-gradient-to-br:hover, .bg-gradient-to-bl:hover, .bg-gradient-to-tr:hover, .bg-gradient-to-tl:hover {
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.25) 0%, rgba(255, 255, 255, 0.1) 100%) !important;
+    border: 1px solid rgba(255, 255, 255, 0.3) !important;
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4),
+                0 2px 6px rgba(255, 255, 255, 0.15) inset !important;
+  }
+  
+  .apple-button:disabled, .bg-gradient-to-r:disabled, .bg-gradient-to-l:disabled {
+    color: rgba(255, 255, 255, 0.3) !important;
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.05) 0%, rgba(255, 255, 255, 0.02) 100%) !important;
+    border: 1px solid rgba(255, 255, 255, 0.05) !important;
+    box-shadow: none !important;
+    backdrop-filter: blur(8px) !important;
+  }
+  
+  /* Premium text styling - clean and legible */
+  h1, h2, h3, h4, h5, h6, p, span {
+    color: #ffffff !important;
+    text-shadow: none !important;
+  }
+  
+  /* Text gradient styling without backgrounds */
+  .text-gradient-wellness {
+    background: linear-gradient(135deg, #38b2f2 0%, #4ade80 100%);
+    background-clip: text;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    color: transparent !important;
+  }
+  
+  .text-gradient-calm {
+    background: linear-gradient(135deg, #3b82f6 0%, #06b6d4 100%);
+    background-clip: text;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    color: transparent !important;
+  }
+  
+  .text-gradient-sage {
+    background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+    background-clip: text;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    color: transparent !important;
+  }
+  
+  .text-gradient-lavender {
+    background: linear-gradient(135deg, #8b5cf6 0%, #a855f7 100%);
+    background-clip: text;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    color: transparent !important;
+  }
+  
+  .text-gradient-rose {
+    background: linear-gradient(135deg, #f43f5e 0%, #e11d48 100%);
+    background-clip: text;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    color: transparent !important;
+  }
+  
+  .text-gradient-white {
+    color: #ffffff !important;
+  }
+  
+  /* Modal and form styling */
   .modal, .dialog, .sheet, .popover, .dropdown {
-    padding-top: 20px !important;
+    margin-top: 85px !important;
   }
   
-  /* Global form button consistency */
-  form button, .form button, [role="dialog"] button, [role="menu"] button {
-    color: #f5f5f5 !important;
-    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.8) !important;
+  /* Form elements consistency */
+  form button, [role="dialog"] button, [role="menu"] button {
+    color: #ffffff !important;
+    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.8) !important;
   }
   
-  /* Shadcn overrides for high contrast */
+  /* Shadcn component overrides */
   .text-primary-foreground {
-    color: #111111 !important;
-    text-shadow: 0 1px 2px rgba(255, 255, 255, 0.8) !important;
+    color: #000000 !important;
   }
   
   .text-secondary-foreground, .text-destructive-foreground {
-    color: #f5f5f5 !important;
-    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.8) !important;
+    color: #ffffff !important;
   }
   
-  /* Additional global spacing fixes */
+  /* Global container spacing consistency */
   .container, .max-w-7xl, .max-w-6xl, .max-w-4xl, .max-w-2xl {
     margin-top: 20px !important;
   }
   
-  /* Ensure no content gets cut off by navbar */
-  body > div:first-child, #root > div:first-child {
-    padding-top: 80px !important;
-  }
-  
-  /* Fix any remaining navbar overlap issues */
-  [class*="fixed"][class*="top-0"], [class*="sticky"][class*="top-"] {
+  /* Navbar z-index priority */
+  nav, [class*="fixed"][class*="top-0"] {
     z-index: 9999 !important;
   }
   
-  /* Ensure all content starts below navbar */
-  section:first-child, article:first-child, .hero, .landing {
-    margin-top: 100px !important;
+  /* Dark mode optimization - strong contrast */
+  body {
+    background: #000000 !important;
+    color: #ffffff !important;
+  }
+  
+  /* Remove any unwanted opacity or wash-out effects */
+  * {
+    opacity: 1 !important;
+  }
+  
+  .opacity-50, .opacity-60, .opacity-70 {
+    opacity: 0.8 !important;
+  }
+  
+  .opacity-90 {
+    opacity: 0.95 !important;
   }
   
   /* Page layout fixes for navbar spacing */
