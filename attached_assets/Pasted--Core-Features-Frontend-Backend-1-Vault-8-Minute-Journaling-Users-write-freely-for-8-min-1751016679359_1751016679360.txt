@@ -1,0 +1,150 @@
+🧱 Core Features (Frontend + Backend)
+1. 🧠 Vault – 8-Minute Journaling
+Users write freely for 8 minutes.
+
+Text autosaves.
+
+Entries can be kept private or shared anonymously with the community.
+
+Protected by JWT.
+
+Stored in MongoDB with timestamp.
+
+2. ✍️ Letters You'll Never Send
+Write unsent letters (to self, parents, ex, etc.).
+
+Gemini AI can stylize them into poetic form.
+
+Users can either burn (auto-delete), keep private, or stylize.
+
+Not shared to public feed.
+
+3. 💥 Let It Go Room – Emotional Release
+Three emotional release modes:
+
+🔥 Burn: Burn text away with fire animation (auto-deletes in 1hr).
+
+💥 Smash: Gamified object-smashing mode (virtual objects, sound effects).
+
+🎤 Scream: Scream detection via microphone; triggers visual explosion.
+
+Fully private. Entries auto-delete after 1 hour using MongoDB TTL.
+
+Cooldown phase after every action: breathing animation + calming quotes.
+
+4. 📈 Mood Tracker
+User selects mood daily from preset tags.
+
+Adds optional notes.
+
+7-day trend shown via graphs.
+
+Mood entries can be shared anonymously.
+
+All data is stored per user and visualized in the dashboard.
+
+5. 📣 Drop the Weight – Real-Time Community Posts
+A lightweight feed where users drop their burdens anonymously.
+
+Others can react with emoji (❤️ 💪 ✨ 😢 🔥 🤝).
+
+Posts tagged by emotion (Sad, Angry, Anxious, etc.).
+
+Public but anonymous.
+
+Live reaction system and dynamic styling based on emotion type.
+
+6. 🧑‍🤝‍🧑 Lyra – Emotional AI Chatbot
+Personalized AI companion.
+
+Adapts tone/personality based on user’s mood:
+
+Sad → Comforting (Claude / GPT)
+
+Angry → Grounding (Gemini / GPT)
+
+Anxious → Calming (Claude / Gemini)
+
+Funny → Jokes + memes (Grok / GPT-4o)
+
+Loving → Romantic & gentle tone (Claude / GPT)
+
+Automatically sets prompt behavior depending on user-selected mood.
+
+Uses Gemini or Claude API, or switchable config.
+
+7. 🎧 Whisper Box – Voice Journaling
+Users can speak their feelings into the mic (2-minute limit).
+
+Optionally save or delete immediately.
+
+Uses Cloudinary for audio upload.
+
+Whisper AI (OpenAI) can transcribe and reflect.
+
+Privacy-first: user-controlled storage.
+
+🔐 Authentication & Privacy
+PostgreSQL used only for secure user authentication (traditional username/password).
+
+JWT-based sessions with 7-day validity.
+
+MongoDB handles emotional data storage.
+
+All private data is user-scoped.
+
+Community features are fully anonymous; no usernames shown.
+
+🎨 UI/UX Highlights
+Fully responsive frontend using React + TailwindCSS.
+
+Dark mode support with toggle.
+
+Animated transitions for page switches and interactions.
+
+Cards for all emotional modes with intuitive UI.
+
+Calming aesthetics: rain, lofi music, soft gradients.
+
+Let It Go Room includes sound, motion, feedback, cooldown timer.
+
+Community weights and Drop the Weight feed have emotion-tag filters and visual cues.
+
+🔧 Tech Stack
+Frontend: React, TailwindCSS, Framer Motion
+
+Backend: Express.js, MongoDB, Mongoose
+
+Auth: PostgreSQL + JWT (only for login/signup)
+
+AI APIs: Gemini Pro, Claude 3, OpenAI Whisper (for transcription)
+
+Media Storage: Cloudinary (for audio)
+
+Hosting: Replit or Vercel (for frontend) + Render or Replit (for backend)
+
+🎯 Additional Notes
+All Let It Go actions auto-expire from DB after 1 hour (TTL).
+
+Gemini and Claude prompt switching based on mood input.
+
+Whisper AI support will reflect voice diary into text.
+
+All public community entries come only from:
+
+Vault (if toggled public)
+
+Mood Tracker notes (if toggled public)
+
+Drop the Weight (community-specific posts)
+
+Lyra (chatbot) behavior can be extended using prompt injection.
+
+Would you like an exportable README version or deployment checklist too?
+
+
+
+
+
+
+

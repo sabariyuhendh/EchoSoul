@@ -23,12 +23,9 @@ const queryClient = new QueryClient();
 function AppRouter() {
   const { isAuthenticated, isLoading } = useAuth();
 
-  // For development, let's always show authenticated state
-  const showAuth = true; // isAuthenticated;
-
   return (
     <div className="min-h-screen bg-black">
-      {!isLoading && showAuth && <Navigation />}
+      <Navigation />
       <Switch>
         <Route path="/" component={Index} />
         <Route path="/vault" component={Vault} />
