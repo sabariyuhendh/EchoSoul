@@ -4,6 +4,7 @@ import { storage } from "./storage";
 import { setupAuth } from "./replitAuth";
 import { insertLetItGoEntrySchema, insertMoodEntrySchema, insertLetterSchema, insertVaultEntrySchema, insertWhisperSchema, insertPostSchema } from "@shared/schema";
 import { z } from "zod";
+import { getCalmPreferences, saveCalmPreferences, logMeditationSession, getMeditationStats } from './calmSpaceRoutes';
 
 export async function registerRoutes(app: Express): Promise<Server> {
   // Temporarily disable auth for development
@@ -33,7 +34,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.post("/api/letitgo", async (req: any, res) => {
     try {
       const userId = "dev-user-1"; // Mock user ID for development
-      
+
       const validatedData = insertLetItGoEntrySchema.parse({
         ...req.body,
         userId
@@ -220,6 +221,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
     }
   });
+
+    // Calm Space API endpoints
+    app.get("/api/calm/preferences", getCalmPreferences);
+    app.post("/api/calm/preferences", saveCalmPreferences);
+    app.post("/api/calm/meditation", logMeditationSession);
+    app.get("/api/calm/meditation/stats", getMeditationStats);
 
   // Health check endpoint
   app.get("/api/health", (req, res) => {

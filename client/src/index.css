@@ -44,6 +44,72 @@
   }
 }
 
+/* Missing animations and gradients for Calm Space */
+@keyframes spin-slow {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0px) translateX(0px); }
+  25% { transform: translateY(-10px) translateX(5px); }
+  50% { transform: translateY(-20px) translateX(-5px); }
+  75% { transform: translateY(-10px) translateX(5px); }
+}
+
+@keyframes breathe {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.1); }
+}
+
+.animate-spin-slow {
+  animation: spin-slow 20s linear infinite;
+}
+
+.animate-float {
+  animation: float 6s ease-in-out infinite;
+}
+
+.breathe {
+  animation: breathe 10s ease-in-out infinite;
+}
+
+.bg-gradient-radial {
+  background: radial-gradient(var(--tw-gradient-stops));
+}
+
+.text-gradient-wellness {
+  @apply bg-gradient-to-r from-calm-400 to-sage-400 bg-clip-text text-transparent;
+}
+
+.text-gradient-lavender {
+  @apply bg-gradient-to-r from-lavender-400 to-purple-400 bg-clip-text text-transparent;
+}
+
+.text-gradient-calm {
+  @apply bg-gradient-to-r from-calm-400 to-blue-400 bg-clip-text text-transparent;
+}
+
+.text-gradient-sage {
+  @apply bg-gradient-to-r from-sage-400 to-green-400 bg-clip-text text-transparent;
+}
+
+.text-glow-calm {
+  text-shadow: 0 0 20px rgba(56, 189, 248, 0.3);
+}
+
+.apple-card {
+  @apply rounded-2xl border border-white/10 backdrop-blur-xl;
+}
+
+.apple-button {
+  @apply rounded-xl font-medium transition-all duration-200 hover:scale-105;
+}
+
+.calm-shadow {
+  box-shadow: 0 8px 32px rgba(56, 189, 248, 0.2);
+}
+
 @layer base {
   * {
     @apply border-border;
@@ -70,7 +136,6 @@
   button {
     color: white !important;
     font-weight: 500;
-    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
   }
   
   button:hover {
@@ -79,27 +144,6 @@
   
   button:disabled {
     color: rgba(255, 255, 255, 0.5) !important;
-  }
-  
-  /* Specific button variant overrides */
-  button[data-variant="outline"] {
-    color: white !important;
-    border-color: rgba(255, 255, 255, 0.2) !important;
-  }
-  
-  button[data-variant="outline"]:hover {
-    color: white !important;
-    background-color: rgba(255, 255, 255, 0.1) !important;
-    border-color: rgba(255, 255, 255, 0.4) !important;
-  }
-  
-  button[data-variant="ghost"] {
-    color: white !important;
-  }
-  
-  button[data-variant="ghost"]:hover {
-    color: white !important;
-    background-color: rgba(255, 255, 255, 0.1) !important;
   }
   
   /* Ensure all button variants have visible text */
@@ -142,51 +186,21 @@
     font-weight: 600;
     border: none;
     background: transparent;
-    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-    transition: all 0.2s ease-in-out;
   }
   
   .apple-button:hover {
     color: white !important;
     opacity: 0.9;
-    transform: translateY(-1px);
-    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
   }
   
   .apple-button:disabled {
     color: rgba(255, 255, 255, 0.5) !important;
     opacity: 0.5;
-    transform: none;
-    box-shadow: none;
-  }
-  
-  .apple-button:focus {
-    color: white !important;
-    outline: 2px solid rgba(255, 255, 255, 0.3);
-    outline-offset: 2px;
-  }
-  
-  /* Force white text on all buttons */
-  .btn-force-white {
-    color: white !important;
-  }
-  
-  .btn-force-white:hover {
-    color: white !important;
-  }
-  
-  .btn-force-white:focus {
-    color: white !important;
-  }
-  
-  .btn-force-white:active {
-    color: white !important;
   }
   
   /* Page layout fixes for navbar spacing */
   .page-content {
-    padding-top: 100px;
+    padding-top: 80px;
     min-height: 100vh;
   }
   

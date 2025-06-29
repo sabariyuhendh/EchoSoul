@@ -2,14 +2,50 @@
 import { useState, useEffect, useRef } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
-import { Play, Pause, Volume2, VolumeX, ArrowLeft } from 'lucide-react';
+import { Play, Pause, Volume2, VolumeX, ArrowLeft, Clock, BarChart } from 'lucide-react';
 import { Link } from 'wouter';
+import { useQuery, useMutation } from '@tanstack/react-query';
 
 const CalmSpace = () => {
   const [isPlaying, setIsPlaying] = useState(false);
   const [currentTrack, setCurrentTrack] = useState(0);
   const [volume, setVolume] = useState(0.7);
+  const [sessionStartTime, setSessionStartTime] = useState<Date | null>(null);
+  const [sessionDuration, setSessionDuration] = useState(0);
   const audioRef = useRef<HTMLAudioElement>(null);
+
+  // Fetch user preferences
+  const { data: preferences } = useQuery({
+    queryKey: ['calm-preferences'],
+    queryFn: async () => {
+      const response = await fetch('/api/calm/preferences');
+      return response.json();
+    }
+  });
+
+  // Save preferences mutation
+  const savePreferences = useMutation({
+    mutationFn: async (prefs: any) => {
+      const response = await fetch('/api/calm/preferences', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(prefs)
+      });
+      return response.json();
+    }
+  });
+
+  // Log meditation session
+  const logSession = useMutation({
+    mutationFn: async (sessionData: any) => {
+      const response = await fetch('/api/calm/log-session', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(sessionData)
+      });
+      return response.json();
+    }
+  });
 
   const tracks = [
     { name: "Lofi Beats", duration: "3:24", url: "/audio/lofi.mp3" },
