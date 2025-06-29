@@ -81,12 +81,12 @@ const Soulmate = () => {
     <div className="min-h-screen bg-black text-white page-content flex flex-col">
       <div className="max-w-4xl mx-auto w-full flex flex-col h-screen">
         {/* Header */}
-        <div className="flex items-center justify-between p-6 border-b border-white/10">
+        <div className="flex items-center justify-between p-6 pt-8 border-b border-white/10">
           <Link to="/" className="flex items-center space-x-2 text-gray-400 hover:text-white transition-colors">
             <ArrowLeft className="w-5 h-5" />
             <span>Back to Home</span>
           </Link>
-          <div className="text-center">
+          <div className="text-center flex-1">
             <h1 className="text-2xl font-light tracking-tight">
               <span className="text-gradient-rose">AI Soulmate</span>
             </h1>

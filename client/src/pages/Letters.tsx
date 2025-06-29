@@ -56,12 +56,12 @@ const Letters = () => {
     <div className="min-h-screen bg-black text-white page-content p-6">
       <div className="max-w-4xl mx-auto">
         {/* Header */}
-        <div className="flex items-center justify-between mb-8">
+        <div className="flex items-center justify-between mb-8 pt-4">
           <Link to="/" className="flex items-center space-x-2 text-gray-400 hover:text-white transition-colors">
             <ArrowLeft className="w-5 h-5" />
             <span>Back to Home</span>
           </Link>
-          <div className="text-center">
+          <div className="text-center flex-1">
             <h1 className="text-3xl font-light tracking-tight">
               <span className="text-gradient-rose">Letters You'll Never Send</span>
             </h1>
@@ -102,9 +102,9 @@ const Letters = () => {
                     key={style.id}
                     variant={selectedStyle === style.id ? "default" : "outline"}
                     onClick={() => setSelectedStyle(style.id as Letter['style'])}
-                    className={`text-xs py-2 ${selectedStyle === style.id ? 
-                      `bg-gradient-to-r from-${style.color}-500 to-${style.color}-600` : 
-                      'border-white/20 text-gray-300 hover:bg-white/10'}`}
+                    className={`text-xs py-2 font-medium transition-all duration-200 ${selectedStyle === style.id ? 
+                      `bg-gradient-to-r from-${style.color}-500 to-${style.color}-600 text-white border-transparent shadow-lg` : 
+                      'border-white/20 text-white bg-black/40 hover:bg-white/10 hover:text-white hover:border-white/40'}`}
                   >
                     {style.name}
                   </Button>
@@ -117,7 +117,7 @@ const Letters = () => {
               <Button
                 onClick={stylizeContent}
                 disabled={!content.trim() || selectedStyle === 'original'}
-                className="apple-button bg-gradient-to-r from-lavender-500 to-rose-500 text-white flex-1"
+                className="bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white font-medium flex-1 py-3 px-6 border-none shadow-lg transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 <Sparkles className="w-4 h-4 mr-2" />
                 Stylize with AI
@@ -125,7 +125,7 @@ const Letters = () => {
               <Button
                 onClick={saveLetter}
                 disabled={!to.trim() || !content.trim()}
-                className="apple-button bg-gradient-to-r from-sage-500 to-calm-500 text-white flex-1"
+                className="bg-gradient-to-r from-green-500 to-blue-500 hover:from-green-600 hover:to-blue-600 text-white font-medium flex-1 py-3 px-6 border-none shadow-lg transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 <Heart className="w-4 h-4 mr-2" />
                 Save Letter
