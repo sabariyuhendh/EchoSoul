@@ -16,6 +16,7 @@ import Whisper from "./pages/Whisper";
 import Soulmate from "./pages/Soulmate";
 import Feed from "./pages/Feed";
 import CalmSpace from "./pages/CalmSpace";
+import Signup from "./pages/Signup";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -36,6 +37,7 @@ function AppRouter() {
         <Route path="/soulmate" component={Soulmate} />
         <Route path="/feed" component={Feed} />
         <Route path="/calm" component={CalmSpace} />
+        <Route path="/signup" component={Signup} />
         <Route component={NotFound} />
       </Switch>
     </div>

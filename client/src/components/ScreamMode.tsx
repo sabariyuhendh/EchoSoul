@@ -42,15 +42,35 @@ const ScreamMode = ({ content, onBack, onComplete }: ScreamModeProps) => {
         return;
       }
 
+      // Stop any existing streams first
+      if (streamRef.current) {
+        streamRef.current.getTracks().forEach(track => track.stop());
+        streamRef.current = null;
+      }
+
+      if (audioContextRef.current && audioContextRef.current.state !== 'closed') {
+        await audioContextRef.current.close();
+        audioContextRef.current = null;
+      }
+
       const stream = await navigator.mediaDevices.getUserMedia({ 
         audio: {
-          echoCancellation: true,
-          noiseSuppression: true,
-          autoGainControl: true
+          echoCancellation: false,
+          noiseSuppression: false,
+          autoGainControl: false,
+          channelCount: 1,
+          sampleRate: 48000
         } 
       });
       
-      const audioContext = new (window.AudioContext || (window as any).webkitAudioContext)();
+      const AudioContextClass = window.AudioContext || (window as any).webkitAudioContext;
+      const audioContext = new AudioContextClass({ latencyHint: 'interactive' });
+      
+      // Resume context if suspended
+      if (audioContext.state === 'suspended') {
+        await audioContext.resume();
+      }
+      
       const analyser = audioContext.createAnalyser();
       const microphone = audioContext.createMediaStreamSource(stream);
       
@@ -64,24 +84,20 @@ const ScreamMode = ({ content, onBack, onComplete }: ScreamModeProps) => {
       
       setIsListening(true);
       monitorAudio();
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error accessing microphone:', error);
       let errorMessage = 'Could not access microphone. ';
       
-      if (error instanceof DOMException) {
-        switch (error.name) {
-          case 'NotAllowedError':
-            errorMessage += 'Please allow microphone access in your browser settings.';
-            break;
-          case 'NotFoundError':
-            errorMessage += 'No microphone found. Please connect a microphone.';
-            break;
-          case 'NotSupportedError':
-            errorMessage += 'Microphone not supported by your browser.';
-            break;
-          default:
-            errorMessage += 'Please check your microphone settings.';
-        }
+      if (error.name === 'NotAllowedError' || error.name === 'PermissionDeniedError') {
+        errorMessage += 'Please allow microphone access in your browser settings.';
+      } else if (error.name === 'NotFoundError' || error.name === 'DevicesNotFoundError') {
+        errorMessage += 'No microphone found. Please connect a microphone.';
+      } else if (error.name === 'NotSupportedError' || error.name === 'NotReadableError') {
+        errorMessage += 'Microphone not supported or already in use by another application.';
+      } else if (error.name === 'SecurityError') {
+        errorMessage += 'Microphone access is not allowed on insecure connections. Please use HTTPS.';
+      } else {
+        errorMessage += 'Please check your microphone settings.';
       }
       
       alert(errorMessage);
@@ -120,17 +136,30 @@ const ScreamMode = ({ content, onBack, onComplete }: ScreamModeProps) => {
     }
   };
 
-  const stopListening = () => {
+  const stopListening = async () => {
     setIsListening(false);
+    setVolume(0);
+    
     if (animationIdRef.current) {
       cancelAnimationFrame(animationIdRef.current);
+      animationIdRef.current = undefined;
     }
-    if (audioContextRef.current) {
-      audioContextRef.current.close();
-    }
+    
     if (streamRef.current) {
       streamRef.current.getTracks().forEach(track => track.stop());
+      streamRef.current = null;
     }
+    
+    if (audioContextRef.current && audioContextRef.current.state !== 'closed') {
+      try {
+        await audioContextRef.current.close();
+      } catch (error) {
+        console.error('Error closing audio context:', error);
+      }
+      audioContextRef.current = null;
+    }
+    
+    analyserRef.current = null;
   };
 
   return (

@@ -148,6 +148,15 @@ Changelog:
   * Optimized dark mode colors for strong contrast and premium appearance
   * Applied smooth hover transitions and scaling effects for premium feel
   * Ensured consistent aesthetic across all pages: Vault, Calm Space, Let It Go, Feed, Whisper, Soulmate, Mood
+- June 29, 2025. Major immersive experience enhancements:
+  * Fixed DOM exceptions and voice input issues in ScreamMode with better error handling
+  * Created 3D realistic SmashMode with physics-based destruction and power charging
+  * Implemented realistic paper burning animation in BurnMode with text char-by-char burning
+  * Developed interstellar black hole visualization for Calm Space with orbiting accretion disk
+  * Added comprehensive animations: rotate-slow, pulse-slow, wobble, lens-distort, jet-pulse
+  * Created Signup page with Google OAuth integration and premium styling
+  * Fixed infinite loop issues in 3D components
+  * Enhanced all interactive modes for maximum immersion and realism
 ```
 
 ## User Preferences

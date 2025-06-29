@@ -7,8 +7,8 @@ import { ArrowLeft, Flame, Zap, Mic, Timer } from 'lucide-react';
 import { Link } from 'wouter';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { apiRequest } from '@/lib/queryClient';
-import BurnMode from '@/components/BurnMode';
-import SmashMode from '@/components/SmashMode';
+import BurnMode from '@/components/BurnModeRealistic';
+import SmashMode from '@/components/SmashMode3D';
 import ScreamMode from '@/components/ScreamMode';
 
 type ReleaseMode = 'burn' | 'smash' | 'scream';
