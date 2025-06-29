@@ -25,8 +25,22 @@ const Whisper = () => {
 
   const startRecording = async () => {
     try {
-      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-      const mediaRecorder = new MediaRecorder(stream);
+      if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+        alert('Your browser does not support microphone access. Please use a modern browser like Chrome, Firefox, or Safari.');
+        return;
+      }
+
+      const stream = await navigator.mediaDevices.getUserMedia({ 
+        audio: {
+          echoCancellation: true,
+          noiseSuppression: true,
+          autoGainControl: true
+        } 
+      });
+      
+      const mediaRecorder = new MediaRecorder(stream, {
+        mimeType: MediaRecorder.isTypeSupported('audio/webm') ? 'audio/webm' : 'audio/mp4'
+      });
       mediaRecorderRef.current = mediaRecorder;
       
       const chunks: BlobPart[] = [];
@@ -58,6 +72,25 @@ const Whisper = () => {
       
     } catch (error) {
       console.error('Error accessing microphone:', error);
+      let errorMessage = 'Could not access microphone. ';
+      
+      if (error instanceof DOMException) {
+        switch (error.name) {
+          case 'NotAllowedError':
+            errorMessage += 'Please allow microphone access in your browser settings.';
+            break;
+          case 'NotFoundError':
+            errorMessage += 'No microphone found. Please connect a microphone.';
+            break;
+          case 'NotSupportedError':
+            errorMessage += 'Audio recording not supported by your browser.';
+            break;
+          default:
+            errorMessage += 'Please check your microphone settings.';
+        }
+      }
+      
+      alert(errorMessage);
     }
   };
 

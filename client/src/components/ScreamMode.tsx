@@ -17,6 +17,7 @@ const ScreamMode = ({ content, onBack, onComplete }: ScreamModeProps) => {
   const [soundWaves, setSoundWaves] = useState<Array<{id: number, scale: number}>>([]);
   const audioContextRef = useRef<AudioContext | null>(null);
   const analyserRef = useRef<AnalyserNode | null>(null);
+  const streamRef = useRef<MediaStream | null>(null);
   const animationIdRef = useRef<number>();
 
   useEffect(() => {
@@ -27,26 +28,63 @@ const ScreamMode = ({ content, onBack, onComplete }: ScreamModeProps) => {
       if (audioContextRef.current) {
         audioContextRef.current.close();
       }
+      if (streamRef.current) {
+        streamRef.current.getTracks().forEach(track => track.stop());
+      }
     };
   }, []);
 
   const startListening = async () => {
     try {
-      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-      const audioContext = new AudioContext();
+      // Check if browser supports getUserMedia
+      if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+        alert('Your browser does not support microphone access. Please use a modern browser like Chrome, Firefox, or Safari.');
+        return;
+      }
+
+      const stream = await navigator.mediaDevices.getUserMedia({ 
+        audio: {
+          echoCancellation: true,
+          noiseSuppression: true,
+          autoGainControl: true
+        } 
+      });
+      
+      const audioContext = new (window.AudioContext || (window as any).webkitAudioContext)();
       const analyser = audioContext.createAnalyser();
       const microphone = audioContext.createMediaStreamSource(stream);
       
-      analyser.fftSize = 256;
+      analyser.fftSize = 512;
+      analyser.smoothingTimeConstant = 0.3;
       microphone.connect(analyser);
       
       audioContextRef.current = audioContext;
       analyserRef.current = analyser;
+      streamRef.current = stream;
       
       setIsListening(true);
       monitorAudio();
     } catch (error) {
       console.error('Error accessing microphone:', error);
+      let errorMessage = 'Could not access microphone. ';
+      
+      if (error instanceof DOMException) {
+        switch (error.name) {
+          case 'NotAllowedError':
+            errorMessage += 'Please allow microphone access in your browser settings.';
+            break;
+          case 'NotFoundError':
+            errorMessage += 'No microphone found. Please connect a microphone.';
+            break;
+          case 'NotSupportedError':
+            errorMessage += 'Microphone not supported by your browser.';
+            break;
+          default:
+            errorMessage += 'Please check your microphone settings.';
+        }
+      }
+      
+      alert(errorMessage);
     }
   };
 
@@ -89,6 +127,9 @@ const ScreamMode = ({ content, onBack, onComplete }: ScreamModeProps) => {
     }
     if (audioContextRef.current) {
       audioContextRef.current.close();
+    }
+    if (streamRef.current) {
+      streamRef.current.getTracks().forEach(track => track.stop());
     }
   };
 
