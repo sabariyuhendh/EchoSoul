@@ -1,10 +1,127 @@
 
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, Suspense } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Play, Pause, Volume2, VolumeX, ArrowLeft, Clock, BarChart } from 'lucide-react';
 import { Link } from 'wouter';
 import { useQuery, useMutation } from '@tanstack/react-query';
+import { Canvas, useFrame } from '@react-three/fiber';
+import { Float, Sparkles } from '@react-three/drei';
+import * as THREE from 'three';
+
+// Cosmic Debris Component for 3D background
+function CosmicDebris({ count = 50 }: { count?: number }) {
+  const meshRef = useRef<THREE.InstancedMesh>(null);
+  const dummy = new THREE.Object3D();
+  
+  useFrame((state) => {
+    if (!meshRef.current) return;
+    
+    const time = state.clock.getElapsedTime();
+    
+    for (let i = 0; i < count; i++) {
+      const x = (i % 10 - 5) * 4;
+      const y = Math.floor(i / 10 - 2.5) * 4;
+      const z = (Math.sin(time * 0.5 + i) * 2) - 5;
+      
+      dummy.position.set(
+        x + Math.sin(time * 0.3 + i) * 0.5,
+        y + Math.cos(time * 0.4 + i) * 0.5,
+        z
+      );
+      
+      dummy.rotation.x = time * 0.5 + i;
+      dummy.rotation.y = time * 0.3 + i;
+      dummy.rotation.z = time * 0.2 + i;
+      
+      const scale = 0.1 + Math.sin(time * 0.5 + i) * 0.05;
+      dummy.scale.set(scale, scale, scale);
+      
+      dummy.updateMatrix();
+      meshRef.current.setMatrixAt(i, dummy.matrix);
+    }
+    
+    meshRef.current.instanceMatrix.needsUpdate = true;
+  });
+  
+  return (
+    <instancedMesh ref={meshRef} args={[undefined, undefined, count]}>
+      <dodecahedronGeometry args={[1, 0]} />
+      <meshPhysicalMaterial
+        color="#87CEEB"
+        metalness={0.8}
+        roughness={0.2}
+        transmission={0.6}
+        thickness={0.5}
+        envMapIntensity={1}
+        clearcoat={1}
+        clearcoatRoughness={0.1}
+        emissive="#4169E1"
+        emissiveIntensity={0.2}
+      />
+    </instancedMesh>
+  );
+}
+
+// Interactive Smashable Crystal
+function SmashableCrystal({ position }: { position: [number, number, number] }) {
+  const [broken, setBroken] = useState(false);
+  const meshRef = useRef<THREE.Mesh>(null);
+  
+  useFrame((state) => {
+    if (meshRef.current && !broken) {
+      meshRef.current.rotation.y += 0.01;
+      meshRef.current.position.y = position[1] + Math.sin(state.clock.elapsedTime * 2) * 0.1;
+    }
+  });
+  
+  const handleClick = () => {
+    if (!broken) {
+      setBroken(true);
+      setTimeout(() => setBroken(false), 3000);
+    }
+  };
+  
+  if (broken) {
+    return (
+      <Sparkles
+        count={30}
+        scale={2}
+        size={3}
+        speed={2}
+        opacity={0.8}
+        color="#87CEEB"
+        position={position}
+      />
+    );
+  }
+  
+  return (
+    <Float speed={2} rotationIntensity={0.5} floatIntensity={0.5}>
+      <mesh
+        ref={meshRef}
+        position={position}
+        onClick={handleClick}
+        onPointerOver={() => document.body.style.cursor = 'pointer'}
+        onPointerOut={() => document.body.style.cursor = 'auto'}
+      >
+        <octahedronGeometry args={[0.5, 0]} />
+        <meshPhysicalMaterial
+          color="#00CED1"
+          metalness={0.2}
+          roughness={0.1}
+          transmission={0.9}
+          thickness={1}
+          ior={2.4}
+          clearcoat={1}
+          clearcoatRoughness={0.1}
+          emissive="#00CED1"
+          emissiveIntensity={0.3}
+        />
+      </mesh>
+    </Float>
+  );
+}
 
 const CalmSpace = () => {
   const [isPlaying, setIsPlaying] = useState(false);
@@ -78,8 +195,37 @@ const CalmSpace = () => {
 
   return (
     <div className="min-h-screen bg-black text-white page-content relative overflow-hidden">
+      {/* 3D Cosmic Debris Layer */}
+      <div className="absolute inset-0 z-0">
+        <Canvas camera={{ position: [0, 0, 10], fov: 75 }}>
+          <Suspense fallback={null}>
+            <ambientLight intensity={0.3} />
+            <pointLight position={[10, 10, 10]} intensity={0.5} />
+            <pointLight position={[-10, -10, -10]} intensity={0.5} color="#87CEEB" />
+            
+            {/* Floating cosmic debris */}
+            <CosmicDebris count={40} />
+            
+            {/* Interactive smashable crystals */}
+            <SmashableCrystal position={[-3, 2, 0]} />
+            <SmashableCrystal position={[3, -2, 0]} />
+            <SmashableCrystal position={[0, 0, -2]} />
+            
+            {/* Background sparkles */}
+            <Sparkles
+              count={200}
+              scale={15}
+              size={1}
+              speed={0.5}
+              opacity={0.5}
+              color="#ffffff"
+            />
+          </Suspense>
+        </Canvas>
+      </div>
+      
       {/* Photorealistic Black Hole Background - inspired by Interstellar/Event Horizon */}
-      <div className="absolute inset-0 z-0 overflow-hidden bg-black">
+      <div className="absolute inset-0 z-0 overflow-hidden bg-black mix-blend-screen pointer-events-none">
         {/* Deep space environment */}
         <div className="absolute inset-0 bg-gradient-radial from-transparent via-blue-950/10 to-black"></div>
         

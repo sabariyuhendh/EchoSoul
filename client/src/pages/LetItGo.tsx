@@ -8,7 +8,7 @@ import { Link } from 'wouter';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { apiRequest } from '@/lib/queryClient';
 import BurnMode from '@/components/BurnModeRealistic';
-import SmashMode from '@/components/SmashMode3D';
+import SmashMode from '@/components/SmashMode3DRealistic';
 import ScreamMode from '@/components/ScreamMode';
 
 type ReleaseMode = 'burn' | 'smash' | 'scream';
