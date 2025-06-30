@@ -151,14 +151,32 @@
     @apply border-border;
   }
   
+  html {
+    height: 100%;
+    overflow-y: auto;
+    scroll-behavior: smooth;
+  }
+  
   body {
     @apply bg-black text-white font-sans antialiased;
     min-height: 100vh;
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    overflow-x: hidden;
+    overflow-y: auto;
+    position: relative;
     background: #000000;
     font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Helvetica', 'Arial', sans-serif;
     font-feature-settings: "liga" 1, "kern" 1;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+  }
+
+  #root {
+    min-height: 100vh;
+    position: relative;
+    overflow: visible;
   }
   
   /* Apple-style glassmorphism with calming accents */
@@ -307,7 +325,7 @@
     box-decoration-break: clone !important;
     color: transparent !important;
     display: inline-block !important;
-    font-weight: 600 !important;
+    font-weight: 300 !important;
     text-shadow: none !important;
   }
   
@@ -320,7 +338,7 @@
     box-decoration-break: clone !important;
     color: transparent !important;
     display: inline-block !important;
-    font-weight: 600 !important;
+    font-weight: 300 !important;
     text-shadow: none !important;
   }
   
@@ -333,7 +351,7 @@
     box-decoration-break: clone !important;
     color: transparent !important;
     display: inline-block !important;
-    font-weight: 600 !important;
+    font-weight: 300 !important;
     text-shadow: none !important;
   }
   
@@ -346,7 +364,7 @@
     box-decoration-break: clone !important;
     color: transparent !important;
     display: inline-block !important;
-    font-weight: 600 !important;
+    font-weight: 300 !important;
     text-shadow: none !important;
   }
   
@@ -359,7 +377,7 @@
     box-decoration-break: clone !important;
     color: transparent !important;
     display: inline-block !important;
-    font-weight: 600 !important;
+    font-weight: 300 !important;
     text-shadow: none !important;
   }
   
@@ -372,7 +390,7 @@
     box-decoration-break: clone !important;
     color: transparent !important;
     display: inline-block !important;
-    font-weight: 600 !important;
+    font-weight: 300 !important;
     text-shadow: none !important;
   }
   
@@ -385,7 +403,7 @@
     box-decoration-break: clone !important;
     color: transparent !important;
     display: inline-block !important;
-    font-weight: 600 !important;
+    font-weight: 300 !important;
     text-shadow: none !important;
   }
   
@@ -558,7 +576,7 @@
     box-decoration-break: clone !important;
     color: transparent !important;
     display: inline-block !important;
-    font-weight: 600 !important;
+    font-weight: 300 !important;
     text-shadow: none !important;
   }
   
