@@ -129,6 +129,8 @@ const CalmSpace = () => {
   const [volume, setVolume] = useState(0.7);
   const [sessionStartTime, setSessionStartTime] = useState<Date | null>(null);
   const [sessionDuration, setSessionDuration] = useState(0);
+  const [cosmicDebrisEnabled, setCosmicDebrisEnabled] = useState(true);
+  const [debrisIntensity, setDebrisIntensity] = useState(0.5);
   const audioRef = useRef<HTMLAudioElement>(null);
 
   // Fetch user preferences
@@ -136,7 +138,13 @@ const CalmSpace = () => {
     queryKey: ['calm-preferences'],
     queryFn: async () => {
       const response = await fetch('/api/calm/preferences');
-      return response.json();
+      const data = await response.json();
+      if (data) {
+        setVolume(data.volume || 0.7);
+        setCosmicDebrisEnabled(data.cosmicDebrisEnabled ?? true);
+        setDebrisIntensity(data.debrisIntensity || 0.5);
+      }
+      return data;
     }
   });
 
@@ -196,33 +204,39 @@ const CalmSpace = () => {
   return (
     <div className="min-h-screen bg-black text-white page-content relative overflow-hidden">
       {/* 3D Cosmic Debris Layer */}
-      <div className="absolute inset-0 z-0">
-        <Canvas camera={{ position: [0, 0, 10], fov: 75 }}>
-          <Suspense fallback={null}>
-            <ambientLight intensity={0.3} />
-            <pointLight position={[10, 10, 10]} intensity={0.5} />
-            <pointLight position={[-10, -10, -10]} intensity={0.5} color="#87CEEB" />
+      {cosmicDebrisEnabled && (
+        <div className="absolute inset-0 z-0">
+          <Canvas camera={{ position: [0, 0, 10], fov: 75 }}>
+            <Suspense fallback={null}>
+              <ambientLight intensity={0.3 * debrisIntensity} />
+              <pointLight position={[10, 10, 10]} intensity={0.5 * debrisIntensity} />
+              <pointLight position={[-10, -10, -10]} intensity={0.5 * debrisIntensity} color="#87CEEB" />
+              
+              {/* Floating cosmic debris */}
+              <CosmicDebris count={Math.round(40 * debrisIntensity)} />
+              
+              {/* Interactive smashable crystals */}
+              {debrisIntensity > 0.3 && (
+                <>
+                  <SmashableCrystal position={[-3, 2, 0]} />
+                  <SmashableCrystal position={[3, -2, 0]} />
+                  <SmashableCrystal position={[0, 0, -2]} />
+                </>
+              )}
             
-            {/* Floating cosmic debris */}
-            <CosmicDebris count={40} />
-            
-            {/* Interactive smashable crystals */}
-            <SmashableCrystal position={[-3, 2, 0]} />
-            <SmashableCrystal position={[3, -2, 0]} />
-            <SmashableCrystal position={[0, 0, -2]} />
-            
-            {/* Background sparkles */}
-            <Sparkles
-              count={200}
-              scale={15}
-              size={1}
-              speed={0.5}
-              opacity={0.5}
-              color="#ffffff"
-            />
-          </Suspense>
-        </Canvas>
-      </div>
+              {/* Background sparkles */}
+              <Sparkles
+                count={200}
+                scale={15}
+                size={1}
+                speed={0.5}
+                opacity={0.5}
+                color="#ffffff"
+              />
+            </Suspense>
+          </Canvas>
+        </div>
+      )}
       
       {/* Photorealistic Black Hole Background - inspired by Interstellar/Event Horizon */}
       <div className="absolute inset-0 z-0 overflow-hidden bg-black mix-blend-screen pointer-events-none">
@@ -496,6 +510,66 @@ const CalmSpace = () => {
                   </div>
                 </div>
               ))}
+            </div>
+          </Card>
+
+          {/* Cosmic Debris Controls */}
+          <Card className="apple-card p-6 mt-8 backdrop-blur-xl bg-white/3">
+            <h3 className="text-xl font-light mb-4 text-gradient-calm">Cosmic Debris</h3>
+            <div className="space-y-4">
+              <div className="flex items-center justify-between">
+                <span className="text-gray-300">Enable Cosmic Debris</span>
+                <button
+                  onClick={() => {
+                    setCosmicDebrisEnabled(!cosmicDebrisEnabled);
+                    savePreferences.mutate({
+                      userId: 'dev-user-1',
+                      cosmicDebrisEnabled: !cosmicDebrisEnabled,
+                      debrisIntensity,
+                      volume
+                    });
+                  }}
+                  className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
+                    cosmicDebrisEnabled ? 'bg-calm-500' : 'bg-gray-600'
+                  }`}
+                >
+                  <span
+                    className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
+                      cosmicDebrisEnabled ? 'translate-x-6' : 'translate-x-1'
+                    }`}
+                  />
+                </button>
+              </div>
+              
+              {cosmicDebrisEnabled && (
+                <div className="space-y-2">
+                  <div className="flex items-center justify-between">
+                    <span className="text-gray-300">Debris Intensity</span>
+                    <span className="text-gray-400 text-sm">{Math.round(debrisIntensity * 100)}%</span>
+                  </div>
+                  <input
+                    type="range"
+                    min="0"
+                    max="1"
+                    step="0.1"
+                    value={debrisIntensity}
+                    onChange={(e) => {
+                      const newIntensity = parseFloat(e.target.value);
+                      setDebrisIntensity(newIntensity);
+                      savePreferences.mutate({
+                        userId: 'dev-user-1',
+                        cosmicDebrisEnabled,
+                        debrisIntensity: newIntensity,
+                        volume
+                      });
+                    }}
+                    className="w-full accent-calm-500"
+                  />
+                  <p className="text-xs text-gray-500 mt-2">
+                    Higher intensity adds more interactive crystals you can smash
+                  </p>
+                </div>
+              )}
             </div>
           </Card>
 

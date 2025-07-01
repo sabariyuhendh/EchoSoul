@@ -1,19 +1,28 @@
 
 import { Request, Response } from 'express';
+import { storage } from './storage';
 
 // Get user's calm space preferences
 export const getCalmPreferences = async (req: Request, res: Response) => {
   try {
-    const userId = req.user?.id;
-    // Implementation would fetch user preferences from database
-    const preferences = {
-      favoriteTrack: 0,
-      volume: 0.7,
-      breathingPattern: { inhale: 4, hold: 4, exhale: 6 },
-      ambientSounds: true
-    };
+    const userId = (req as any).user?.id || 'dev-user-1';
+    const preferences = await storage.getCalmSpacePreferences(userId);
+    
+    if (!preferences) {
+      // Return default preferences if none exist
+      return res.json({
+        favoriteTrack: 0,
+        volume: 0.7,
+        breathingPattern: { inhale: 4, hold: 4, exhale: 6 },
+        ambientSounds: true,
+        cosmicDebrisEnabled: true,
+        debrisIntensity: 0.5
+      });
+    }
+    
     res.json(preferences);
   } catch (error) {
+    console.error('Error fetching calm preferences:', error);
     res.status(500).json({ error: 'Failed to fetch preferences' });
   }
 };
@@ -21,12 +30,29 @@ export const getCalmPreferences = async (req: Request, res: Response) => {
 // Save user's calm space preferences
 export const saveCalmPreferences = async (req: Request, res: Response) => {
   try {
-    const userId = req.user?.id;
-    const { favoriteTrack, volume, breathingPattern, ambientSounds } = req.body;
+    const userId = (req as any).user?.id || 'dev-user-1';
+    const { 
+      favoriteTrack, 
+      volume, 
+      breathingPattern, 
+      ambientSounds,
+      cosmicDebrisEnabled,
+      debrisIntensity 
+    } = req.body;
     
-    // Implementation would save preferences to database
-    res.json({ success: true });
+    const preferences = await storage.upsertCalmSpacePreferences({
+      userId,
+      favoriteTrack,
+      volume,
+      breathingPattern,
+      ambientSounds,
+      cosmicDebrisEnabled,
+      debrisIntensity
+    });
+    
+    res.json({ success: true, preferences });
   } catch (error) {
+    console.error('Error saving calm preferences:', error);
     res.status(500).json({ error: 'Failed to save preferences' });
   }
 };

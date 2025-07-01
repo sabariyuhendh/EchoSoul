@@ -249,6 +249,39 @@ export async function registerRoutes(app: Express): Promise<Server> {
     app.post("/api/calm/preferences", saveCalmPreferences);
     app.post("/api/calm/meditation", logMeditationSession);
     app.get("/api/calm/meditation/stats", getMeditationStats);
+    
+    // Smash Mode API endpoints
+    app.post("/api/smash/stats", async (req: any, res) => {
+      try {
+        const userId = req.user?.id || "dev-user-1";
+        const { objectType, smashForce, destructionPattern, emotionalRelease, sessionId } = req.body;
+        
+        const stats = await storage.createSmashModeStats({
+          userId,
+          objectType,
+          smashForce,
+          destructionPattern,
+          emotionalRelease,
+          sessionId
+        });
+        
+        res.json({ success: true, stats });
+      } catch (error) {
+        console.error("Error saving smash stats:", error);
+        res.status(500).json({ error: "Internal server error" });
+      }
+    });
+    
+    app.get("/api/smash/stats", async (req: any, res) => {
+      try {
+        const userId = req.user?.id || "dev-user-1";
+        const stats = await storage.getUserSmashModeStats(userId);
+        res.json({ stats });
+      } catch (error) {
+        console.error("Error fetching smash stats:", error);
+        res.status(500).json({ error: "Internal server error" });
+      }
+    });
 
   // Health check endpoint
   app.get("/api/health", (req, res) => {

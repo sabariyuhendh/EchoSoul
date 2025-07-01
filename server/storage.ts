@@ -1,9 +1,11 @@
 import { 
   users, letItGoEntries, vaultEntries, moodEntries, letters, whispers, posts,
+  smashModeStats, calmSpacePreferences,
   type User, type UpsertUser, type LetItGoEntry, type InsertLetItGoEntry,
   type VaultEntry, type InsertVaultEntry, type MoodEntry, type InsertMoodEntry,
   type Letter, type InsertLetter, type Whisper, type InsertWhisper,
-  type Post, type InsertPost
+  type Post, type InsertPost, type SmashModeStats, type InsertSmashModeStats,
+  type CalmSpacePreferences, type InsertCalmSpacePreferences
 } from "@shared/schema";
 import { db } from "./db";
 import { eq, lt, desc } from "drizzle-orm";
@@ -38,6 +40,14 @@ export interface IStorage {
   // Post operations
   createPost(post: InsertPost): Promise<Post>;
   getPublicPosts(): Promise<Post[]>;
+  
+  // Smash mode operations
+  createSmashModeStats(stats: InsertSmashModeStats): Promise<SmashModeStats>;
+  getUserSmashModeStats(userId: string): Promise<SmashModeStats[]>;
+  
+  // Calm space preferences operations
+  getCalmSpacePreferences(userId: string): Promise<CalmSpacePreferences | undefined>;
+  upsertCalmSpacePreferences(prefs: InsertCalmSpacePreferences): Promise<CalmSpacePreferences>;
 }
 
 export class DatabaseStorage implements IStorage {
@@ -236,6 +246,79 @@ export class DatabaseStorage implements IStorage {
       .from(posts)
       .orderBy(desc(posts.createdAt))
       .limit(50); // Limit to recent 50 posts
+  }
+
+  // Smash mode operations
+  async createSmashModeStats(stats: InsertSmashModeStats): Promise<SmashModeStats> {
+    const id = `smash_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+    
+    const statsData = {
+      id,
+      userId: stats.userId,
+      objectType: stats.objectType,
+      smashForce: stats.smashForce,
+      destructionPattern: stats.destructionPattern || null,
+      emotionalRelease: stats.emotionalRelease || null,
+      sessionId: stats.sessionId
+    };
+    
+    const [smashStats] = await db
+      .insert(smashModeStats)
+      .values(statsData)
+      .returning();
+    return smashStats;
+  }
+
+  async getUserSmashModeStats(userId: string): Promise<SmashModeStats[]> {
+    return await db
+      .select()
+      .from(smashModeStats)
+      .where(eq(smashModeStats.userId, userId))
+      .orderBy(desc(smashModeStats.createdAt));
+  }
+
+  // Calm space preferences operations
+  async getCalmSpacePreferences(userId: string): Promise<CalmSpacePreferences | undefined> {
+    const [prefs] = await db
+      .select()
+      .from(calmSpacePreferences)
+      .where(eq(calmSpacePreferences.userId, userId))
+      .limit(1);
+    return prefs;
+  }
+
+  async upsertCalmSpacePreferences(prefs: InsertCalmSpacePreferences): Promise<CalmSpacePreferences> {
+    const id = `calm_prefs_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+    
+    const prefsData = {
+      id,
+      userId: prefs.userId,
+      favoriteTrack: prefs.favoriteTrack ?? 0,
+      volume: prefs.volume ?? 0.7,
+      breathingPattern: prefs.breathingPattern ?? { inhale: 4, hold: 4, exhale: 6 },
+      ambientSounds: prefs.ambientSounds ?? true,
+      cosmicDebrisEnabled: prefs.cosmicDebrisEnabled ?? true,
+      debrisIntensity: prefs.debrisIntensity ?? 0.5,
+      updatedAt: new Date()
+    };
+    
+    const [preference] = await db
+      .insert(calmSpacePreferences)
+      .values(prefsData)
+      .onConflictDoUpdate({
+        target: calmSpacePreferences.userId,
+        set: {
+          favoriteTrack: prefsData.favoriteTrack,
+          volume: prefsData.volume,
+          breathingPattern: prefsData.breathingPattern,
+          ambientSounds: prefsData.ambientSounds,
+          cosmicDebrisEnabled: prefsData.cosmicDebrisEnabled,
+          debrisIntensity: prefsData.debrisIntensity,
+          updatedAt: prefsData.updatedAt
+        }
+      })
+      .returning();
+    return preference;
   }
 }
 

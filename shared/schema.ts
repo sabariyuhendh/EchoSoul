@@ -78,6 +78,30 @@ export const posts = pgTable("posts", {
   createdAt: timestamp("created_at").defaultNow().notNull(),
 });
 
+// Smash mode analytics and preferences
+export const smashModeStats = pgTable("smash_mode_stats", {
+  id: text("id").primaryKey().notNull(),
+  userId: varchar("user_id").notNull(),
+  objectType: text("object_type").notNull(), // 'crystal_orb', 'ceramic_vase', 'glass_bottle', 'metal_cube'
+  smashForce: real("smash_force").notNull(), // 0-100
+  destructionPattern: text("destruction_pattern"), // physics pattern used
+  emotionalRelease: integer("emotional_release"), // user rating 1-10
+  sessionId: text("session_id").notNull(),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+});
+
+export const calmSpacePreferences = pgTable("calm_space_preferences", {
+  id: text("id").primaryKey().notNull(),
+  userId: varchar("user_id").notNull().unique(),
+  favoriteTrack: integer("favorite_track").default(0),
+  volume: real("volume").default(0.7),
+  breathingPattern: jsonb("breathing_pattern").default({ inhale: 4, hold: 4, exhale: 6 }),
+  ambientSounds: boolean("ambient_sounds").default(true),
+  cosmicDebrisEnabled: boolean("cosmic_debris_enabled").default(true),
+  debrisIntensity: real("debris_intensity").default(0.5),
+  updatedAt: timestamp("updated_at").defaultNow().notNull(),
+});
+
 // User types
 export type UpsertUser = typeof users.$inferInsert;
 export type User = typeof users.$inferSelect;
@@ -138,3 +162,28 @@ export const insertPostSchema = createInsertSchema(posts).pick({
 });
 export type InsertPost = z.infer<typeof insertPostSchema>;
 export type Post = typeof posts.$inferSelect;
+
+// Smash mode types
+export const insertSmashModeStatsSchema = createInsertSchema(smashModeStats).pick({
+  userId: true,
+  objectType: true,
+  smashForce: true,
+  destructionPattern: true,
+  emotionalRelease: true,
+  sessionId: true,
+});
+export type InsertSmashModeStats = z.infer<typeof insertSmashModeStatsSchema>;
+export type SmashModeStats = typeof smashModeStats.$inferSelect;
+
+// Calm space preference types  
+export const insertCalmSpacePreferencesSchema = createInsertSchema(calmSpacePreferences).pick({
+  userId: true,
+  favoriteTrack: true,
+  volume: true,
+  breathingPattern: true,
+  ambientSounds: true,
+  cosmicDebrisEnabled: true,
+  debrisIntensity: true,
+});
+export type InsertCalmSpacePreferences = z.infer<typeof insertCalmSpacePreferencesSchema>;
+export type CalmSpacePreferences = typeof calmSpacePreferences.$inferSelect;
