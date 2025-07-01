@@ -102,6 +102,29 @@ export const calmSpacePreferences = pgTable("calm_space_preferences", {
   updatedAt: timestamp("updated_at").defaultNow().notNull(),
 });
 
+export const humourClubEntries = pgTable("humour_club_entries", {
+  id: text("id").primaryKey().notNull(),
+  userId: varchar("user_id").notNull(),
+  type: text("type").notNull(), // 'joke', 'meme', 'poll', 'game_score', 'gif_reaction'
+  content: text("content").notNull(),
+  metadata: jsonb("metadata"), // JSON object for additional data
+  isPublic: boolean("is_public").default(false),
+  likes: integer("likes").default(0),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at").defaultNow().notNull(),
+});
+
+export const humourClubPolls = pgTable("humour_club_polls", {
+  id: text("id").primaryKey().notNull(),
+  userId: varchar("user_id").notNull(),
+  question: text("question").notNull(),
+  options: jsonb("options").notNull(), // Array of poll options
+  votes: jsonb("votes").notNull().default([]), // Array of vote counts
+  isActive: boolean("is_active").default(true),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at").defaultNow().notNull(),
+});
+
 // User types
 export type UpsertUser = typeof users.$inferInsert;
 export type User = typeof users.$inferSelect;
@@ -187,3 +210,24 @@ export const insertCalmSpacePreferencesSchema = createInsertSchema(calmSpacePref
 });
 export type InsertCalmSpacePreferences = z.infer<typeof insertCalmSpacePreferencesSchema>;
 export type CalmSpacePreferences = typeof calmSpacePreferences.$inferSelect;
+
+// Humour Club types
+export const insertHumourClubEntrySchema = createInsertSchema(humourClubEntries).pick({
+  userId: true,
+  type: true,
+  content: true,
+  metadata: true,
+  isPublic: true,
+});
+export type InsertHumourClubEntry = z.infer<typeof insertHumourClubEntrySchema>;
+export type HumourClubEntry = typeof humourClubEntries.$inferSelect;
+
+export const insertHumourClubPollSchema = createInsertSchema(humourClubPolls).pick({
+  userId: true,
+  question: true,
+  options: true,
+  votes: true,
+  isActive: true,
+});
+export type InsertHumourClubPoll = z.infer<typeof insertHumourClubPollSchema>;
+export type HumourClubPoll = typeof humourClubPolls.$inferSelect;

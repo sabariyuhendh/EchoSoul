@@ -2,8 +2,9 @@ import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
 import { setupAuth } from "./replitAuth";
-import { insertLetItGoEntrySchema, insertMoodEntrySchema, insertLetterSchema, insertVaultEntrySchema, insertWhisperSchema, insertPostSchema } from "@shared/schema";
+import { insertLetItGoEntrySchema, insertMoodEntrySchema, insertLetterSchema, insertVaultEntrySchema, insertWhisperSchema, insertPostSchema, insertHumourClubEntrySchema, insertHumourClubPollSchema } from "@shared/schema";
 import { z } from "zod";
+import OpenAI from "openai";
 import { getCalmPreferences, saveCalmPreferences, logMeditationSession, getMeditationStats } from './calmSpaceRoutes';
 
 export async function registerRoutes(app: Express): Promise<Server> {
@@ -49,6 +50,26 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error("Error during signup:", error);
       res.status(500).json({ message: "Failed to sign up" });
+    }
+  });
+
+  // Mock login route for development
+  app.post('/api/auth/login', async (req: any, res) => {
+    try {
+      // In development, just return success with mock user
+      const mockUser = {
+        id: "dev-user-1",
+        email: req.body.email || "developer@echosoul.dev",
+        firstName: "Dev",
+        lastName: "User",
+        profileImageUrl: null,
+        createdAt: new Date(),
+        updatedAt: new Date()
+      };
+      res.json({ success: true, user: mockUser, message: "Login successful" });
+    } catch (error) {
+      console.error("Error during login:", error);
+      res.status(500).json({ message: "Failed to log in" });
     }
   });
 
@@ -282,6 +303,182 @@ export async function registerRoutes(app: Express): Promise<Server> {
         res.status(500).json({ error: "Internal server error" });
       }
     });
+
+  // Initialize OpenAI with API key
+  const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
+
+  // Humour Club API endpoints
+  app.get("/api/humour/entries", async (req: any, res) => {
+    try {
+      const entries = await storage.getPublicHumourClubEntries();
+      res.json({ entries });
+    } catch (error) {
+      console.error("Error fetching humour entries:", error);
+      res.status(500).json({ error: "Internal server error" });
+    }
+  });
+
+  app.post("/api/humour/entries", async (req: any, res) => {
+    try {
+      const userId = req.user?.id || "dev-user-1";
+      const validatedData = insertHumourClubEntrySchema.parse({
+        ...req.body,
+        userId
+      });
+
+      const entry = await storage.createHumourClubEntry(validatedData);
+      res.json({ success: true, entry });
+    } catch (error) {
+      console.error("Error creating humour entry:", error);
+      if (error instanceof z.ZodError) {
+        res.status(400).json({ error: "Invalid data", details: error.errors });
+      } else {
+        res.status(500).json({ error: "Internal server error" });
+      }
+    }
+  });
+
+  app.post("/api/humour/entries/:id/like", async (req: any, res) => {
+    try {
+      const { id } = req.params;
+      await storage.likeHumourClubEntry(id);
+      res.json({ success: true });
+    } catch (error) {
+      console.error("Error liking humour entry:", error);
+      res.status(500).json({ error: "Internal server error" });
+    }
+  });
+
+  // Humour Club AI Joke endpoint
+  app.post("/api/humour/joke", async (req: any, res) => {
+    try {
+      const { category = "general" } = req.body;
+      
+      const response = await openai.chat.completions.create({
+        model: "gpt-4o", // the newest OpenAI model is "gpt-4o" which was released May 13, 2024. do not change this unless explicitly requested by the user
+        messages: [
+          {
+            role: "system",
+            content: "You are a wholesome, positive joke generator. Create clean, uplifting jokes that would make someone smile. Keep them light-hearted and appropriate for all audiences. Avoid dark humor, controversial topics, or anything that could be offensive."
+          },
+          {
+            role: "user",
+            content: `Tell me a ${category} joke that's clean, positive, and will make someone laugh or smile.`
+          }
+        ],
+        max_tokens: 150,
+      });
+
+      const joke = response.choices[0].message.content;
+      res.json({ joke });
+    } catch (error) {
+      console.error("Error generating joke:", error);
+      res.status(500).json({ error: "Failed to generate joke" });
+    }
+  });
+
+  // Humour Club Meme endpoint
+  app.get("/api/humour/meme", async (req: any, res) => {
+    try {
+      // Predefined collection of positive, uplifting memes
+      const memes = [
+        {
+          text: "When you finally understand a concept you've been struggling with",
+          image: "🎯",
+          category: "success"
+        },
+        {
+          text: "Me trying to adult responsibly vs me wanting to stay in bed",
+          image: "⚖️",
+          category: "relatable"
+        },
+        {
+          text: "When you remember something funny and start laughing alone",
+          image: "😂",
+          category: "everyday"
+        },
+        {
+          text: "That feeling when you complete all your tasks for the day",
+          image: "✅",
+          category: "productivity"
+        },
+        {
+          text: "When your favorite song comes on shuffle",
+          image: "🎵",
+          category: "music"
+        },
+        {
+          text: "Me pretending I have my life together",
+          image: "🎭",
+          category: "life"
+        },
+        {
+          text: "When you find money in your old jacket pocket",
+          image: "💰",
+          category: "surprise"
+        },
+        {
+          text: "The satisfaction of peeling the plastic off new electronics",
+          image: "📱",
+          category: "satisfaction"
+        }
+      ];
+
+      const randomMeme = memes[Math.floor(Math.random() * memes.length)];
+      res.json({ meme: randomMeme });
+    } catch (error) {
+      console.error("Error getting meme:", error);
+      res.status(500).json({ error: "Failed to get meme" });
+    }
+  });
+
+  // Humour Club Polls
+  app.get("/api/humour/polls", async (req: any, res) => {
+    try {
+      const polls = await storage.getActiveHumourClubPolls();
+      res.json({ polls });
+    } catch (error) {
+      console.error("Error fetching polls:", error);
+      res.status(500).json({ error: "Internal server error" });
+    }
+  });
+
+  app.post("/api/humour/polls", async (req: any, res) => {
+    try {
+      const userId = req.user?.id || "dev-user-1";
+      const validatedData = insertHumourClubPollSchema.parse({
+        ...req.body,
+        userId
+      });
+
+      const poll = await storage.createHumourClubPoll(validatedData);
+      res.json({ success: true, poll });
+    } catch (error) {
+      console.error("Error creating poll:", error);
+      if (error instanceof z.ZodError) {
+        res.status(400).json({ error: "Invalid data", details: error.errors });
+      } else {
+        res.status(500).json({ error: "Internal server error" });
+      }
+    }
+  });
+
+  app.post("/api/humour/polls/:id/vote", async (req: any, res) => {
+    try {
+      const { id } = req.params;
+      const { optionIndex } = req.body;
+      
+      if (typeof optionIndex !== 'number' || optionIndex < 0) {
+        return res.status(400).json({ error: "Invalid option index" });
+      }
+
+      const poll = await storage.voteInHumourClubPoll(id, optionIndex);
+      res.json({ success: true, poll });
+    } catch (error) {
+      console.error("Error voting in poll:", error);
+      res.status(500).json({ error: "Internal server error" });
+    }
+  });
 
   // Health check endpoint
   app.get("/api/health", (req, res) => {

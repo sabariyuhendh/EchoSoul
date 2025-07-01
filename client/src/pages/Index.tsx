@@ -80,6 +80,14 @@ const Index = () => {
       color: "lavender",
       gradient: "bg-wellness-flow",
       path: "/calm"
+    },
+    {
+      icon: Heart,
+      title: "Humour Club",
+      description: "Joyful space to laugh, play games, and reset with humor",
+      color: "amber",
+      gradient: "bg-wellness-flow",
+      path: "/humour"
     }
   ];
 

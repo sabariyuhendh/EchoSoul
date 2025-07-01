@@ -1,14 +1,16 @@
 import { 
   users, letItGoEntries, vaultEntries, moodEntries, letters, whispers, posts,
-  smashModeStats, calmSpacePreferences,
+  smashModeStats, calmSpacePreferences, humourClubEntries, humourClubPolls,
   type User, type UpsertUser, type LetItGoEntry, type InsertLetItGoEntry,
   type VaultEntry, type InsertVaultEntry, type MoodEntry, type InsertMoodEntry,
   type Letter, type InsertLetter, type Whisper, type InsertWhisper,
   type Post, type InsertPost, type SmashModeStats, type InsertSmashModeStats,
-  type CalmSpacePreferences, type InsertCalmSpacePreferences
+  type CalmSpacePreferences, type InsertCalmSpacePreferences,
+  type HumourClubEntry, type InsertHumourClubEntry,
+  type HumourClubPoll, type InsertHumourClubPoll
 } from "@shared/schema";
 import { db } from "./db";
-import { eq, lt, desc } from "drizzle-orm";
+import { eq, lt, desc, sql } from "drizzle-orm";
 
 export interface IStorage {
   // User operations
@@ -48,6 +50,17 @@ export interface IStorage {
   // Calm space preferences operations
   getCalmSpacePreferences(userId: string): Promise<CalmSpacePreferences | undefined>;
   upsertCalmSpacePreferences(prefs: InsertCalmSpacePreferences): Promise<CalmSpacePreferences>;
+
+  // Humour Club operations
+  createHumourClubEntry(entry: InsertHumourClubEntry): Promise<HumourClubEntry>;
+  getUserHumourClubEntries(userId: string): Promise<HumourClubEntry[]>;
+  getPublicHumourClubEntries(): Promise<HumourClubEntry[]>;
+  likeHumourClubEntry(entryId: string): Promise<void>;
+  
+  // Humour Club Poll operations
+  createHumourClubPoll(poll: InsertHumourClubPoll): Promise<HumourClubPoll>;
+  getActiveHumourClubPolls(): Promise<HumourClubPoll[]>;
+  voteInHumourClubPoll(pollId: string, optionIndex: number): Promise<HumourClubPoll>;
 }
 
 export class DatabaseStorage implements IStorage {
@@ -319,6 +332,114 @@ export class DatabaseStorage implements IStorage {
       })
       .returning();
     return preference;
+  }
+
+  // Humour Club operations
+  async createHumourClubEntry(insertEntry: InsertHumourClubEntry): Promise<HumourClubEntry> {
+    const id = `humour_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+    
+    const entryData = {
+      id,
+      userId: insertEntry.userId,
+      type: insertEntry.type,
+      content: insertEntry.content,
+      metadata: insertEntry.metadata || null,
+      isPublic: insertEntry.isPublic ?? false,
+      likes: 0
+    };
+    
+    const [entry] = await db
+      .insert(humourClubEntries)
+      .values(entryData)
+      .returning();
+    return entry;
+  }
+
+  async getUserHumourClubEntries(userId: string): Promise<HumourClubEntry[]> {
+    return await db
+      .select()
+      .from(humourClubEntries)
+      .where(eq(humourClubEntries.userId, userId))
+      .orderBy(desc(humourClubEntries.createdAt));
+  }
+
+  async getPublicHumourClubEntries(): Promise<HumourClubEntry[]> {
+    return await db
+      .select()
+      .from(humourClubEntries)
+      .where(eq(humourClubEntries.isPublic, true))
+      .orderBy(desc(humourClubEntries.createdAt))
+      .limit(50);
+  }
+
+  async likeHumourClubEntry(entryId: string): Promise<void> {
+    const [entry] = await db
+      .select({ likes: humourClubEntries.likes })
+      .from(humourClubEntries)
+      .where(eq(humourClubEntries.id, entryId))
+      .limit(1);
+      
+    if (entry) {
+      await db
+        .update(humourClubEntries)
+        .set({ likes: (entry.likes || 0) + 1, updatedAt: new Date() })
+        .where(eq(humourClubEntries.id, entryId));
+    }
+  }
+
+  // Humour Club Poll operations
+  async createHumourClubPoll(insertPoll: InsertHumourClubPoll): Promise<HumourClubPoll> {
+    const id = `poll_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+    
+    const pollData = {
+      id,
+      userId: insertPoll.userId,
+      question: insertPoll.question,
+      options: insertPoll.options,
+      votes: insertPoll.votes || [],
+      isActive: insertPoll.isActive ?? true
+    };
+    
+    const [poll] = await db
+      .insert(humourClubPolls)
+      .values(pollData)
+      .returning();
+    return poll;
+  }
+
+  async getActiveHumourClubPolls(): Promise<HumourClubPoll[]> {
+    return await db
+      .select()
+      .from(humourClubPolls)
+      .where(eq(humourClubPolls.isActive, true))
+      .orderBy(desc(humourClubPolls.createdAt))
+      .limit(10);
+  }
+
+  async voteInHumourClubPoll(pollId: string, optionIndex: number): Promise<HumourClubPoll> {
+    const [poll] = await db
+      .select()
+      .from(humourClubPolls)
+      .where(eq(humourClubPolls.id, pollId))
+      .limit(1);
+    
+    if (!poll) {
+      throw new Error("Poll not found");
+    }
+    
+    const votes = Array.isArray(poll.votes) ? [...(poll.votes as number[])] : [];
+    while (votes.length <= optionIndex) {
+      votes.push(0);
+    }
+    votes[optionIndex] = (votes[optionIndex] || 0) + 1;
+    
+    const [updatedPoll] = await db
+      .update(humourClubPolls)
+      .set({ votes, updatedAt: new Date() })
+      .where(eq(humourClubPolls.id, pollId))
+      .returning();
+    
+    return updatedPoll;
   }
 }
 

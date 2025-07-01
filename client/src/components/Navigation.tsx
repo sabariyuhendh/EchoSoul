@@ -21,7 +21,8 @@ const Navigation = () => {
     { title: "Whisper", path: "/whisper", color: "lavender" },
     { title: "Soulmate", path: "/soulmate", color: "calm" },
     { title: "Feed", path: "/feed", color: "sage" },
-    { title: "Calm Space", path: "/calm", color: "lavender" }
+    { title: "Calm Space", path: "/calm", color: "lavender" },
+    { title: "Humour Club", path: "/humour", color: "amber" }
   ];
 
   const isActive = (path: string) => location === path;
