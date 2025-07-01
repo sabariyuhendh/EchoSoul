@@ -373,7 +373,27 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.json({ joke });
     } catch (error) {
       console.error("Error generating joke:", error);
-      res.status(500).json({ error: "Failed to generate joke" });
+      
+      // Fallback jokes when OpenAI is unavailable
+      const fallbackJokes = {
+        general: [
+          "Why don't scientists trust atoms? Because they make up everything!",
+          "What do you call a fake noodle? An impasta!",
+          "Why did the scarecrow win an award? He was outstanding in his field!",
+          "What do you call a dinosaur that crashes his car? Tyrannosaurus Wrecks!",
+          "Why don't eggs tell jokes? They'd crack each other up!"
+        ],
+        dad: [
+          "I'm reading a book about anti-gravity. It's impossible to put down!",
+          "Why don't scientists trust atoms? Because they make up everything!",
+          "What did the ocean say to the beach? Nothing, it just waved!",
+          "Why do fish live in saltwater? Because pepper makes them sneeze!"
+        ]
+      };
+      
+      const jokes = fallbackJokes[category as keyof typeof fallbackJokes] || fallbackJokes.general;
+      const randomJoke = jokes[Math.floor(Math.random() * jokes.length)];
+      res.json({ joke: randomJoke });
     }
   });
 

@@ -47,17 +47,12 @@ function CosmicDebris({ count = 50 }: { count?: number }) {
   return (
     <instancedMesh ref={meshRef} args={[undefined, undefined, count]}>
       <dodecahedronGeometry args={[1, 0]} />
-      <meshPhysicalMaterial
+      <meshStandardMaterial
         color="#87CEEB"
         metalness={0.8}
         roughness={0.2}
-        transmission={0.6}
-        thickness={0.5}
-        envMapIntensity={1}
-        clearcoat={1}
-        clearcoatRoughness={0.1}
         emissive="#4169E1"
-        emissiveIntensity={0.2}
+        emissiveIntensity={0.1}
       />
     </instancedMesh>
   );
@@ -106,17 +101,12 @@ function SmashableCrystal({ position }: { position: [number, number, number] }) 
         onPointerOut={() => document.body.style.cursor = 'auto'}
       >
         <octahedronGeometry args={[0.5, 0]} />
-        <meshPhysicalMaterial
+        <meshStandardMaterial
           color="#00CED1"
           metalness={0.2}
           roughness={0.1}
-          transmission={0.9}
-          thickness={1}
-          ior={2.4}
-          clearcoat={1}
-          clearcoatRoughness={0.1}
           emissive="#00CED1"
-          emissiveIntensity={0.3}
+          emissiveIntensity={0.2}
         />
       </mesh>
     </Float>

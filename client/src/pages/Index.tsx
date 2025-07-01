@@ -154,7 +154,7 @@ const Index = () => {
       </section>
 
       {/* Features Section */}
-      <section className="py-32 px-6 max-w-7xl mx-auto">
+      <section className="py-16 px-6 max-w-7xl mx-auto">
         <div className={`transition-all duration-1000 delay-300 ${mounted ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}>
           <div className="text-center mb-20">
             <h3 className="text-5xl md:text-6xl font-light mb-6 tracking-tight">
@@ -190,7 +190,7 @@ const Index = () => {
       </section>
 
       {/* Values Section */}
-      <section className="py-32 px-6 max-w-6xl mx-auto">
+      <section className="py-16 px-6 max-w-6xl mx-auto">
         <div className={`transition-all duration-1000 delay-700 ${mounted ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}>
           <div className="text-center mb-20">
             <h3 className="text-5xl md:text-6xl font-light mb-6 tracking-tight">
@@ -241,7 +241,7 @@ const Index = () => {
       </section>
 
       {/* CTA Section */}
-      <section className="py-32 px-6 max-w-4xl mx-auto">
+      <section className="py-16 px-6 max-w-4xl mx-auto">
         <div className={`apple-card p-16 text-center transition-all duration-1000 delay-1000 relative overflow-hidden ${mounted ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}>
           <div className="absolute inset-0 bg-wellness-overlay opacity-50"></div>
           <div className="relative z-10">
