@@ -188,18 +188,18 @@
   
   /* Universal navbar spacing fix - consistent across all pages */
   .page-content {
-    padding-top: 85px !important;
-    min-height: calc(100vh - 85px);
+    padding-top: 100px !important;
+    min-height: calc(100vh - 100px);
   }
   
   /* Global container spacing for all page types */
   .min-h-screen {
-    padding-top: 85px !important;
+    padding-top: 100px !important;
   }
   
   /* Additional container spacing */
   main, .main-content, [data-main-content] {
-    padding-top: 85px !important;
+    padding-top: 100px !important;
   }
   
   /* Remove any unintended borders/outlines from headings */

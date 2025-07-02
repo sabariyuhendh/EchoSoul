@@ -17,7 +17,7 @@ const Soulmate = () => {
   const [messages, setMessages] = useState<Message[]>([
     {
       id: '1',
-      content: "Hey there 💕 I'm here for you. How are you feeling today? I'm here to listen without any judgment.",
+      content: "Hey there 💕 I'm Lyra, and I'm here for you. How are you feeling today? I'm here to listen without any judgment.",
       isUser: false,
       timestamp: new Date()
     }
@@ -88,7 +88,7 @@ const Soulmate = () => {
           </Link>
           <div className="text-center flex-1">
             <h1 className="text-2xl font-light tracking-tight">
-              <span className="text-gradient-rose">AI Soulmate</span>
+              <span className="text-gradient-rose">Lyra</span>
             </h1>
             <p className="text-gray-400 text-sm">Your emotional support companion</p>
           </div>
