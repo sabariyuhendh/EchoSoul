@@ -187,22 +187,18 @@
   }
   
   /* Universal navbar spacing fix - consistent across all pages */
+  /* Navbar has mt-4 (16px) + height of navbar (approx 48px) + buffer = 80px total */
   .page-content {
-    padding-top: 70px !important;
-    height: 100vh;
-    max-height: 100vh;
-    overflow-y: auto;
-    display: flex;
-    flex-direction: column;
+    padding-top: 80px !important;
+    min-height: 100vh;
+    position: relative;
   }
   
   /* Global container spacing for all page types - prevent excessive space */
   .min-h-screen {
     padding-top: 0 !important;
-    height: 100vh !important;
-    min-height: unset !important;
-    max-height: 100vh;
-    overflow-y: auto;
+    min-height: 100vh;
+    overflow-y: visible;
   }
   
   /* Additional container spacing */
@@ -212,14 +208,13 @@
   
   /* Ensure content containers are properly sized */
   .h-screen {
-    height: 100vh !important;
-    max-height: 100vh;
+    min-height: 100vh;
   }
   
   /* Chat and content area optimization */
   .chat-container, .content-container {
-    height: calc(100vh - 70px);
-    max-height: calc(100vh - 70px);
+    height: calc(100vh - 80px);
+    max-height: calc(100vh - 80px);
     overflow-y: auto;
   }
   
@@ -245,7 +240,7 @@
   
   /* Calm Space specific optimizations */
   .calm-space-content {
-    height: calc(100vh - 70px);
+    height: calc(100vh - 80px);
     overflow-y: auto;
     padding: 1.5rem;
   }
@@ -261,6 +256,24 @@
   .feed-content, .content-grid {
     max-height: calc(100vh - 140px);
     overflow-y: auto;
+  }
+  
+  /* Home page specific fix for scrolling */
+  body {
+    overflow-y: auto !important;
+    overflow-x: hidden;
+  }
+  
+  /* Remove any body height restrictions */
+  html, body {
+    height: auto !important;
+    min-height: 100vh;
+  }
+  
+  /* Fix for pages with fixed height containers */
+  .h-screen.page-content {
+    height: auto !important;
+    min-height: 100vh;
   }
   
   /* Remove any unintended borders/outlines from headings */

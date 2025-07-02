@@ -81,8 +81,8 @@ const Soulmate = () => {
   };
 
   return (
-    <div className="h-screen bg-black text-white page-content flex flex-col overflow-hidden">
-      <div className="max-w-4xl mx-auto w-full flex flex-col h-full">
+    <div className="h-screen bg-black text-white page-content flex flex-col">
+      <div className="max-w-4xl mx-auto w-full flex flex-col" style={{ height: 'calc(100vh - 80px)' }}>
         {/* Header */}
         <div className="flex items-center justify-between p-6 pt-8 border-b border-white/10">
           <Link to="/" className="flex items-center space-x-2 text-gray-400 hover:text-white transition-colors">

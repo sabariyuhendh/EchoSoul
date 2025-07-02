@@ -225,7 +225,7 @@ const HumourClub = () => {
   };
 
   return (
-    <div className="min-h-screen bg-black text-white page-content relative overflow-hidden">
+    <div className="min-h-screen bg-black text-white page-content relative">
       {/* Cosmic background elements - matching site style */}
       <div className="absolute inset-0 opacity-20">
         <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-gradient-to-br from-amber-500 to-rose-500 rounded-full blur-3xl opacity-20 animate-breathe"></div>

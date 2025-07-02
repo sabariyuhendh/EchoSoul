@@ -113,7 +113,7 @@ const Index = () => {
   ];
 
   return (
-    <div className="min-h-screen bg-black text-white page-content overflow-hidden">
+    <div className="min-h-screen bg-black text-white page-content">
       {/* Hero Section - Apple Style with Calming Accents */}
       <section className="relative min-h-screen flex items-center justify-center px-6">
         <div 
