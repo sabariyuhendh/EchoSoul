@@ -180,7 +180,7 @@ const Feed = () => {
         )}
 
         {/* Posts Feed */}
-        <div className="p-6 space-y-6">
+        <div className="p-6 space-y-6 feed-content">
           {posts.map((post) => {
             const moodConfig = moods.find(m => m.id === post.mood);
             return (

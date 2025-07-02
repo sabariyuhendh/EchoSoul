@@ -189,18 +189,78 @@
   /* Universal navbar spacing fix - consistent across all pages */
   .page-content {
     padding-top: 70px !important;
-    min-height: 100vh;
+    height: 100vh;
+    max-height: 100vh;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
   }
   
-  /* Global container spacing for all page types */
+  /* Global container spacing for all page types - prevent excessive space */
   .min-h-screen {
     padding-top: 0 !important;
-    min-height: 100vh;
+    height: 100vh !important;
+    min-height: unset !important;
+    max-height: 100vh;
+    overflow-y: auto;
   }
   
   /* Additional container spacing */
   main, .main-content, [data-main-content] {
     padding-top: 0 !important;
+  }
+  
+  /* Ensure content containers are properly sized */
+  .h-screen {
+    height: 100vh !important;
+    max-height: 100vh;
+  }
+  
+  /* Chat and content area optimization */
+  .chat-container, .content-container {
+    height: calc(100vh - 70px);
+    max-height: calc(100vh - 70px);
+    overflow-y: auto;
+  }
+  
+  /* Unified content centering and spacing */
+  .page-content > * {
+    flex-shrink: 0;
+  }
+  
+  /* Prevent unnecessary bottom spacing */
+  .page-content:last-child,
+  .min-h-screen:last-child {
+    margin-bottom: 0 !important;
+    padding-bottom: 0 !important;
+  }
+  
+  /* Optimal spacing for all page containers */
+  .max-w-4xl, .max-w-6xl, .max-w-2xl {
+    margin-left: auto;
+    margin-right: auto;
+    padding-left: 1.5rem;
+    padding-right: 1.5rem;
+  }
+  
+  /* Calm Space specific optimizations */
+  .calm-space-content {
+    height: calc(100vh - 70px);
+    overflow-y: auto;
+    padding: 1.5rem;
+  }
+  
+  /* Soulmate page optimizations */
+  .chat-messages-container {
+    flex: 1;
+    overflow-y: auto;
+    min-height: 0;
+  }
+  
+  /* Feed and content pages optimization */
+  .feed-content, .content-grid {
+    max-height: calc(100vh - 140px);
+    overflow-y: auto;
   }
   
   /* Remove any unintended borders/outlines from headings */

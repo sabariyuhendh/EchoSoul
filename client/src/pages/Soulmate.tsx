@@ -31,7 +31,10 @@ const Soulmate = () => {
   };
 
   useEffect(() => {
-    scrollToBottom();
+    // Only scroll to bottom when new messages are added, not on initial load
+    if (messages.length > 1) {
+      scrollToBottom();
+    }
   }, [messages]);
 
   const sendMessage = async () => {
@@ -78,8 +81,8 @@ const Soulmate = () => {
   };
 
   return (
-    <div className="min-h-screen bg-black text-white page-content flex flex-col">
-      <div className="max-w-4xl mx-auto w-full flex flex-col h-screen">
+    <div className="h-screen bg-black text-white page-content flex flex-col overflow-hidden">
+      <div className="max-w-4xl mx-auto w-full flex flex-col h-full">
         {/* Header */}
         <div className="flex items-center justify-between p-6 pt-8 border-b border-white/10">
           <Link to="/" className="flex items-center space-x-2 text-gray-400 hover:text-white transition-colors">
@@ -99,7 +102,7 @@ const Soulmate = () => {
         </div>
 
         {/* Chat Messages */}
-        <div className="flex-1 overflow-y-auto p-6 space-y-4">
+        <div className="flex-1 overflow-y-auto p-6 space-y-4 chat-messages-container">
           {messages.map((message) => (
             <div
               key={message.id}
