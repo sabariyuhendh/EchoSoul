@@ -36,75 +36,77 @@ const Navigation = () => {
   };
 
   return (
-    <nav className="fixed top-0 left-1/2 transform -translate-x-1/2 z-50 mt-6">
-      <div className="bg-black/80 backdrop-blur-xl border border-white/10 rounded-full px-6 py-3 shadow-2xl">
-        <div className="flex items-center space-x-8">
+    <nav className="fixed top-0 left-1/2 transform -translate-x-1/2 z-50 mt-4 w-full max-w-6xl px-4">
+      <div className="bg-black/90 backdrop-blur-xl border border-white/10 rounded-full px-4 py-2 shadow-2xl">
+        <div className="flex items-center justify-between">
           {/* Logo */}
-          <Link to="/" className="flex items-center space-x-3">
-            <div className="w-8 h-8 bg-gradient-to-br from-blue-400 to-purple-400 rounded-full"></div>
-            <h1 className="text-lg font-semibold tracking-tight text-white">EchoSoul</h1>
+          <Link to="/" className="flex items-center space-x-2">
+            <div className="w-7 h-7 bg-gradient-to-br from-blue-400 to-purple-400 rounded-full"></div>
+            <h1 className="text-base font-semibold tracking-tight text-white">EchoSoul</h1>
           </Link>
 
           {/* Desktop Navigation */}
-          <div className="hidden lg:flex items-center space-x-6">
+          <div className="hidden lg:flex items-center space-x-1">
             {navItems.map((item) => (
               <Link key={item.path} to={item.path}>
-                <span
-                  className={`px-4 py-2 text-sm font-medium transition-all duration-300 cursor-pointer ${
+                <button
+                  className={`px-3 py-1.5 text-sm font-medium transition-all duration-300 rounded-full ${
                     isActive(item.path)
-                      ? 'text-white'
-                      : 'text-gray-300 hover:text-white'
+                      ? 'text-white bg-white/10'
+                      : 'text-gray-300 hover:text-white hover:bg-white/5'
                   }`}
                 >
                   {item.title}
-                </span>
+                </button>
               </Link>
             ))}
           </div>
             
           {/* User menu */}
-          {isAuthenticated && typedUser ? (
-            <DropdownMenu>
-              <DropdownMenuTrigger>
-                <Avatar className="w-8 h-8">
-                  <AvatarImage src={typedUser.profileImageUrl || undefined} />
-                  <AvatarFallback className="bg-blue-600 text-white text-sm">
-                    {typedUser.firstName?.[0] || typedUser.email?.[0]?.toUpperCase() || "U"}
-                  </AvatarFallback>
-                </Avatar>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent className="w-56 bg-black/90 border-white/20 text-white">
-                <DropdownMenuItem className="focus:bg-white/10">
-                  <div className="flex flex-col">
-                    <span className="font-medium">{typedUser.firstName || "User"}</span>
-                    <span className="text-sm text-gray-400">{typedUser.email}</span>
-                  </div>
-                </DropdownMenuItem>
-                <DropdownMenuItem 
-                  onClick={handleLogout}
-                  className="focus:bg-white/10 cursor-pointer"
-                >
-                  Sign Out
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
-          ) : (
-            <Button
-              onClick={handleLogin}
-              className="bg-gray-800 hover:bg-gray-700 text-white px-6 py-2 rounded-full font-medium transition-all duration-300 border border-white/20"
-            >
-              Sign In
-            </Button>
-          )}
+          <div className="flex items-center">
+            {isAuthenticated && typedUser ? (
+              <DropdownMenu>
+                <DropdownMenuTrigger>
+                  <Avatar className="w-7 h-7">
+                    <AvatarImage src={typedUser.profileImageUrl || undefined} />
+                    <AvatarFallback className="bg-blue-600 text-white text-xs">
+                      {typedUser.firstName?.[0] || typedUser.email?.[0]?.toUpperCase() || "U"}
+                    </AvatarFallback>
+                  </Avatar>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent className="w-56 bg-black/90 border-white/20 text-white">
+                  <DropdownMenuItem className="focus:bg-white/10">
+                    <div className="flex flex-col">
+                      <span className="font-medium">{typedUser.firstName || "User"}</span>
+                      <span className="text-sm text-gray-400">{typedUser.email}</span>
+                    </div>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem 
+                    onClick={handleLogout}
+                    className="focus:bg-white/10 cursor-pointer"
+                  >
+                    Sign Out
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            ) : (
+              <Button
+                onClick={handleLogin}
+                className="bg-gray-800 hover:bg-gray-700 text-white px-4 py-1.5 text-sm rounded-full font-medium transition-all duration-300 border border-white/20"
+              >
+                Sign In
+              </Button>
+            )}
 
-          {/* Mobile Menu Button */}
-          <Button
-            variant="ghost"
-            className="lg:hidden text-white"
-            onClick={() => setIsOpen(!isOpen)}
-          >
-            {isOpen ? "✕" : "☰"}
-          </Button>
+            {/* Mobile Menu Button */}
+            <Button
+              variant="ghost"
+              className="lg:hidden text-white ml-2 p-1"
+              onClick={() => setIsOpen(!isOpen)}
+            >
+              {isOpen ? "✕" : "☰"}
+            </Button>
+          </div>
         </div>
       </div>
 

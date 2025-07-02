@@ -188,18 +188,19 @@
   
   /* Universal navbar spacing fix - consistent across all pages */
   .page-content {
-    padding-top: 100px !important;
-    min-height: calc(100vh - 100px);
+    padding-top: 70px !important;
+    min-height: 100vh;
   }
   
   /* Global container spacing for all page types */
   .min-h-screen {
-    padding-top: 100px !important;
+    padding-top: 0 !important;
+    min-height: 100vh;
   }
   
   /* Additional container spacing */
   main, .main-content, [data-main-content] {
-    padding-top: 100px !important;
+    padding-top: 0 !important;
   }
   
   /* Remove any unintended borders/outlines from headings */
@@ -464,12 +465,15 @@
     opacity: 0.9 !important;
   }
   
-  /* Page layout fixes for navbar spacing - prevent scrolling issues */
-  .page-content {
-    padding-top: 85px;
-    min-height: 100vh;
+  /* Prevent scrolling beyond page bounds */
+  body {
     overflow-x: hidden;
-    position: relative;
+    overscroll-behavior: none;
+  }
+  
+  html {
+    overflow-x: hidden;
+    scroll-behavior: smooth;
   }
   
   /* Animation fixes */

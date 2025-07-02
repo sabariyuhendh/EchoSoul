@@ -188,6 +188,17 @@ Changelog:
   * Added database fallback mechanisms to gracefully handle connection issues
   * Reduced excessive padding on Index page for better visual balance
   * Successfully tested sign-in functionality with proper API responses
+- July 2, 2025. Navbar redesign and spacing optimization:
+  * Redesigned navbar with centered floating pill design matching user specifications
+  * Fixed navbar text alignment issues with proper flexbox layout
+  * Changed AI companion name from "AI Soulmate" to "Lyra" throughout the application
+  * Updated navbar spacing to 70px padding-top for better content alignment
+  * Removed excessive blank spaces and prevented upward scrolling beyond page bounds
+  * Fixed database schema synchronization with db:push command
+  * Optimized page container structure to eliminate phantom spacing
+  * Applied consistent layout across all pages with unified spacing system
+  * Enhanced navbar responsiveness with proper mobile breakpoints
+  * Fixed Calm Space page display issues and API preference errors
 ```
 
 ## User Preferences

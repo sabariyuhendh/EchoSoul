@@ -192,10 +192,10 @@ const CalmSpace = () => {
   };
 
   return (
-    <div className="min-h-screen bg-black text-white page-content relative overflow-hidden">
+    <div className="min-h-screen bg-black text-white page-content relative">
       {/* 3D Cosmic Debris Layer */}
       {cosmicDebrisEnabled && (
-        <div className="absolute inset-0 z-0">
+        <div className="absolute inset-0 z-0 pointer-events-none">
           <Canvas camera={{ position: [0, 0, 10], fov: 75 }}>
             <Suspense fallback={null}>
               <ambientLight intensity={0.3 * debrisIntensity} />
@@ -422,7 +422,7 @@ const CalmSpace = () => {
         ))}
       </div>
 
-      <div className="relative z-10 p-6 pt-24">
+      <div className="relative z-10 p-6">
         {/* Header */}
         <div className="max-w-4xl mx-auto mb-8">
           <div className="flex items-center justify-between mb-6">
