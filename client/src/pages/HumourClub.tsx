@@ -225,12 +225,28 @@ const HumourClub = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-purple-900 via-pink-900 to-yellow-900 text-white page-content relative overflow-hidden">
-      {/* Cosmic background elements */}
+    <div className="min-h-screen bg-black text-white page-content relative overflow-hidden">
+      {/* Cosmic background elements - matching site style */}
       <div className="absolute inset-0 opacity-20">
-        <div className="absolute top-1/4 left-1/6 w-64 h-64 bg-gradient-to-br from-cyan-400 to-blue-600 rounded-full blur-3xl animate-pulse"></div>
-        <div className="absolute bottom-1/3 right-1/4 w-96 h-96 bg-gradient-to-br from-pink-400 to-red-500 rounded-full blur-3xl animate-bounce" style={{animationDuration: '3s'}}></div>
-        <div className="absolute top-1/2 left-1/2 w-32 h-32 bg-gradient-to-br from-yellow-400 to-orange-500 rounded-full blur-2xl animate-spin" style={{animationDuration: '8s'}}></div>
+        <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-gradient-to-br from-amber-500 to-rose-500 rounded-full blur-3xl opacity-20 animate-breathe"></div>
+        <div className="absolute bottom-1/4 right-1/4 w-64 h-64 bg-gradient-to-br from-lavender-500 to-calm-500 rounded-full blur-3xl opacity-20 animate-breathe" style={{animationDelay: '2s'}}></div>
+        <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-80 h-80 bg-gradient-to-br from-sage-500 to-amber-500 rounded-full blur-3xl opacity-10 animate-breathe" style={{animationDelay: '1s'}}></div>
+      </div>
+
+      {/* Floating cosmic particles */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        {Array.from({ length: 20 }).map((_, i) => (
+          <div
+            key={i}
+            className="absolute w-1 h-1 bg-white rounded-full opacity-30 animate-float"
+            style={{
+              left: `${Math.random() * 100}%`,
+              top: `${Math.random() * 100}%`,
+              animationDelay: `${Math.random() * 10}s`,
+              animationDuration: `${15 + Math.random() * 20}s`
+            }}
+          />
+        ))}
       </div>
 
       {/* Confetti overlay */}
@@ -273,24 +289,24 @@ const HumourClub = () => {
         </div>
       )}
 
-      <div className="relative z-20 max-w-6xl mx-auto px-6 py-8">
+      <div className="relative z-20 max-w-6xl mx-auto px-6 py-8 animate-fadeIn">
         {/* Header */}
-        <div className="flex items-center justify-between mb-8">
-          <Link to="/" className="flex items-center space-x-2 text-gray-300 hover:text-white transition-colors">
+        <div className="flex items-center justify-between mb-12">
+          <Link to="/" className="flex items-center space-x-2 text-gray-400 hover:text-white transition-colors">
             <ArrowLeft className="w-5 h-5" />
             <span>Back to Home</span>
           </Link>
           <div className="text-center flex-1">
-            <h1 className="text-4xl font-bold bg-gradient-to-r from-yellow-400 via-pink-400 to-cyan-400 bg-clip-text text-transparent mb-2">
-              🎭 Humour Club 
+            <h1 className="text-5xl md:text-6xl font-light tracking-tight mb-4">
+              <span className="text-gradient-amber text-glow-amber">Humour Club</span>
             </h1>
-            <p className="text-gray-300">Your joyful space to laugh and unwind</p>
+            <p className="text-gray-400 font-light">Your joyful sanctuary for laughter and light</p>
           </div>
           <Button
             onClick={() => setSoundEnabled(!soundEnabled)}
             variant="ghost"
             size="sm"
-            className="text-gray-300 hover:text-white"
+            className="apple-button text-gray-400 hover:text-white hover:bg-white/10"
           >
             {soundEnabled ? <Volume2 className="w-5 h-5" /> : <VolumeX className="w-5 h-5" />}
           </Button>
@@ -298,34 +314,34 @@ const HumourClub = () => {
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
           {/* AI Joke Bot */}
-          <Card className="glass p-6 border border-white/20 bg-white/10 backdrop-blur-xl">
-            <div className="space-y-4">
-              <div className="flex items-center space-x-2">
-                <div className="w-8 h-8 bg-gradient-to-r from-yellow-400 to-orange-500 rounded-full flex items-center justify-center">
-                  <Sparkles className="w-4 h-4 text-white" />
+          <Card className="apple-card p-8 animate-slideUp" style={{animationDelay: '0.1s'}}>
+            <div className="space-y-6">
+              <div className="flex items-center space-x-3">
+                <div className="w-12 h-12 bg-gradient-to-br from-amber-400 to-amber-600 rounded-2xl flex items-center justify-center animate-breathe">
+                  <Sparkles className="w-6 h-6 text-white" />
                 </div>
-                <h3 className="text-xl font-semibold">AI Joke Bot</h3>
+                <h3 className="text-xl font-medium tracking-tight">AI Joke Bot</h3>
               </div>
               
               {currentJoke && (
-                <div className="bg-black/20 rounded-lg p-4 min-h-[100px] flex items-center">
-                  <p className="text-lg text-center w-full italic">"{currentJoke}"</p>
+                <div className="apple-card-subtle p-6 min-h-[120px] flex items-center">
+                  <p className="text-lg text-center w-full italic text-white/90 font-light">"{currentJoke}"</p>
                 </div>
               )}
               
-              <div className="flex space-x-2">
+              <div className="flex space-x-3">
                 <Button
                   onClick={() => jokeeMutation.mutate('general')}
                   disabled={jokeeMutation.isPending}
-                  className="flex-1 bg-gradient-to-r from-yellow-500 to-orange-500 hover:from-yellow-600 hover:to-orange-600 text-white font-medium transform hover:scale-105 transition-all"
+                  className="flex-1 apple-button bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-white font-medium border-0 amber-shadow"
                 >
-                  {jokeeMutation.isPending ? "Crafting..." : "Tell me a joke! 😄"}
+                  {jokeeMutation.isPending ? "Crafting..." : "Tell me a joke!"}
                 </Button>
                 <Button
                   onClick={() => jokeeMutation.mutate('dad')}
                   disabled={jokeeMutation.isPending}
                   variant="outline"
-                  className="border-yellow-400 text-yellow-400 hover:bg-yellow-400/10"
+                  className="apple-button border-amber-400/30 text-amber-400 hover:bg-amber-400/10 hover:border-amber-400/50"
                 >
                   Dad Jokes
                 </Button>
@@ -334,20 +350,20 @@ const HumourClub = () => {
           </Card>
 
           {/* Meme Generator */}
-          <Card className="glass p-6 border border-white/20 bg-white/10 backdrop-blur-xl">
-            <div className="space-y-4">
-              <div className="flex items-center space-x-2">
-                <div className="w-8 h-8 bg-gradient-to-r from-pink-400 to-purple-500 rounded-full flex items-center justify-center">
-                  <span className="text-white">😂</span>
+          <Card className="apple-card p-8 animate-slideUp" style={{animationDelay: '0.2s'}}>
+            <div className="space-y-6">
+              <div className="flex items-center space-x-3">
+                <div className="w-12 h-12 bg-gradient-to-br from-rose-400 to-rose-600 rounded-2xl flex items-center justify-center animate-breathe" style={{animationDelay: '0.5s'}}>
+                  <span className="text-white text-xl">😂</span>
                 </div>
-                <h3 className="text-xl font-semibold">Meme Generator</h3>
+                <h3 className="text-xl font-medium tracking-tight">Meme Generator</h3>
               </div>
               
               {currentMeme && (
-                <div className="bg-black/20 rounded-lg p-6 text-center space-y-3">
-                  <div className="text-6xl">{currentMeme.image}</div>
-                  <p className="text-lg font-medium">{currentMeme.text}</p>
-                  <span className="inline-block px-3 py-1 bg-purple-500/30 rounded-full text-sm">
+                <div className="apple-card-subtle p-6 text-center space-y-4">
+                  <div className="text-6xl animate-float">{currentMeme.image}</div>
+                  <p className="text-lg font-light text-white/90">{currentMeme.text}</p>
+                  <span className="inline-block px-4 py-2 apple-card-subtle rounded-full text-sm text-rose-400">
                     #{currentMeme.category}
                   </span>
                 </div>
@@ -355,7 +371,7 @@ const HumourClub = () => {
               
               <Button
                 onClick={() => shuffleMeme()}
-                className="w-full bg-gradient-to-r from-pink-500 to-purple-500 hover:from-pink-600 hover:to-purple-600 text-white font-medium transform hover:scale-105 transition-all"
+                className="w-full apple-button bg-gradient-to-r from-rose-500 to-rose-600 hover:from-rose-600 hover:to-rose-700 text-white font-medium border-0 rose-shadow"
               >
                 <Shuffle className="w-4 h-4 mr-2" />
                 Shuffle Meme
@@ -364,22 +380,22 @@ const HumourClub = () => {
           </Card>
 
           {/* Mini Games */}
-          <Card className="glass p-6 border border-white/20 bg-white/10 backdrop-blur-xl">
-            <div className="space-y-4">
-              <div className="flex items-center space-x-2">
-                <div className="w-8 h-8 bg-gradient-to-r from-cyan-400 to-blue-500 rounded-full flex items-center justify-center">
-                  <Play className="w-4 h-4 text-white" />
+          <Card className="apple-card p-8 animate-slideUp" style={{animationDelay: '0.3s'}}>
+            <div className="space-y-6">
+              <div className="flex items-center space-x-3">
+                <div className="w-12 h-12 bg-gradient-to-br from-calm-500 to-lavender-600 rounded-2xl flex items-center justify-center animate-breathe" style={{animationDelay: '1s'}}>
+                  <Play className="w-6 h-6 text-white" />
                 </div>
-                <h3 className="text-xl font-semibold">Quick Games</h3>
+                <h3 className="text-xl font-medium tracking-tight">Quick Games</h3>
               </div>
               
-              <div className="space-y-3">
+              <div className="space-y-4">
                 {gameActive ? (
-                  <div className="bg-black/20 rounded-lg p-4 text-center">
-                    <div className="text-2xl font-bold mb-2">🎯 Bubble Pop!</div>
-                    <div className="text-xl mb-2">Score: {gameScore}</div>
-                    <div className="text-sm text-gray-300">Keep clicking bubbles!</div>
-                    <div className="mt-3 flex flex-wrap justify-center gap-2">
+                  <div className="apple-card-subtle p-6 text-center">
+                    <div className="text-2xl font-bold mb-3">🎯 Bubble Pop!</div>
+                    <div className="text-xl mb-3 text-gradient-calm">Score: {gameScore}</div>
+                    <div className="text-sm text-gray-400 mb-4">Keep clicking bubbles!</div>
+                    <div className="mt-4 flex flex-wrap justify-center gap-3">
                       {Array.from({ length: 6 }).map((_, i) => (
                         <button
                           key={i}
@@ -387,7 +403,8 @@ const HumourClub = () => {
                             setGameScore(prev => prev + 1);
                             playSound('pop');
                           }}
-                          className="w-8 h-8 bg-gradient-to-r from-cyan-400 to-blue-500 rounded-full hover:scale-110 transition-transform animate-pulse"
+                          className="w-16 h-16 bg-gradient-to-br from-calm-400 to-lavender-500 rounded-2xl shadow-lg transform hover:scale-110 transition-all animate-float apple-button"
+                          style={{ animationDelay: `${i * 0.1}s` }}
                         >
                           💫
                         </button>
@@ -398,7 +415,7 @@ const HumourClub = () => {
                   <>
                     <Button
                       onClick={startBubbleGame}
-                      className="w-full bg-gradient-to-r from-cyan-500 to-blue-500 hover:from-cyan-600 hover:to-blue-600 text-white font-medium"
+                      className="w-full apple-button bg-gradient-to-r from-calm-500 to-lavender-600 hover:from-calm-600 hover:to-lavender-700 text-white font-medium border-0 calm-shadow"
                     >
                       🎯 Bubble Pop Game (10s)
                     </Button>
@@ -411,7 +428,7 @@ const HumourClub = () => {
                         });
                       }}
                       variant="outline"
-                      className="w-full border-cyan-400 text-cyan-400 hover:bg-cyan-400/10"
+                      className="w-full apple-button border-calm-400/30 text-calm-400 hover:bg-calm-400/10 hover:border-calm-400/50"
                     >
                       🧠 Memory Challenge
                     </Button>
@@ -422,20 +439,20 @@ const HumourClub = () => {
           </Card>
 
           {/* Dance Party */}
-          <Card className="glass p-6 border border-white/20 bg-white/10 backdrop-blur-xl">
-            <div className="space-y-4">
-              <div className="flex items-center space-x-2">
-                <div className="w-8 h-8 bg-gradient-to-r from-red-400 to-pink-500 rounded-full flex items-center justify-center">
-                  <span className="text-white">💃</span>
+          <Card className="apple-card p-8 animate-slideUp" style={{animationDelay: '0.4s'}}>
+            <div className="space-y-6">
+              <div className="flex items-center space-x-3">
+                <div className="w-12 h-12 bg-gradient-to-br from-sage-400 to-sage-600 rounded-2xl flex items-center justify-center animate-breathe" style={{animationDelay: '1.5s'}}>
+                  <span className="text-white text-xl">💃</span>
                 </div>
-                <h3 className="text-xl font-semibold">Dance Party</h3>
+                <h3 className="text-xl font-medium tracking-tight">Dance Party</h3>
               </div>
               
-              <div className="bg-black/20 rounded-lg p-4 text-center">
-                <p className="text-gray-300 mb-4">Need an instant mood boost?</p>
+              <div className="apple-card-subtle p-6 text-center">
+                <p className="text-gray-400 mb-4 font-light">Need an instant mood boost?</p>
                 <Button
                   onClick={triggerDanceParty}
-                  className="w-full bg-gradient-to-r from-red-500 to-pink-500 hover:from-red-600 hover:to-pink-600 text-white font-medium transform hover:scale-105 transition-all text-lg py-3"
+                  className="w-full apple-button bg-gradient-to-r from-sage-500 to-sage-600 hover:from-sage-600 hover:to-sage-700 text-white font-medium text-lg py-6 transform hover:scale-105 transition-all border-0 sage-shadow"
                 >
                   🎉 START DANCE PARTY! 🎉
                 </Button>
@@ -445,18 +462,18 @@ const HumourClub = () => {
         </div>
 
         {/* Community Polls Section */}
-        <div className="mt-8">
-          <h2 className="text-2xl font-bold mb-6 text-center bg-gradient-to-r from-cyan-400 to-purple-400 bg-clip-text text-transparent">
-            Community Fun Polls
+        <div className="mt-12 animate-fadeIn" style={{animationDelay: '0.5s'}}>
+          <h2 className="text-3xl font-light text-center mb-10">
+            <span className="text-gradient-lavender text-glow-lavender">Community Fun Polls</span>
           </h2>
           
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
             {/* Active Polls */}
-            <div className="space-y-4">
-              <h3 className="text-lg font-semibold">Vote Now!</h3>
+            <div className="space-y-6">
+              <h3 className="text-xl font-medium text-lavender-400">Vote Now!</h3>
               {(pollsData as any)?.polls?.map((poll: Poll) => (
-                <Card key={poll.id} className="glass p-4 border border-white/20 bg-white/10 backdrop-blur-xl">
-                  <h4 className="font-medium mb-3">{poll.question}</h4>
+                <Card key={poll.id} className="apple-card p-6 animate-slideUp">
+                  <h4 className="font-medium mb-4 text-lg">{poll.question}</h4>
                   <div className="space-y-2">
                     {poll.options.map((option: string, index: number) => {
                       const totalVotes = poll.votes.reduce((sum, count) => sum + count, 0);
@@ -491,24 +508,24 @@ const HumourClub = () => {
             </div>
 
             {/* Create Poll */}
-            <Card className="glass p-6 border border-white/20 bg-white/10 backdrop-blur-xl">
-              <h3 className="text-lg font-semibold mb-4">Create a Fun Poll</h3>
-              <div className="space-y-4">
+            <Card className="apple-card p-8 animate-slideUp" style={{animationDelay: '0.6s'}}>
+              <h3 className="text-xl font-medium mb-6 text-lavender-400">Create a Fun Poll</h3>
+              <div className="space-y-6">
                 <div>
-                  <Label htmlFor="question">Question</Label>
+                  <Label htmlFor="question" className="text-gray-400 mb-2">Question</Label>
                   <Input
                     id="question"
                     value={pollQuestion}
                     onChange={(e) => setPollQuestion(e.target.value)}
                     placeholder="What's the funniest animal?"
-                    className="bg-white/10 border-white/20 text-white placeholder-gray-400"
+                    className="apple-input"
                   />
                 </div>
                 
-                <div className="space-y-2">
-                  <Label>Options</Label>
+                <div className="space-y-3">
+                  <Label className="text-gray-400">Options</Label>
                   {pollOptions.map((option, index) => (
-                    <div key={index} className="flex space-x-2">
+                    <div key={index} className="flex space-x-3">
                       <Input
                         value={option}
                         onChange={(e) => {
@@ -517,14 +534,14 @@ const HumourClub = () => {
                           setPollOptions(newOptions);
                         }}
                         placeholder={`Option ${index + 1}`}
-                        className="bg-white/10 border-white/20 text-white placeholder-gray-400"
+                        className="apple-input"
                       />
                       {pollOptions.length > 2 && (
                         <Button
                           onClick={() => removePollOption(index)}
                           variant="outline"
                           size="sm"
-                          className="border-red-400 text-red-400 hover:bg-red-400/10"
+                          className="apple-button border-rose-400/30 text-rose-400 hover:bg-rose-400/10 hover:border-rose-400/50"
                         >
                           ✕
                         </Button>
@@ -533,12 +550,12 @@ const HumourClub = () => {
                   ))}
                 </div>
                 
-                <div className="flex space-x-2">
+                <div className="flex space-x-3">
                   <Button
                     onClick={addPollOption}
                     variant="outline"
                     size="sm"
-                    className="border-cyan-400 text-cyan-400 hover:bg-cyan-400/10"
+                    className="apple-button border-lavender-400/30 text-lavender-400 hover:bg-lavender-400/10 hover:border-lavender-400/50"
                     disabled={pollOptions.length >= 6}
                   >
                     + Add Option
@@ -546,7 +563,7 @@ const HumourClub = () => {
                   <Button
                     onClick={() => createPollMutation.mutate({ question: pollQuestion, options: pollOptions.filter(o => o.trim()) })}
                     disabled={!pollQuestion.trim() || pollOptions.filter(o => o.trim()).length < 2 || createPollMutation.isPending}
-                    className="bg-gradient-to-r from-cyan-500 to-purple-500 hover:from-cyan-600 hover:to-purple-600 text-white font-medium"
+                    className="flex-1 apple-button bg-gradient-to-r from-lavender-500 to-lavender-600 hover:from-lavender-600 hover:to-lavender-700 text-white font-medium border-0 lavender-shadow"
                   >
                     {createPollMutation.isPending ? "Creating..." : "Create Poll"}
                   </Button>

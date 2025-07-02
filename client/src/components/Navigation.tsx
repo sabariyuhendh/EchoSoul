@@ -28,7 +28,7 @@ const Navigation = () => {
   const isActive = (path: string) => location === path;
 
   const handleLogin = () => {
-    window.location.href = "/api/login";
+    window.location.href = "/login";
   };
 
   const handleLogout = () => {

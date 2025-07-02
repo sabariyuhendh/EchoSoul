@@ -73,6 +73,16 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Handle GET request to /api/login - redirect to login page
+  app.get('/api/login', (req, res) => {
+    res.redirect('/login');
+  });
+
+  // Handle Google OAuth (mock for development)
+  app.get('/api/auth/google', (req, res) => {
+    res.redirect('/login');
+  });
+
   // Let It Go Room API endpoints
   app.post("/api/letitgo", async (req: any, res) => {
     try {
@@ -351,9 +361,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   // Humour Club AI Joke endpoint
   app.post("/api/humour/joke", async (req: any, res) => {
+    const { category = "general" } = req.body;
+    
     try {
-      const { category = "general" } = req.body;
-      
       const response = await openai.chat.completions.create({
         model: "gpt-4o", // the newest OpenAI model is "gpt-4o" which was released May 13, 2024. do not change this unless explicitly requested by the user
         messages: [
