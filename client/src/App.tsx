@@ -56,7 +56,7 @@ import Mood from "./pages/Mood";
 import Whisper from "./pages/Whisper";
 import Soulmate from "./pages/Soulmate";
 import Feed from "./pages/Feed";
-import CalmSpace from "./pages/CalmSpace";
+import CalmSpace from "./pages/CalmSpaceSimple";
 import HumourClub from "./pages/HumourClub";
 import Login from "./pages/Login";
 import Signup from "./pages/Signup";
