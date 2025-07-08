@@ -5,7 +5,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Route, Switch } from "wouter";
 import { useAuth } from "@/hooks/useAuth";
-import Navigation from "./components/Navigation";
+import Navigation from "./components/NavigationRedesigned";
 import { Component, ReactNode } from "react";
 
 // Simple Error Boundary without external dependency
@@ -61,6 +61,7 @@ import HumourClub from "./pages/HumourClub";
 import Login from "./pages/Login";
 import Signup from "./pages/Signup";
 import NotFound from "./pages/NotFound";
+import ReflectionRoom from "./pages/ReflectionRoom";
 
 const queryClient = new QueryClient();
 
@@ -82,6 +83,7 @@ function AppRouter() {
           <Route path="/feed" component={Feed} />
           <Route path="/calm" component={CalmSpace} />
           <Route path="/humour" component={HumourClub} />
+          <Route path="/reflection" component={ReflectionRoom} />
           <Route path="/login" component={Login} />
           <Route path="/signup" component={Signup} />
           <Route component={NotFound} />

@@ -231,3 +231,23 @@ export const insertHumourClubPollSchema = createInsertSchema(humourClubPolls).pi
 });
 export type InsertHumourClubPoll = z.infer<typeof insertHumourClubPollSchema>;
 export type HumourClubPoll = typeof humourClubPolls.$inferSelect;
+
+export const reflections = pgTable("reflections", {
+  id: text("id").primaryKey().$defaultFn(() => crypto.randomUUID()),
+  userId: text("user_id").notNull().references(() => users.id),
+  questionIndex: integer("question_index").notNull(),
+  question: text("question").notNull(),
+  answer: text("answer").notNull(),
+  category: text("category").notNull(),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at").defaultNow().notNull(),
+});
+
+export const insertReflectionSchema = createInsertSchema(reflections).pick({
+  questionIndex: true,
+  question: true,
+  answer: true,
+  category: true,
+});
+export type InsertReflection = z.infer<typeof insertReflectionSchema>;
+export type Reflection = typeof reflections.$inferSelect;

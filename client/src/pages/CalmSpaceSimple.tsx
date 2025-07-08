@@ -219,15 +219,15 @@ const CalmSpace = () => {
         </div>
 
         {/* Audio Player */}
-        <Card className="bg-gray-900/50 border-gray-800 mb-6">
+        <Card className="bg-gray-900/50 border-gray-800 backdrop-blur-xl mb-6">
           <div className="p-6">
             <div className="flex items-center justify-between mb-4">
-              <h2 className="text-xl font-semibold text-white">
+              <h2 className="text-xl font-semibold bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent">
                 {tracks[currentTrack].name}
               </h2>
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-2 bg-blue-500/10 px-3 py-1 rounded-full">
                 <Clock className="h-4 w-4 text-blue-400" />
-                <span className="text-blue-400">{formatTime(sessionTimer)}</span>
+                <span className="text-blue-400 font-mono">{formatTime(sessionTimer)}</span>
               </div>
             </div>
 
@@ -289,10 +289,15 @@ const CalmSpace = () => {
         </Card>
 
         {/* Breathing Exercise */}
-        <Card className="bg-gray-900/50 border-gray-800 mb-6">
+        <Card className="bg-gray-900/50 border-gray-800 backdrop-blur-xl mb-6">
           <div className="p-6">
             <div className="flex items-center justify-between mb-4">
-              <h2 className="text-xl font-semibold text-white">Breathing Exercise</h2>
+              <div>
+                <h2 className="text-xl font-semibold bg-gradient-to-r from-green-400 to-blue-400 bg-clip-text text-transparent">
+                  Breathing Exercise
+                </h2>
+                <p className="text-sm text-gray-400">4-4-4-4 breathing pattern</p>
+              </div>
               <Switch
                 checked={breathingMode}
                 onCheckedChange={setBreathingMode}
@@ -301,28 +306,36 @@ const CalmSpace = () => {
             
             {breathingMode && (
               <div className="text-center">
-                <div className="mb-4">
-                  <div className={`w-20 h-20 mx-auto rounded-full border-4 border-blue-400 transition-all duration-1000 ${
-                    breathingPhase === 'inhale' ? 'scale-125 bg-blue-400/20' :
-                    breathingPhase === 'hold' ? 'scale-125 bg-blue-400/40' :
-                    'scale-100 bg-blue-400/10'
-                  }`} />
+                <div className="mb-6">
+                  <div className={`w-24 h-24 mx-auto rounded-full border-4 transition-all duration-1000 relative ${
+                    breathingPhase === 'inhale' ? 'scale-125 bg-blue-400/20 border-blue-400 shadow-lg shadow-blue-400/50' :
+                    breathingPhase === 'hold' ? 'scale-125 bg-purple-400/20 border-purple-400 shadow-lg shadow-purple-400/50' :
+                    breathingPhase === 'exhale' ? 'scale-100 bg-green-400/20 border-green-400 shadow-lg shadow-green-400/50' :
+                    'scale-100 bg-gray-400/10 border-gray-400'
+                  }`}>
+                    <div className="absolute inset-0 rounded-full bg-gradient-to-r from-blue-400/20 to-purple-400/20 animate-pulse" />
+                  </div>
                 </div>
-                <p className="text-lg mb-2">{getBreathingInstruction()}</p>
-                <p className="text-sm text-gray-400">Completed cycles: {breathingCount}</p>
+                <p className="text-lg mb-2 font-medium">{getBreathingInstruction()}</p>
+                <div className="bg-gray-800/50 rounded-full px-4 py-2 inline-block">
+                  <p className="text-sm text-gray-300">Completed cycles: <span className="text-blue-400 font-bold">{breathingCount}</span></p>
+                </div>
               </div>
             )}
           </div>
         </Card>
 
         {/* Settings */}
-        <Card className="bg-gray-900/50 border-gray-800">
+        <Card className="bg-gray-900/50 border-gray-800 backdrop-blur-xl">
           <div className="p-6">
             <h2 className="text-xl font-semibold text-white mb-4">Environment Settings</h2>
             
-            <div className="space-y-4">
+            <div className="space-y-6">
               <div className="flex items-center justify-between">
-                <Label htmlFor="cosmic-debris">Cosmic Debris</Label>
+                <div>
+                  <Label htmlFor="cosmic-debris" className="text-white">Cosmic Debris</Label>
+                  <p className="text-sm text-gray-400">Floating particles in background</p>
+                </div>
                 <Switch
                   id="cosmic-debris"
                   checked={cosmicDebrisEnabled}
@@ -331,8 +344,8 @@ const CalmSpace = () => {
               </div>
               
               {cosmicDebrisEnabled && (
-                <div>
-                  <Label className="text-sm text-gray-400 mb-2 block">
+                <div className="pl-4 border-l-2 border-blue-500/20">
+                  <Label className="text-sm text-gray-300 mb-2 block">
                     Debris Intensity: {debrisIntensity}%
                   </Label>
                   <Slider
@@ -340,12 +353,16 @@ const CalmSpace = () => {
                     onValueChange={(value) => setDebrisIntensity(value[0])}
                     max={100}
                     step={10}
+                    className="mt-2"
                   />
                 </div>
               )}
               
               <div className="flex items-center justify-between">
-                <Label htmlFor="smashable-crystals">Interactive Crystals</Label>
+                <div>
+                  <Label htmlFor="smashable-crystals" className="text-white">Interactive Crystals</Label>
+                  <p className="text-sm text-gray-400">Clickable stress relief elements</p>
+                </div>
                 <Switch
                   id="smashable-crystals"
                   checked={smashableCrystalsEnabled}

@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
-import { Heart, MessageCircle, BookOpen, Mic, TrendingUp, Sparkles, Shield, Clock, ArrowRight, Flame, Users } from 'lucide-react';
+import { Heart, MessageCircle, BookOpen, Mic, TrendingUp, Sparkles, Shield, Clock, ArrowRight, Flame, Users, Brain } from 'lucide-react';
 import { Link } from 'wouter';
 
 const Index = () => {
@@ -88,6 +88,14 @@ const Index = () => {
       color: "amber",
       gradient: "bg-wellness-flow",
       path: "/humour"
+    },
+    {
+      icon: Brain,
+      title: "Reflection Room",
+      description: "Deep introspective questions for self-discovery and growth",
+      color: "lavender",
+      gradient: "bg-wellness-flow",
+      path: "/reflection"
     }
   ];
 

@@ -515,6 +515,47 @@ export async function registerRoutes(app: Express): Promise<Server> {
     res.json({ status: "ok", timestamp: new Date().toISOString() });
   });
 
+  // Reflection routes
+  app.get('/api/reflections', async (req, res) => {
+    try {
+      const { isAuthenticated, user } = req as any;
+      
+      if (!isAuthenticated || !user) {
+        return res.status(401).json({ error: 'Authentication required' });
+      }
+
+      const userReflections = await storage.getUserReflections(user.id);
+      res.json(userReflections);
+    } catch (error) {
+      console.error('Error fetching reflections:', error);
+      res.status(500).json({ error: 'Failed to fetch reflections' });
+    }
+  });
+
+  app.post('/api/reflections', async (req, res) => {
+    try {
+      const { isAuthenticated, user } = req as any;
+      
+      if (!isAuthenticated || !user) {
+        return res.status(401).json({ error: 'Authentication required' });
+      }
+
+      const reflectionData = {
+        userId: user.id,
+        questionIndex: req.body.questionIndex,
+        question: req.body.question,
+        answer: req.body.answer,
+        category: req.body.category,
+      };
+
+      const reflection = await storage.createReflection(reflectionData);
+      res.json(reflection);
+    } catch (error) {
+      console.error('Error creating reflection:', error);
+      res.status(500).json({ error: 'Failed to create reflection' });
+    }
+  });
+
   const httpServer = createServer(app);
   return httpServer;
 }

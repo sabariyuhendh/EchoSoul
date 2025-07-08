@@ -7,7 +7,8 @@ import {
   type Post, type InsertPost, type SmashModeStats, type InsertSmashModeStats,
   type CalmSpacePreferences, type InsertCalmSpacePreferences,
   type HumourClubEntry, type InsertHumourClubEntry,
-  type HumourClubPoll, type InsertHumourClubPoll
+  type HumourClubPoll, type InsertHumourClubPoll,
+  type Reflection, type InsertReflection
 } from "@shared/schema";
 import { db } from "./db";
 import { eq, lt, desc, sql } from "drizzle-orm";
@@ -61,6 +62,11 @@ export interface IStorage {
   createHumourClubPoll(poll: InsertHumourClubPoll): Promise<HumourClubPoll>;
   getActiveHumourClubPolls(): Promise<HumourClubPoll[]>;
   voteInHumourClubPoll(pollId: string, optionIndex: number): Promise<HumourClubPoll>;
+  
+  // Reflection operations
+  createReflection(reflection: InsertReflection): Promise<Reflection>;
+  getUserReflections(userId: string): Promise<Reflection[]>;
+  updateReflection(id: string, reflection: Partial<InsertReflection>): Promise<Reflection>;
 }
 
 export class DatabaseStorage implements IStorage {
@@ -440,6 +446,68 @@ export class DatabaseStorage implements IStorage {
       .returning();
     
     return updatedPoll;
+  }
+  // Reflection operations
+  async createReflection(insertReflection: InsertReflection): Promise<Reflection> {
+    const id = `reflection_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+    
+    const reflectionData = {
+      id,
+      userId: insertReflection.userId,
+      questionIndex: insertReflection.questionIndex,
+      question: insertReflection.question,
+      answer: insertReflection.answer,
+      category: insertReflection.category,
+    };
+    
+    // Check if reflection already exists for this user and question
+    const [existingReflection] = await db
+      .select()
+      .from(reflections)
+      .where(
+        sql`${reflections.userId} = ${insertReflection.userId} AND ${reflections.questionIndex} = ${insertReflection.questionIndex}`
+      )
+      .limit(1);
+    
+    if (existingReflection) {
+      // Update existing reflection
+      const [updatedReflection] = await db
+        .update(reflections)
+        .set({
+          answer: insertReflection.answer,
+          updatedAt: new Date(),
+        })
+        .where(eq(reflections.id, existingReflection.id))
+        .returning();
+      return updatedReflection;
+    } else {
+      // Create new reflection
+      const [reflection] = await db
+        .insert(reflections)
+        .values(reflectionData)
+        .returning();
+      return reflection;
+    }
+  }
+
+  async getUserReflections(userId: string): Promise<Reflection[]> {
+    return await db
+      .select()
+      .from(reflections)
+      .where(eq(reflections.userId, userId))
+      .orderBy(desc(reflections.updatedAt));
+  }
+
+  async updateReflection(id: string, updateData: Partial<InsertReflection>): Promise<Reflection> {
+    const [updatedReflection] = await db
+      .update(reflections)
+      .set({
+        ...updateData,
+        updatedAt: new Date(),
+      })
+      .where(eq(reflections.id, id))
+      .returning();
+    return updatedReflection;
   }
 }
 
