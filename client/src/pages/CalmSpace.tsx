@@ -132,82 +132,26 @@ const CalmSpace = () => {
 
   return (
     <div className="min-h-screen text-white page-content relative overflow-hidden" style={{ background: '#000000' }}>
-      {/* Gorgeous Space Background */}
-      <div className="absolute inset-0" style={{ background: 'radial-gradient(ellipse at bottom, #000000 0%, #000000 100%)' }}>
-        {/* Deep space gradient */}
-        <div className="absolute inset-0 bg-gradient-to-br from-black via-black to-black" />
+      {/* Clean Pure Black Space Background */}
+      <div className="absolute inset-0" style={{ background: '#000000' }}>
         
-        {/* Subtle nebula clouds - static and gentle */}
-        <div className="absolute top-0 left-0 w-full h-full opacity-20">
-          <div className="absolute top-1/3 left-1/5 w-80 h-80 rounded-full blur-3xl" 
-               style={{ background: 'radial-gradient(circle, rgba(59, 130, 246, 0.15) 0%, rgba(147, 51, 234, 0.08) 70%, transparent 100%)' }} />
-          <div className="absolute top-2/3 right-1/5 w-72 h-72 rounded-full blur-3xl" 
-               style={{ background: 'radial-gradient(circle, rgba(168, 85, 247, 0.12) 0%, rgba(59, 130, 246, 0.06) 70%, transparent 100%)' }} />
-          <div className="absolute bottom-1/3 left-1/2 w-64 h-64 rounded-full blur-3xl" 
-               style={{ background: 'radial-gradient(circle, rgba(34, 197, 94, 0.1) 0%, rgba(168, 85, 247, 0.05) 70%, transparent 100%)' }} />
-        </div>
-        
-        {/* Distant stars field */}
-        <div className="absolute inset-0 opacity-80">
-          {[...Array(300)].map((_, i) => (
-            <div
-              key={i}
-              className="absolute bg-white rounded-full animate-pulse"
-              style={{
-                left: `${Math.random() * 100}%`,
-                top: `${Math.random() * 100}%`,
-                width: `${Math.random() * 2 + 1}px`,
-                height: `${Math.random() * 2 + 1}px`,
-                animationDelay: `${Math.random() * 8}s`,
-                animationDuration: `${3 + Math.random() * 4}s`,
-                opacity: Math.random() * 0.9 + 0.3,
-                boxShadow: `0 0 ${Math.random() * 4 + 2}px rgba(255, 255, 255, ${Math.random() * 0.8 + 0.2})`,
-              }}
-            />
-          ))}
-        </div>
-        
-        {/* Shooting stars */}
+        {/* Simple stars field - like real space */}
         <div className="absolute inset-0">
-          {[...Array(5)].map((_, i) => (
+          {[...Array(150)].map((_, i) => (
             <div
               key={i}
-              className="absolute h-px bg-gradient-to-r from-transparent via-white to-transparent animate-shooting-star"
+              className="absolute bg-white rounded-full"
               style={{
                 left: `${Math.random() * 100}%`,
                 top: `${Math.random() * 100}%`,
-                width: `${Math.random() * 100 + 50}px`,
-                animationDelay: `${Math.random() * 15}s`,
-                animationDuration: '4s',
-                transform: 'rotate(45deg)',
-                boxShadow: '0 0 6px rgba(255, 255, 255, 0.8)',
+                width: `${Math.random() * 1.5 + 0.5}px`,
+                height: `${Math.random() * 1.5 + 0.5}px`,
+                opacity: Math.random() * 0.8 + 0.2,
               }}
             />
           ))}
         </div>
         
-        {/* Cosmic dust and particles */}
-        <div className="absolute inset-0 opacity-30">
-          {[...Array(50)].map((_, i) => (
-            <div
-              key={i}
-              className="absolute bg-blue-300 rounded-full animate-pulse"
-              style={{
-                left: `${Math.random() * 100}%`,
-                top: `${Math.random() * 100}%`,
-                width: `${Math.random() * 3 + 0.5}px`,
-                height: `${Math.random() * 3 + 0.5}px`,
-                animationDelay: `${Math.random() * 10}s`,
-                animationDuration: `${5 + Math.random() * 5}s`,
-                opacity: Math.random() * 0.6 + 0.1,
-                filter: 'blur(0.5px)',
-              }}
-            />
-          ))}
-        </div>
-        
-        {/* Cosmic glow effect */}
-        <div className="absolute inset-0 bg-gradient-to-br from-transparent via-blue-900/10 to-purple-900/20 animate-cosmic-glow" />
       </div>
 
       {/* Content */}
