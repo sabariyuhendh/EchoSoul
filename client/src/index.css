@@ -187,18 +187,33 @@
   }
   
   /* Universal navbar spacing fix - consistent across all pages */
-  /* Navbar has mt-4 (16px) + height of navbar (approx 48px) + buffer = 80px total */
+  /* Navbar has mt-4 (16px) + height of navbar (approx 48px) + buffer = 90px total */
   .page-content {
-    padding-top: 80px !important;
+    padding-top: 90px !important;
     min-height: 100vh;
     position: relative;
   }
   
   /* Global container spacing for all page types - prevent excessive space */
-  .min-h-screen {
+  .min-h-screen.page-content {
+    padding-top: 90px !important;
+    min-height: 100vh;
+    overflow-y: visible;
+  }
+  
+  /* Fix for pages that use min-h-screen without page-content class */
+  .min-h-screen:not(.page-content) {
     padding-top: 0 !important;
     min-height: 100vh;
     overflow-y: visible;
+  }
+  
+  /* Ensure proper spacing for container elements within page-content */
+  .page-content .max-w-4xl,
+  .page-content .max-w-6xl,
+  .page-content .max-w-2xl {
+    padding-top: 0 !important;
+    margin-top: 0 !important;
   }
   
   /* Additional container spacing */
@@ -213,8 +228,8 @@
   
   /* Chat and content area optimization */
   .chat-container, .content-container {
-    height: calc(100vh - 80px);
-    max-height: calc(100vh - 80px);
+    height: calc(100vh - 90px);
+    max-height: calc(100vh - 90px);
     overflow-y: auto;
   }
   
@@ -240,7 +255,7 @@
   
   /* Calm Space specific optimizations */
   .calm-space-content {
-    height: calc(100vh - 80px);
+    height: calc(100vh - 90px);
     overflow-y: auto;
     padding: 1.5rem;
   }
@@ -254,7 +269,7 @@
   
   /* Feed and content pages optimization */
   .feed-content, .content-grid {
-    max-height: calc(100vh - 140px);
+    max-height: calc(100vh - 150px);
     overflow-y: auto;
   }
   
@@ -274,6 +289,7 @@
   .h-screen.page-content {
     height: auto !important;
     min-height: 100vh;
+    padding-top: 90px !important;
   }
   
   /* Remove any unintended borders/outlines from headings */
@@ -501,8 +517,12 @@
     color: #ffffff !important;
   }
   
-  /* Global container spacing consistency */
-  .container, .max-w-7xl, .max-w-6xl, .max-w-4xl, .max-w-2xl {
+  /* Global container spacing consistency - only for pages without page-content class */
+  body:not(.page-content) .container, 
+  body:not(.page-content) .max-w-7xl, 
+  body:not(.page-content) .max-w-6xl, 
+  body:not(.page-content) .max-w-4xl, 
+  body:not(.page-content) .max-w-2xl {
     margin-top: 20px !important;
   }
   
