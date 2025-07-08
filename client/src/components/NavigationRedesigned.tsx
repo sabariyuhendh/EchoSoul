@@ -51,7 +51,7 @@ const NavigationRedesigned = () => {
             <div className="w-8 h-8 bg-gradient-to-br from-blue-400 to-purple-400 rounded-full flex items-center justify-center">
               <span className="text-white text-sm font-bold">E</span>
             </div>
-            <h1 className="text-lg font-bold bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent">
+            <h1 className="text-lg font-bold text-white">
               EchoSoul
             </h1>
           </Link>
