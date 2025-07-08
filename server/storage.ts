@@ -1,6 +1,6 @@
 import { 
   users, letItGoEntries, vaultEntries, moodEntries, letters, whispers, posts,
-  smashModeStats, calmSpacePreferences, humourClubEntries, humourClubPolls,
+  smashModeStats, calmSpacePreferences, humourClubEntries, humourClubPolls, reflections,
   type User, type UpsertUser, type LetItGoEntry, type InsertLetItGoEntry,
   type VaultEntry, type InsertVaultEntry, type MoodEntry, type InsertMoodEntry,
   type Letter, type InsertLetter, type Whisper, type InsertWhisper,

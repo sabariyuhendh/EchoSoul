@@ -163,146 +163,121 @@ const ReflectionRoom = () => {
   if (!mounted) return null;
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-blue-900 to-purple-900 page-content">
-      <div className="relative min-h-screen">
-        {/* Background effects */}
-        <div className="absolute inset-0 bg-gradient-to-br from-blue-900/20 via-purple-900/20 to-pink-900/20" />
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,rgba(120,119,198,0.1),transparent_70%)]" />
-        
-        {/* Floating particles */}
-        <div className="absolute inset-0 overflow-hidden">
-          {[...Array(30)].map((_, i) => (
-            <div
-              key={i}
-              className="absolute animate-float opacity-20"
-              style={{
-                left: `${Math.random() * 100}%`,
-                top: `${Math.random() * 100}%`,
-                animationDelay: `${Math.random() * 10}s`,
-                animationDuration: `${15 + Math.random() * 10}s`,
-              }}
-            >
-              <div className="w-2 h-2 bg-blue-400 rounded-full blur-sm" />
+    <div className="min-h-screen bg-black text-white page-content">
+      <div className="max-w-4xl mx-auto px-4 py-8">
+        {/* Header */}
+        <div className="text-center mb-8">
+          <div className="flex items-center justify-center gap-3 mb-4">
+            <div className="p-3 bg-gradient-to-r from-blue-500/20 to-purple-500/20 rounded-full border border-blue-500/30">
+              <Brain className="w-8 h-8 text-blue-400" />
             </div>
-          ))}
+            <h1 className="text-4xl font-bold text-white">
+              Reflection Room
+            </h1>
+          </div>
+          <p className="text-gray-300 text-lg max-w-2xl mx-auto">
+            Journey through deep questions designed to unlock insights about yourself, your relationships, and your path forward.
+          </p>
         </div>
 
-        <div className="relative z-10 container mx-auto px-4 py-8">
-          {/* Header */}
-          <div className="text-center mb-8">
-            <div className="flex items-center justify-center gap-3 mb-4">
-              <div className="p-3 bg-gradient-to-r from-blue-500/20 to-purple-500/20 rounded-full border border-blue-500/30">
-                <Brain className="w-8 h-8 text-blue-400" />
-              </div>
-              <h1 className="text-4xl font-bold text-white">
-                Reflection Room
-              </h1>
-            </div>
-            <p className="text-gray-300 text-lg max-w-2xl mx-auto">
-              Journey through deep questions designed to unlock insights about yourself, your relationships, and your path forward.
-            </p>
-          </div>
-
-          {/* Progress section */}
-          <div className="mb-8">
-            <Card className="bg-gray-800/50 border-gray-700/50 backdrop-blur-sm">
-              <CardContent className="p-6">
-                <div className="flex items-center justify-between mb-4">
-                  <div className="flex items-center gap-3">
-                    <Badge className={getCategoryColor(currentQuestion.category)}>
-                      {currentQuestion.category}
-                    </Badge>
-                    <span className="text-gray-400">
-                      Question {currentIndex + 1} of {REFLECTION_QUESTIONS.length}
-                    </span>
-                  </div>
-                  <div className="flex items-center gap-2 text-sm text-gray-400">
-                    <Lightbulb className="w-4 h-4" />
-                    <span>{getCompletedCount()} completed</span>
-                  </div>
+        {/* Progress section */}
+        <div className="mb-8">
+          <Card className="bg-gray-900/50 border-gray-800 backdrop-blur-sm">
+            <CardContent className="p-6">
+              <div className="flex items-center justify-between mb-4">
+                <div className="flex items-center gap-3">
+                  <Badge className={getCategoryColor(currentQuestion.category)}>
+                    {currentQuestion.category}
+                  </Badge>
+                  <span className="text-gray-400">
+                    Question {currentIndex + 1} of {REFLECTION_QUESTIONS.length}
+                  </span>
                 </div>
-                <Progress value={progress} className="h-2" />
-              </CardContent>
-            </Card>
-          </div>
+                <div className="flex items-center gap-2 text-sm text-gray-400">
+                  <Lightbulb className="w-4 h-4" />
+                  <span>{getCompletedCount()} answered</span>
+                </div>
+              </div>
+              <Progress value={progress} className="w-full" />
+            </CardContent>
+          </Card>
+        </div>
 
-          {/* Question section */}
-          <div className="max-w-4xl mx-auto">
-            <Card className="bg-gray-800/50 border-gray-700/50 backdrop-blur-sm mb-6">
-              <CardHeader>
-                <CardTitle className="flex items-center gap-3 text-xl">
-                  <IconComponent className="w-6 h-6 text-blue-400" />
-                  <span className="text-gray-200">Deep Reflection</span>
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <p className="text-gray-300 text-lg leading-relaxed mb-6">
-                  {currentQuestion.question}
-                </p>
-                
-                <Textarea
-                  placeholder="Take your time to reflect deeply... there's no rush, no judgment, just space for your authentic thoughts."
-                  value={currentAnswer}
-                  onChange={(e) => setCurrentAnswer(e.target.value)}
-                  className="min-h-[200px] bg-gray-900/50 border-gray-600/50 text-gray-200 placeholder-gray-500 resize-none"
-                />
-              </CardContent>
-            </Card>
-
-            {/* Navigation */}
-            <div className="flex items-center justify-between">
+        {/* Current Question */}
+        <Card className="bg-gray-900/50 border-gray-800 backdrop-blur-sm mb-8">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-3 text-xl">
+              <div className="p-2 bg-gradient-to-r from-blue-500/20 to-purple-500/20 rounded-lg">
+                <IconComponent className="w-6 h-6 text-blue-400" />
+              </div>
+              <span className="text-white">Question {currentIndex + 1}</span>
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="p-6">
+            <p className="text-gray-300 text-lg mb-6 leading-relaxed">
+              {currentQuestion.question}
+            </p>
+            
+            <Textarea
+              value={currentAnswer}
+              onChange={(e) => setCurrentAnswer(e.target.value)}
+              placeholder="Take your time to reflect and write your thoughts..."
+              className="min-h-[120px] bg-gray-800 border-gray-700 text-white placeholder-gray-400"
+            />
+            
+            <div className="flex items-center justify-between mt-6">
               <Button
-                variant="outline"
                 onClick={handlePrevious}
                 disabled={currentIndex === 0}
-                className="flex items-center gap-2 bg-gray-800/50 border-gray-700/50 text-gray-200 hover:bg-gray-700/50"
+                variant="outline"
+                className="flex items-center gap-2"
               >
                 <ChevronLeft className="w-4 h-4" />
                 Previous
               </Button>
-
-              <div className="flex items-center gap-3">
+              
+              <div className="flex items-center gap-4">
                 <Button
-                  variant="outline"
                   onClick={handleSave}
                   disabled={!currentAnswer.trim() || saveReflectionMutation.isPending}
-                  className="flex items-center gap-2 bg-blue-600/20 border-blue-500/30 text-blue-400 hover:bg-blue-600/30"
+                  variant="outline"
+                  className="flex items-center gap-2"
                 >
                   <Save className="w-4 h-4" />
                   {saveReflectionMutation.isPending ? 'Saving...' : 'Save'}
                 </Button>
-
+                
                 <Button
                   onClick={handleNext}
                   disabled={currentIndex === REFLECTION_QUESTIONS.length - 1}
-                  className="flex items-center gap-2 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700"
+                  className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700"
                 >
                   Next
                   <ChevronRight className="w-4 h-4" />
                 </Button>
               </div>
             </div>
-          </div>
+          </CardContent>
+        </Card>
 
-          {/* Completion message */}
-          {getCompletedCount() === REFLECTION_QUESTIONS.length && (
-            <Card className="mt-8 bg-gradient-to-r from-emerald-900/20 to-blue-900/20 border-emerald-500/30">
-              <CardContent className="p-6 text-center">
-                <div className="flex items-center justify-center gap-3 mb-4">
-                  <div className="p-3 bg-emerald-500/20 rounded-full">
-                    <Sparkles className="w-8 h-8 text-emerald-400" />
-                  </div>
-                  <h3 className="text-2xl font-bold text-white">
-                    Journey Complete!
-                  </h3>
+        {/* Completion message */}
+        {getCompletedCount() === REFLECTION_QUESTIONS.length && (
+          <Card className="bg-emerald-900/20 border-emerald-500/30">
+            <CardContent className="p-6 text-center">
+              <div className="flex items-center justify-center gap-3 mb-4">
+                <div className="p-3 bg-emerald-500/20 rounded-full">
+                  <Sparkles className="w-8 h-8 text-emerald-400" />
                 </div>
-                <p className="text-gray-300 max-w-2xl mx-auto">
-                  You've completed all reflection questions. Your insights have been safely stored and are part of your personal growth journey. Take time to revisit these reflections as you continue to evolve.
-                </p>
-              </CardContent>
-            </Card>
-          )}
-        </div>
+                <h3 className="text-2xl font-bold text-white">
+                  Journey Complete!
+                </h3>
+              </div>
+              <p className="text-gray-300 max-w-2xl mx-auto">
+                You've completed all reflection questions. Your insights have been safely stored and are part of your personal growth journey. Take time to revisit these reflections as you continue to evolve.
+              </p>
+            </CardContent>
+          </Card>
+        )}
       </div>
     </div>
   );
