@@ -194,7 +194,7 @@ const ReflectionRoom = () => {
               <div className="p-3 bg-gradient-to-r from-blue-500/20 to-purple-500/20 rounded-full border border-blue-500/30">
                 <Brain className="w-8 h-8 text-blue-400" />
               </div>
-              <h1 className="text-4xl font-bold bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400 bg-clip-text text-transparent">
+              <h1 className="text-4xl font-bold text-white">
                 Reflection Room
               </h1>
             </div>
@@ -292,7 +292,7 @@ const ReflectionRoom = () => {
                   <div className="p-3 bg-emerald-500/20 rounded-full">
                     <Sparkles className="w-8 h-8 text-emerald-400" />
                   </div>
-                  <h3 className="text-2xl font-bold text-emerald-400">
+                  <h3 className="text-2xl font-bold text-white">
                     Journey Complete!
                   </h3>
                 </div>

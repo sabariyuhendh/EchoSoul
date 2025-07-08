@@ -518,13 +518,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Reflection routes
   app.get('/api/reflections', async (req, res) => {
     try {
-      const { isAuthenticated, user } = req as any;
-      
-      if (!isAuthenticated || !user) {
-        return res.status(401).json({ error: 'Authentication required' });
-      }
+      const userId = "dev-user-1"; // Mock user ID for development
 
-      const userReflections = await storage.getUserReflections(user.id);
+      const userReflections = await storage.getUserReflections(userId);
       res.json(userReflections);
     } catch (error) {
       console.error('Error fetching reflections:', error);
@@ -534,14 +530,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.post('/api/reflections', async (req, res) => {
     try {
-      const { isAuthenticated, user } = req as any;
-      
-      if (!isAuthenticated || !user) {
-        return res.status(401).json({ error: 'Authentication required' });
-      }
+      const userId = "dev-user-1"; // Mock user ID for development
 
       const reflectionData = {
-        userId: user.id,
+        userId,
         questionIndex: req.body.questionIndex,
         question: req.body.question,
         answer: req.body.answer,

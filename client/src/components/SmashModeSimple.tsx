@@ -168,21 +168,20 @@ const SmashModeSimple = ({ content, onBack, onComplete }: SmashModeSimpleProps) 
         handleSmash();
       }
       setSmashPower(0);
+      document.removeEventListener('mouseup', handleMouseUp);
+      document.removeEventListener('mouseleave', handleMouseLeave);
     };
     
     const handleMouseLeave = () => {
       clearInterval(interval);
       setIsCharging(false);
       setSmashPower(0);
+      document.removeEventListener('mouseup', handleMouseUp);
+      document.removeEventListener('mouseleave', handleMouseLeave);
     };
     
     document.addEventListener('mouseup', handleMouseUp);
     document.addEventListener('mouseleave', handleMouseLeave);
-    
-    return () => {
-      document.removeEventListener('mouseup', handleMouseUp);
-      document.removeEventListener('mouseleave', handleMouseLeave);
-    };
   };
 
   // Handle smash

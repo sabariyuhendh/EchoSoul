@@ -273,13 +273,13 @@ const CalmSpace = () => {
 
         {/* Main Black Hole System - matching the reference image */}
         <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
-          {/* Outer glow/atmosphere */}
+          {/* Outer glow/atmosphere - smoother cosmic glow */}
           <div 
             className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[900px] h-[900px] rounded-full"
             style={{
-              background: 'radial-gradient(circle at center, transparent 40%, rgba(135, 206, 250, 0.1) 50%, rgba(30, 144, 255, 0.15) 70%, transparent 85%)',
-              filter: 'blur(30px)',
-              animation: 'pulse-slow 8s ease-in-out infinite'
+              background: 'radial-gradient(circle at center, transparent 40%, rgba(135, 206, 250, 0.08) 50%, rgba(30, 144, 255, 0.12) 70%, transparent 85%)',
+              filter: 'blur(40px)',
+              animation: 'cosmic-glow 12s ease-in-out infinite'
             }}
           />
           
@@ -431,8 +431,8 @@ const CalmSpace = () => {
               <span>Back to Home</span>
             </Link>
             <div className="text-center">
-              <h1 className="text-3xl font-light tracking-tight">
-                <span className="text-gradient-wellness">Calm Space</span>
+              <h1 className="text-3xl font-light tracking-tight text-white">
+                Calm Space
               </h1>
               <p className="text-gray-400 text-sm">Find peace in the cosmic void</p>
             </div>
@@ -442,7 +442,7 @@ const CalmSpace = () => {
           {/* Music Player */}
           <Card className="apple-card p-8 mb-8 backdrop-blur-xl bg-white/5">
             <div className="text-center mb-6">
-              <h2 className="text-2xl font-light mb-4 text-gradient-lavender">
+              <h2 className="text-2xl font-light mb-4 text-white">
                 {tracks[currentTrack].name}
               </h2>
               <div className="flex items-center justify-center space-x-6 mb-6">

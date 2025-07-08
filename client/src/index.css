@@ -60,6 +60,14 @@
   50% { opacity: 1; transform: scale(1.1); }
 }
 
+@keyframes cosmic-glow {
+  0% { opacity: 0.4; transform: scale(1) rotate(0deg); }
+  25% { opacity: 0.6; transform: scale(1.02) rotate(90deg); }
+  50% { opacity: 0.8; transform: scale(1.05) rotate(180deg); }
+  75% { opacity: 0.6; transform: scale(1.02) rotate(270deg); }
+  100% { opacity: 0.4; transform: scale(1) rotate(360deg); }
+}
+
 @keyframes wobble {
   0%, 100% { transform: translate(-50%, -50%) rotate(0deg); }
   25% { transform: translate(-48%, -52%) rotate(1deg); }
