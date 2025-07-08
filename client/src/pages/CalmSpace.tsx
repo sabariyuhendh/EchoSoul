@@ -137,14 +137,14 @@ const CalmSpace = () => {
         {/* Deep space gradient */}
         <div className="absolute inset-0 bg-gradient-to-br from-black via-black to-black" />
         
-        {/* Large nebula clouds */}
-        <div className="absolute top-0 left-0 w-full h-full opacity-40">
-          <div className="absolute top-1/4 left-1/4 w-96 h-96 rounded-full blur-3xl animate-pulse" 
-               style={{ background: 'radial-gradient(circle, rgba(59, 130, 246, 0.3) 0%, rgba(147, 51, 234, 0.2) 50%, transparent 100%)' }} />
-          <div className="absolute top-1/2 right-1/4 w-80 h-80 rounded-full blur-3xl animate-pulse" 
-               style={{ background: 'radial-gradient(circle, rgba(236, 72, 153, 0.25) 0%, rgba(59, 130, 246, 0.15) 50%, transparent 100%)', animationDelay: '2s' }} />
-          <div className="absolute bottom-1/4 left-1/2 w-64 h-64 rounded-full blur-3xl animate-pulse" 
-               style={{ background: 'radial-gradient(circle, rgba(34, 197, 94, 0.3) 0%, rgba(168, 85, 247, 0.2) 50%, transparent 100%)', animationDelay: '4s' }} />
+        {/* Subtle nebula clouds - static and gentle */}
+        <div className="absolute top-0 left-0 w-full h-full opacity-20">
+          <div className="absolute top-1/3 left-1/5 w-80 h-80 rounded-full blur-3xl" 
+               style={{ background: 'radial-gradient(circle, rgba(59, 130, 246, 0.15) 0%, rgba(147, 51, 234, 0.08) 70%, transparent 100%)' }} />
+          <div className="absolute top-2/3 right-1/5 w-72 h-72 rounded-full blur-3xl" 
+               style={{ background: 'radial-gradient(circle, rgba(168, 85, 247, 0.12) 0%, rgba(59, 130, 246, 0.06) 70%, transparent 100%)' }} />
+          <div className="absolute bottom-1/3 left-1/2 w-64 h-64 rounded-full blur-3xl" 
+               style={{ background: 'radial-gradient(circle, rgba(34, 197, 94, 0.1) 0%, rgba(168, 85, 247, 0.05) 70%, transparent 100%)' }} />
         </div>
         
         {/* Distant stars field */}
