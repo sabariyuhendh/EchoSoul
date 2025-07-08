@@ -37,7 +37,7 @@ const ScreamMode = ({ content, onBack, onComplete }: ScreamModeProps) => {
   const startListening = async () => {
     try {
       // Check if browser supports getUserMedia
-      if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+      if (typeof navigator === 'undefined' || !navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
         alert('Your browser does not support microphone access. Please use a modern browser like Chrome, Firefox, or Safari.');
         return;
       }

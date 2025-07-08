@@ -48,45 +48,53 @@ const HumourClub = () => {
   
   // Predefined sound effects (using Web Audio API for basic sounds)
   const playSound = (type: 'pop' | 'cheer' | 'whoosh' | 'ding') => {
-    if (!soundEnabled) return;
+    if (!soundEnabled || typeof window === 'undefined') return;
     
-    const audioContext = new (window.AudioContext || (window as any).webkitAudioContext)();
-    const oscillator = audioContext.createOscillator();
-    const gainNode = audioContext.createGain();
-    
-    oscillator.connect(gainNode);
-    gainNode.connect(audioContext.destination);
-    
-    let frequency = 440;
-    let duration = 0.2;
-    
-    switch (type) {
-      case 'pop':
-        frequency = 800;
-        duration = 0.1;
-        break;
-      case 'cheer':
-        frequency = 600;
-        duration = 0.3;
-        break;
-      case 'whoosh':
-        frequency = 300;
-        duration = 0.4;
-        break;
-      case 'ding':
-        frequency = 1000;
-        duration = 0.2;
-        break;
+    try {
+      if (!window.AudioContext && !(window as any).webkitAudioContext) {
+        console.warn('Web Audio API not supported');
+        return;
+      }
+      const audioContext = new (window.AudioContext || (window as any).webkitAudioContext)();
+      const oscillator = audioContext.createOscillator();
+      const gainNode = audioContext.createGain();
+      
+      oscillator.connect(gainNode);
+      gainNode.connect(audioContext.destination);
+      
+      let frequency = 440;
+      let duration = 0.2;
+      
+      switch (type) {
+        case 'pop':
+          frequency = 800;
+          duration = 0.1;
+          break;
+        case 'cheer':
+          frequency = 600;
+          duration = 0.3;
+          break;
+        case 'whoosh':
+          frequency = 300;
+          duration = 0.4;
+          break;
+        case 'ding':
+          frequency = 1000;
+          duration = 0.2;
+          break;
+      }
+      
+      oscillator.frequency.setValueAtTime(frequency, audioContext.currentTime);
+      oscillator.type = 'sine';
+      
+      gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
+      gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + duration);
+      
+      oscillator.start(audioContext.currentTime);
+      oscillator.stop(audioContext.currentTime + duration);
+    } catch (error) {
+      console.warn('Sound playback failed:', error);
     }
-    
-    oscillator.frequency.setValueAtTime(frequency, audioContext.currentTime);
-    oscillator.type = 'sine';
-    
-    gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
-    gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + duration);
-    
-    oscillator.start(audioContext.currentTime);
-    oscillator.stop(audioContext.currentTime + duration);
   };
 
   // Trigger confetti animation

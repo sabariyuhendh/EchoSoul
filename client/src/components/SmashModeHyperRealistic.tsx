@@ -412,9 +412,19 @@ const SmashModeHyperRealistic = ({ content, onBack, onComplete }: SmashModeHyper
   
   // Initialize audio
   useEffect(() => {
-    audioContextRef.current = new (window.AudioContext || (window as any).webkitAudioContext)();
+    try {
+      if (typeof window !== 'undefined' && (window.AudioContext || (window as any).webkitAudioContext)) {
+        audioContextRef.current = new (window.AudioContext || (window as any).webkitAudioContext)();
+      }
+    } catch (error) {
+      console.warn('Audio context initialization failed:', error);
+    }
     return () => {
-      audioContextRef.current?.close();
+      try {
+        audioContextRef.current?.close();
+      } catch (error) {
+        console.warn('Audio context cleanup failed:', error);
+      }
     };
   }, []);
   
