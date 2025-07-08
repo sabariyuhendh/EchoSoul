@@ -131,28 +131,37 @@ const CalmSpace = () => {
   const currentTrackData = tracks.find(t => t.id === currentTrack);
 
   return (
-    <div className="min-h-screen bg-black text-white page-content relative overflow-hidden">
+    <div className="min-h-screen text-white page-content relative overflow-hidden" style={{ background: 'linear-gradient(135deg, #000428 0%, #004e92 100%)' }}>
       {/* Gorgeous Space Background */}
-      <div className="absolute inset-0 bg-gradient-to-br from-black via-purple-900/20 to-black">
-        {/* Nebula clouds */}
-        <div className="absolute top-0 left-0 w-full h-full opacity-30">
-          <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-gradient-radial from-blue-500/20 via-purple-500/10 to-transparent rounded-full blur-3xl animate-pulse" />
-          <div className="absolute top-1/2 right-1/4 w-80 h-80 bg-gradient-radial from-pink-500/15 via-blue-500/10 to-transparent rounded-full blur-3xl animate-pulse" style={{ animationDelay: '2s' }} />
-          <div className="absolute bottom-1/4 left-1/2 w-64 h-64 bg-gradient-radial from-cyan-500/20 via-purple-500/10 to-transparent rounded-full blur-3xl animate-pulse" style={{ animationDelay: '4s' }} />
+      <div className="absolute inset-0" style={{ background: 'radial-gradient(ellipse at bottom, #1B2735 0%, #090A0F 100%)' }}>
+        {/* Deep space gradient */}
+        <div className="absolute inset-0 bg-gradient-to-br from-black via-indigo-900/30 to-purple-900/20" />
+        
+        {/* Large nebula clouds */}
+        <div className="absolute top-0 left-0 w-full h-full opacity-40">
+          <div className="absolute top-1/4 left-1/4 w-96 h-96 rounded-full blur-3xl animate-pulse" 
+               style={{ background: 'radial-gradient(circle, rgba(59, 130, 246, 0.3) 0%, rgba(147, 51, 234, 0.2) 50%, transparent 100%)' }} />
+          <div className="absolute top-1/2 right-1/4 w-80 h-80 rounded-full blur-3xl animate-pulse" 
+               style={{ background: 'radial-gradient(circle, rgba(236, 72, 153, 0.25) 0%, rgba(59, 130, 246, 0.15) 50%, transparent 100%)', animationDelay: '2s' }} />
+          <div className="absolute bottom-1/4 left-1/2 w-64 h-64 rounded-full blur-3xl animate-pulse" 
+               style={{ background: 'radial-gradient(circle, rgba(34, 197, 94, 0.3) 0%, rgba(168, 85, 247, 0.2) 50%, transparent 100%)', animationDelay: '4s' }} />
         </div>
         
-        {/* Distant stars */}
-        <div className="absolute inset-0">
-          {[...Array(200)].map((_, i) => (
+        {/* Distant stars field */}
+        <div className="absolute inset-0 opacity-80">
+          {[...Array(300)].map((_, i) => (
             <div
               key={i}
-              className="absolute w-1 h-1 bg-white rounded-full animate-pulse"
+              className="absolute bg-white rounded-full animate-pulse"
               style={{
                 left: `${Math.random() * 100}%`,
                 top: `${Math.random() * 100}%`,
-                animationDelay: `${Math.random() * 5}s`,
-                animationDuration: `${2 + Math.random() * 3}s`,
-                opacity: Math.random() * 0.8 + 0.2,
+                width: `${Math.random() * 2 + 1}px`,
+                height: `${Math.random() * 2 + 1}px`,
+                animationDelay: `${Math.random() * 8}s`,
+                animationDuration: `${3 + Math.random() * 4}s`,
+                opacity: Math.random() * 0.9 + 0.3,
+                boxShadow: `0 0 ${Math.random() * 4 + 2}px rgba(255, 255, 255, ${Math.random() * 0.8 + 0.2})`,
               }}
             />
           ))}
@@ -160,23 +169,45 @@ const CalmSpace = () => {
         
         {/* Shooting stars */}
         <div className="absolute inset-0">
-          {[...Array(3)].map((_, i) => (
+          {[...Array(5)].map((_, i) => (
             <div
               key={i}
-              className="absolute w-2 h-px bg-gradient-to-r from-transparent via-white to-transparent animate-shooting-star"
+              className="absolute h-px bg-gradient-to-r from-transparent via-white to-transparent animate-shooting-star"
               style={{
                 left: `${Math.random() * 100}%`,
                 top: `${Math.random() * 100}%`,
-                animationDelay: `${Math.random() * 10}s`,
-                animationDuration: '3s',
+                width: `${Math.random() * 100 + 50}px`,
+                animationDelay: `${Math.random() * 15}s`,
+                animationDuration: '4s',
                 transform: 'rotate(45deg)',
+                boxShadow: '0 0 6px rgba(255, 255, 255, 0.8)',
+              }}
+            />
+          ))}
+        </div>
+        
+        {/* Cosmic dust and particles */}
+        <div className="absolute inset-0 opacity-30">
+          {[...Array(50)].map((_, i) => (
+            <div
+              key={i}
+              className="absolute bg-blue-300 rounded-full animate-pulse"
+              style={{
+                left: `${Math.random() * 100}%`,
+                top: `${Math.random() * 100}%`,
+                width: `${Math.random() * 3 + 0.5}px`,
+                height: `${Math.random() * 3 + 0.5}px`,
+                animationDelay: `${Math.random() * 10}s`,
+                animationDuration: `${5 + Math.random() * 5}s`,
+                opacity: Math.random() * 0.6 + 0.1,
+                filter: 'blur(0.5px)',
               }}
             />
           ))}
         </div>
         
         {/* Cosmic glow effect */}
-        <div className="absolute inset-0 bg-gradient-to-br from-transparent via-blue-900/5 to-purple-900/10 animate-cosmic-glow" />
+        <div className="absolute inset-0 bg-gradient-to-br from-transparent via-blue-900/10 to-purple-900/20 animate-cosmic-glow" />
       </div>
 
       {/* Content */}
