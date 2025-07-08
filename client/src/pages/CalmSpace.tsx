@@ -131,11 +131,11 @@ const CalmSpace = () => {
   const currentTrackData = tracks.find(t => t.id === currentTrack);
 
   return (
-    <div className="min-h-screen text-white page-content relative overflow-hidden" style={{ background: 'linear-gradient(135deg, #000428 0%, #004e92 100%)' }}>
+    <div className="min-h-screen text-white page-content relative overflow-hidden" style={{ background: '#000000' }}>
       {/* Gorgeous Space Background */}
-      <div className="absolute inset-0" style={{ background: 'radial-gradient(ellipse at bottom, #1B2735 0%, #090A0F 100%)' }}>
+      <div className="absolute inset-0" style={{ background: 'radial-gradient(ellipse at bottom, #000000 0%, #000000 100%)' }}>
         {/* Deep space gradient */}
-        <div className="absolute inset-0 bg-gradient-to-br from-black via-indigo-900/30 to-purple-900/20" />
+        <div className="absolute inset-0 bg-gradient-to-br from-black via-black to-black" />
         
         {/* Large nebula clouds */}
         <div className="absolute top-0 left-0 w-full h-full opacity-40">
