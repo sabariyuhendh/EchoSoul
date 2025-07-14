@@ -74,8 +74,10 @@ const ScreamMode = ({ content, onBack, onComplete }: ScreamModeProps) => {
       const analyser = audioContext.createAnalyser();
       const microphone = audioContext.createMediaStreamSource(stream);
       
-      analyser.fftSize = 512;
-      analyser.smoothingTimeConstant = 0.3;
+      analyser.fftSize = 256;
+      analyser.smoothingTimeConstant = 0.1;
+      analyser.minDecibels = -90;
+      analyser.maxDecibels = -10;
       microphone.connect(analyser);
       
       audioContextRef.current = audioContext;
@@ -110,21 +112,26 @@ const ScreamMode = ({ content, onBack, onComplete }: ScreamModeProps) => {
     const dataArray = new Uint8Array(analyserRef.current.frequencyBinCount);
     analyserRef.current.getByteFrequencyData(dataArray);
     
-    const average = dataArray.reduce((a, b) => a + b) / dataArray.length;
-    const volumePercent = Math.min((average / 128) * 100, 100);
+    // Calculate RMS for better sensitivity
+    let sum = 0;
+    for (let i = 0; i < dataArray.length; i++) {
+      sum += dataArray[i] * dataArray[i];
+    }
+    const rms = Math.sqrt(sum / dataArray.length);
+    const volumePercent = Math.min((rms / 64) * 100, 100); // Improved sensitivity
     
     setVolume(volumePercent);
     
-    // Create sound wave ripples
-    if (volumePercent > 10) {
+    // Create sound wave ripples (lowered threshold)
+    if (volumePercent > 5) {
       setSoundWaves(prev => [...prev, {
         id: Date.now(),
         scale: volumePercent / 100
       }].slice(-5));
     }
     
-    // Shatter glass at high volume
-    if (volumePercent > 70 && !glassShattered) {
+    // Shatter glass at high volume (lowered threshold)
+    if (volumePercent > 40 && !glassShattered) {
       setGlassShattered(true);
       setTimeout(() => {
         onComplete();

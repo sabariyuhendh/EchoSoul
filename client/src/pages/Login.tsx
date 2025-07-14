@@ -117,7 +117,7 @@ const Login = () => {
 
             <Button
               type="button"
-              onClick={() => window.location.href = '/api/auth/google'}
+              onClick={() => window.location.href = '/auth/google'}
               className="w-full mt-4 bg-white hover:bg-gray-100 text-black font-medium border border-white/20"
             >
               <svg className="w-5 h-5 mr-2" viewBox="0 0 24 24">

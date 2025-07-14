@@ -6,71 +6,46 @@ import { insertLetItGoEntrySchema, insertMoodEntrySchema, insertLetterSchema, in
 import { z } from "zod";
 import OpenAI from "openai";
 import { getCalmPreferences, saveCalmPreferences, logMeditationSession, getMeditationStats } from './calmSpaceRoutes';
+import { isAuthenticated } from './replitAuth';
+import passport from 'passport';
 
 export async function registerRoutes(app: Express): Promise<Server> {
-  // Temporarily disable auth for development
-  // await setupAuth(app);
+  // Enable real authentication
+  await setupAuth(app);
 
-  // Mock auth routes for development
+  // Real auth routes
   app.get('/api/auth/user', async (req: any, res) => {
     try {
-      // Return a mock user for development
-      const mockUser = {
-        id: "dev-user-1",
-        email: "developer@echosoul.dev",
-        firstName: "Dev",
-        lastName: "User",
-        profileImageUrl: null,
-        createdAt: new Date(),
-        updatedAt: new Date()
-      };
-      res.json(mockUser);
+      if (!req.user) {
+        return res.status(401).json({ message: "Not authenticated" });
+      }
+      res.json(req.user);
     } catch (error) {
       console.error("Error fetching user:", error);
       res.status(500).json({ message: "Failed to fetch user" });
     }
   });
 
-  // Mock signup route for development
-  app.post('/api/signup', async (req: any, res) => {
-    try {
-      // In development, just redirect to Google OAuth
-      res.json({ redirectUrl: '/api/login' });
-    } catch (error) {
-      console.error("Error during signup:", error);
-      res.status(500).json({ message: "Failed to sign up" });
-    }
-  });
+  // Google OAuth routes
+  app.get('/auth/google', 
+    passport.authenticate('google', { scope: ['profile', 'email'] })
+  );
 
-  // Mock auth signup route for development
-  app.post('/api/auth/signup', async (req: any, res) => {
-    try {
-      // In development, just return success
-      res.json({ success: true, message: "Please use Google OAuth to sign in" });
-    } catch (error) {
-      console.error("Error during signup:", error);
-      res.status(500).json({ message: "Failed to sign up" });
+  app.get('/auth/google/callback', 
+    passport.authenticate('google', { failureRedirect: '/login' }),
+    (req, res) => {
+      // Successful authentication, redirect to home
+      res.redirect('/');
     }
-  });
+  );
 
-  // Mock login route for development
-  app.post('/api/auth/login', async (req: any, res) => {
-    try {
-      // In development, just return success with mock user
-      const mockUser = {
-        id: "dev-user-1",
-        email: req.body.email || "developer@echosoul.dev",
-        firstName: "Dev",
-        lastName: "User",
-        profileImageUrl: null,
-        createdAt: new Date(),
-        updatedAt: new Date()
-      };
-      res.json({ success: true, user: mockUser, message: "Login successful" });
-    } catch (error) {
-      console.error("Error during login:", error);
-      res.status(500).json({ message: "Failed to log in" });
-    }
+  app.post('/api/auth/logout', (req, res) => {
+    req.logout((err) => {
+      if (err) {
+        return res.status(500).json({ message: "Failed to logout" });
+      }
+      res.json({ success: true, message: "Logged out successfully" });
+    });
   });
 
   // Handle GET request to /api/login - redirect to login page
@@ -84,9 +59,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Let It Go Room API endpoints
-  app.post("/api/letitgo", async (req: any, res) => {
+  app.post("/api/letitgo", isAuthenticated, async (req: any, res) => {
     try {
-      const userId = "dev-user-1"; // Mock user ID for development
+      const userId = req.user.id;
 
       const validatedData = insertLetItGoEntrySchema.parse({
         ...req.body,
@@ -105,9 +80,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.get("/api/letitgo", async (req: any, res) => {
+  app.get("/api/letitgo", isAuthenticated, async (req: any, res) => {
     try {
-      const userId = "dev-user-1"; // Mock user ID for development
+      const userId = req.user.id;
       const entries = await storage.getUserLetItGoEntries(userId);
       res.json({ entries });
     } catch (error) {
@@ -117,9 +92,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Vault API endpoints
-  app.post("/api/vault", async (req: any, res) => {
+  app.post("/api/vault", isAuthenticated, async (req: any, res) => {
     try {
-      const userId = "dev-user-1";
+      const userId = req.user.id;
       const validatedData = insertVaultEntrySchema.parse({
         ...req.body,
         userId
@@ -137,9 +112,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.get("/api/vault", async (req: any, res) => {
+  app.get("/api/vault", isAuthenticated, async (req: any, res) => {
     try {
-      const userId = "dev-user-1";
+      const userId = req.user.id;
       const entries = await storage.getUserVaultEntries(userId);
       res.json({ entries });
     } catch (error) {
@@ -149,9 +124,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Mood API endpoints
-  app.post("/api/mood", async (req: any, res) => {
+  app.post("/api/mood", isAuthenticated, async (req: any, res) => {
     try {
-      const userId = "dev-user-1";
+      const userId = req.user.id;
       const validatedData = insertMoodEntrySchema.parse({
         ...req.body,
         userId
@@ -169,9 +144,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.get("/api/mood", async (req: any, res) => {
+  app.get("/api/mood", isAuthenticated, async (req: any, res) => {
     try {
-      const userId = "dev-user-1";
+      const userId = req.user.id;
       const entries = await storage.getUserMoodEntries(userId);
       res.json({ entries });
     } catch (error) {
@@ -181,9 +156,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Letters API endpoints
-  app.post("/api/letters", async (req: any, res) => {
+  app.post("/api/letters", isAuthenticated, async (req: any, res) => {
     try {
-      const userId = "dev-user-1";
+      const userId = req.user.id;
       const validatedData = insertLetterSchema.parse({
         ...req.body,
         userId
@@ -201,9 +176,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.get("/api/letters", async (req: any, res) => {
+  app.get("/api/letters", isAuthenticated, async (req: any, res) => {
     try {
-      const userId = "dev-user-1";
+      const userId = req.user.id;
       const letters = await storage.getUserLetters(userId);
       res.json({ letters });
     } catch (error) {
@@ -213,9 +188,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Whisper API endpoints
-  app.post("/api/whisper", async (req: any, res) => {
+  app.post("/api/whisper", isAuthenticated, async (req: any, res) => {
     try {
-      const userId = "dev-user-1";
+      const userId = req.user.id;
       const validatedData = insertWhisperSchema.parse({
         ...req.body,
         userId
@@ -233,9 +208,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.get("/api/whisper", async (req: any, res) => {
+  app.get("/api/whisper", isAuthenticated, async (req: any, res) => {
     try {
-      const userId = "dev-user-1";
+      const userId = req.user.id;
       const whispers = await storage.getUserWhispers(userId);
       res.json({ whispers });
     } catch (error) {
@@ -255,9 +230,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.post("/api/feed", async (req: any, res) => {
+  app.post("/api/feed", isAuthenticated, async (req: any, res) => {
     try {
-      const userId = "dev-user-1";
+      const userId = req.user.id;
       const validatedData = insertPostSchema.parse({
         ...req.body,
         userId
@@ -282,9 +257,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
     app.get("/api/calm/meditation/stats", getMeditationStats);
     
     // Smash Mode API endpoints
-    app.post("/api/smash/stats", async (req: any, res) => {
+    app.post("/api/smash/stats", isAuthenticated, async (req: any, res) => {
       try {
-        const userId = req.user?.id || "dev-user-1";
+        const userId = req.user.id;
         const { objectType, smashForce, destructionPattern, emotionalRelease, sessionId } = req.body;
         
         const stats = await storage.createSmashModeStats({
@@ -303,9 +278,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
     });
     
-    app.get("/api/smash/stats", async (req: any, res) => {
+    app.get("/api/smash/stats", isAuthenticated, async (req: any, res) => {
       try {
-        const userId = req.user?.id || "dev-user-1";
+        const userId = req.user.id;
         const stats = await storage.getUserSmashModeStats(userId);
         res.json({ stats });
       } catch (error) {
@@ -328,9 +303,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.post("/api/humour/entries", async (req: any, res) => {
+  app.post("/api/humour/entries", isAuthenticated, async (req: any, res) => {
     try {
-      const userId = req.user?.id || "dev-user-1";
+      const userId = req.user.id;
       const validatedData = insertHumourClubEntrySchema.parse({
         ...req.body,
         userId
@@ -348,7 +323,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.post("/api/humour/entries/:id/like", async (req: any, res) => {
+  app.post("/api/humour/entries/:id/like", isAuthenticated, async (req: any, res) => {
     try {
       const { id } = req.params;
       await storage.likeHumourClubEntry(id);
@@ -360,7 +335,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Humour Club AI Joke endpoint
-  app.post("/api/humour/joke", async (req: any, res) => {
+  app.post("/api/humour/joke", isAuthenticated, async (req: any, res) => {
     const { category = "general" } = req.body;
     
     try {
