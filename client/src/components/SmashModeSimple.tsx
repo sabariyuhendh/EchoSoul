@@ -164,7 +164,10 @@ const SmashModeSimple = ({ content, onBack, onComplete }: SmashModeSimpleProps) 
     const handleMouseUp = () => {
       clearInterval(interval);
       setIsCharging(false);
-      if (smashPower > 20) {
+      if (smashPower >= 100) {
+        handleSmash();
+      } else if (smashPower > 20) {
+        // Partial smash for moderate power
         handleSmash();
       }
       setSmashPower(0);

@@ -133,7 +133,11 @@ function SmashableObject({
   };
 
   const handlePointerUp = () => {
-    if (chargeLevel > 0.3 && !isSmashed) {
+    if (chargeLevel >= 0.99 && !isSmashed) {
+      // Only smash when fully charged (100%)
+      smashObject();
+    } else if (chargeLevel > 0.3 && !isSmashed) {
+      // Partial effects for partial charge
       smashObject();
     }
     setIsCharging(false);
