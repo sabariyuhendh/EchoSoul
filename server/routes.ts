@@ -74,7 +74,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const userData = {
         id: userId,
         email,
-        firstName: firstName || '',
+        firstName: firstName || 'User',
         lastName: lastName || '',
         profileImageUrl: '',
         passwordHash

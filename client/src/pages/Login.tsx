@@ -12,15 +12,20 @@ const Login = () => {
   const [, navigate] = useLocation();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [firstName, setFirstName] = useState('');
+  const [lastName, setLastName] = useState('');
   const [isSignUp, setIsSignUp] = useState(false);
   const { toast } = useToast();
 
   const authMutation = useMutation({
-    mutationFn: async (data: { email: string; password: string; isSignUp: boolean }) => {
+    mutationFn: async (data: { email: string; password: string; firstName?: string; lastName?: string; isSignUp: boolean }) => {
       const endpoint = data.isSignUp ? '/api/auth/signup' : '/api/auth/login';
+      const payload = data.isSignUp 
+        ? { email: data.email, password: data.password, firstName: data.firstName, lastName: data.lastName }
+        : { email: data.email, password: data.password };
       return apiRequest(endpoint, {
         method: 'POST',
-        body: JSON.stringify({ email: data.email, password: data.password }),
+        body: JSON.stringify(payload),
       });
     },
     onSuccess: () => {
@@ -49,7 +54,23 @@ const Login = () => {
       });
       return;
     }
-    authMutation.mutate({ email: email.trim(), password, isSignUp });
+    
+    if (isSignUp && (!firstName.trim() || !lastName.trim())) {
+      toast({
+        title: "Missing information",
+        description: "Please fill in your first and last name",
+        variant: "destructive",  
+      });
+      return;
+    }
+    
+    authMutation.mutate({ 
+      email: email.trim(), 
+      password, 
+      firstName: firstName.trim(), 
+      lastName: lastName.trim(), 
+      isSignUp 
+    });
   };
 
   return (
@@ -65,6 +86,35 @@ const Login = () => {
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-6">
+            {isSignUp && (
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label htmlFor="firstName" className="text-white">First Name</Label>
+                  <Input
+                    id="firstName"
+                    type="text"
+                    value={firstName}
+                    onChange={(e) => setFirstName(e.target.value)}
+                    placeholder="First name"
+                    className="bg-white/10 border-white/20 text-white placeholder-gray-400"
+                    required={isSignUp}
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="lastName" className="text-white">Last Name</Label>
+                  <Input
+                    id="lastName"
+                    type="text"
+                    value={lastName}
+                    onChange={(e) => setLastName(e.target.value)}
+                    placeholder="Last name"
+                    className="bg-white/10 border-white/20 text-white placeholder-gray-400"
+                    required={isSignUp}
+                  />
+                </div>
+              </div>
+            )}
+
             <div className="space-y-2">
               <Label htmlFor="email" className="text-white">Email</Label>
               <Input
@@ -117,7 +167,7 @@ const Login = () => {
 
             <Button
               type="button"
-              onClick={() => window.location.href = '/auth/google'}
+              onClick={() => window.location.href = '/api/auth/google'}
               className="w-full mt-4 bg-white hover:bg-gray-100 text-black font-medium border border-white/20"
             >
               <svg className="w-5 h-5 mr-2" viewBox="0 0 24 24">
