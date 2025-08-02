@@ -101,7 +101,7 @@ const Letters = () => {
                     variant={selectedStyle === style.id ? "default" : "outline"}
                     onClick={() => setSelectedStyle(style.id as Letter['style'])}
                     className={`text-sm py-3 font-medium transition-all duration-200 ${selectedStyle === style.id ? 
-                      'bg-white text-black hover:bg-gray-100 border-white shadow-lg' : 
+                      'bg-white text-black hover:bg-gray-200 border-white shadow-lg font-semibold' : 
                       'border-white/50 bg-black/30 text-white hover:bg-white/20 hover:border-white/70 hover:shadow-md'}`}
                   >
                     {style.name}
