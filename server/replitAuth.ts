@@ -202,10 +202,18 @@ export async function setupAuth(app: Express) {
 export const isAuthenticated: RequestHandler = async (req, res, next) => {
   const user = req.user as any;
 
-  if (!req.isAuthenticated() || !user.expires_at) {
+  // Check if user is authenticated via Passport
+  if (!req.isAuthenticated() || !user) {
     return res.status(401).json({ message: "Unauthorized" });
   }
 
+  // For email/password users (they don't have expires_at)
+  if (!user.expires_at) {
+    // Email/password users are valid as long as they have a session
+    return next();
+  }
+
+  // For OAuth users, check token expiry
   const now = Math.floor(Date.now() / 1000);
   if (now <= user.expires_at) {
     return next();

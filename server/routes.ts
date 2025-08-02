@@ -8,6 +8,8 @@ import OpenAI from "openai";
 import { getCalmPreferences, saveCalmPreferences, logMeditationSession, getMeditationStats } from './calmSpaceRoutes';
 import { isAuthenticated } from './replitAuth';
 import passport from 'passport';
+import bcrypt from 'bcrypt';
+import crypto from 'crypto';
 
 export async function registerRoutes(app: Express): Promise<Server> {
   // Enable real authentication
@@ -46,6 +48,88 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
       res.json({ success: true, message: "Logged out successfully" });
     });
+  });
+
+  // Email/Password authentication endpoints
+  app.post('/api/auth/signup', async (req, res) => {
+    try {
+      const { email, password, firstName, lastName } = req.body;
+      
+      if (!email || !password) {
+        return res.status(400).json({ error: 'Email and password are required' });
+      }
+
+      // Check if user already exists
+      const existingUser = await storage.getUserByEmail(email);
+      if (existingUser) {
+        return res.status(400).json({ error: 'User already exists with this email' });
+      }
+
+      // Hash the password
+      const saltRounds = 10;
+      const passwordHash = await bcrypt.hash(password, saltRounds);
+
+      // Create new user with UUID-compatible ID
+      const userId = crypto.randomUUID();
+      const userData = {
+        id: userId,
+        email,
+        firstName: firstName || '',
+        lastName: lastName || '',
+        profileImageUrl: '',
+        passwordHash
+      };
+
+      const user = await storage.upsertUser(userData);
+      
+      // Log the user in automatically
+      req.login(user, (err) => {
+        if (err) {
+          console.error('Auto-login error:', err);
+          return res.status(201).json({ success: true, user: { id: user.id, email: user.email } });
+        }
+        res.status(201).json({ success: true, user: { id: user.id, email: user.email } });
+      });
+
+    } catch (error) {
+      console.error('Signup error:', error);
+      res.status(500).json({ error: 'Internal server error' });
+    }
+  });
+
+  app.post('/api/auth/login', async (req, res) => {
+    try {
+      const { email, password } = req.body;
+      
+      if (!email || !password) {
+        return res.status(400).json({ error: 'Email and password are required' });
+      }
+
+      // Find user by email
+      const user = await storage.getUserByEmail(email);
+      if (!user || !user.passwordHash) {
+        return res.status(401).json({ error: 'Invalid credentials' });
+      }
+
+      // Check password
+      const passwordMatch = await bcrypt.compare(password, user.passwordHash);
+      if (!passwordMatch) {
+        return res.status(401).json({ error: 'Invalid credentials' });
+      }
+
+      // Log the user in
+      req.login(user, (err) => {
+        if (err) {
+          console.error('Login error:', err);
+          return res.status(500).json({ error: 'Failed to log in' });
+        }
+        res.json({ success: true, user: { id: user.id, email: user.email } });
+      });
+
+    } catch (error) {
+      console.error('Login error:', error);
+      res.status(500).json({ error: 'Internal server error' });
+    }
   });
 
   // Handle GET request to /api/login - redirect to login page

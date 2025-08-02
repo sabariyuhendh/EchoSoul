@@ -3,6 +3,14 @@
 ## Overview
 EchoSoul is a comprehensive emotional wellness platform providing tools for emotional expression, mental health support, and personal growth. It features interactive tools like timed journaling, emotional release activities, mood tracking, AI-powered letter writing, voice recording, and anonymous social support. The project aims to offer a holistic approach to mental well-being, fostering self-expression and community support.
 
+## Recent Changes (August 2025)
+- ✅ **Complete Authentication System**: Implemented dual authentication supporting both Google OAuth and email/password registration with bcrypt password hashing
+- ✅ **Database Integration**: All user actions now properly save to PostgreSQL database with UUID-based user identification
+- ✅ **Session Management**: Fixed session persistence across all protected API endpoints with PostgreSQL session storage
+- ✅ **API Endpoint Testing**: Verified all core features (Letters, Let It Go, Vault, Mood Tracking) work with authentication
+- ✅ **SmashMode Fixes**: Resolved orb breaking mechanics at 100% charge in both 3D and Simple modes
+- ✅ **UI Polish**: Fixed font contrast issues on Letters page and removed inconsistent glass effects
+
 ## User Preferences
 Preferred communication style: Simple, everyday language.
 
