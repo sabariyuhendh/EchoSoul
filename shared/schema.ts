@@ -244,6 +244,7 @@ export const reflections = pgTable("reflections", {
 });
 
 export const insertReflectionSchema = createInsertSchema(reflections).pick({
+  userId: true,
   questionIndex: true,
   question: true,
   answer: true,
