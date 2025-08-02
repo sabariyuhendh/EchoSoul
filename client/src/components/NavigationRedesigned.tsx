@@ -120,12 +120,12 @@ const NavigationRedesigned = () => {
                 <DropdownMenuTrigger asChild>
                   <Button variant="ghost" size="sm" className="flex items-center space-x-2 hover:bg-white/10 rounded-full px-3 py-2">
                     <Avatar className="h-6 w-6">
-                      <AvatarImage src={typedUser?.avatar || ''} />
+                      <AvatarImage src={typedUser?.profileImageUrl || ''} />
                       <AvatarFallback className="bg-gradient-to-br from-blue-400 to-purple-400 text-white text-xs">
-                        {typedUser?.username?.[0]?.toUpperCase() || 'U'}
+                        {typedUser?.firstName?.[0]?.toUpperCase() || typedUser?.email?.[0]?.toUpperCase() || 'U'}
                       </AvatarFallback>
                     </Avatar>
-                    <span className="text-sm font-medium text-gray-300 hidden md:block">{typedUser?.username}</span>
+                    <span className="text-sm font-medium text-gray-300 hidden md:block">{typedUser?.firstName || typedUser?.email}</span>
                   </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent 
