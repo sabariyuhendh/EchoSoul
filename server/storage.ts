@@ -397,12 +397,16 @@ export class DatabaseStorage implements IStorage {
   async createHumourClubPoll(insertPoll: InsertHumourClubPoll): Promise<HumourClubPoll> {
     const id = `poll_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
     
+    // Ensure options and votes are properly formatted as JSON arrays
+    const options = Array.isArray(insertPoll.options) ? insertPoll.options : [];
+    const votes = Array.isArray(insertPoll.votes) ? insertPoll.votes : options.map(() => 0);
+    
     const pollData = {
       id,
       userId: insertPoll.userId,
       question: insertPoll.question,
-      options: insertPoll.options,
-      votes: insertPoll.votes || [],
+      options: JSON.stringify(options),
+      votes: JSON.stringify(votes),
       isActive: insertPoll.isActive ?? true
     };
     

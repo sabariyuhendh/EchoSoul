@@ -62,49 +62,47 @@ const Letters = () => {
             <span>Back to Home</span>
           </Link>
           <div className="text-center flex-1">
-            <h1 className="text-3xl font-light tracking-tight">
-              <span className="text-gradient-rose">Letters You'll Never Send</span>
-            </h1>
-            <p className="text-gray-400 text-sm">Express what you can't say</p>
+            <h1 className="text-3xl font-light tracking-tight text-white">Letters You'll Never Send</h1>
+            <p className="text-gray-400 mt-2">Write and express your deepest thoughts</p>
           </div>
           <div className="w-24"></div>
         </div>
 
         {/* Letter Composer */}
-        <Card className="rose-card p-8 mb-8">
+        <div className="bg-black/50 border border-white/10 rounded-2xl p-8 mb-8">
           <div className="space-y-6">
             <div>
-              <label className="block text-sm font-medium mb-2 text-gray-300">To:</label>
+              <label className="block text-sm font-medium mb-2 text-white">To:</label>
               <Input
                 value={to}
                 onChange={(e) => setTo(e.target.value)}
                 placeholder="The person you want to write to..."
-                className="bg-transparent border-white/20 text-white placeholder-gray-500"
+                className="bg-black/30 border-white/20 text-white placeholder-gray-400 focus:border-white/40 focus:ring-1 focus:ring-white/20"
               />
             </div>
 
             <div>
-              <label className="block text-sm font-medium mb-2 text-gray-300">Your Letter:</label>
+              <label className="block text-sm font-medium mb-2 text-white">Your Letter:</label>
               <Textarea
                 value={content}
                 onChange={(e) => setContent(e.target.value)}
                 placeholder="Dear [name], I've been wanting to tell you..."
-                className="min-h-48 bg-transparent border-white/20 text-white placeholder-gray-500 resize-none"
+                className="min-h-48 bg-black/30 border-white/20 text-white placeholder-gray-400 resize-none focus:border-white/40 focus:ring-1 focus:ring-white/20"
               />
             </div>
 
             {/* Style Options */}
             <div>
-              <label className="block text-sm font-medium mb-4 text-gray-300">Letter Style:</label>
+              <label className="block text-sm font-medium mb-4 text-white">Letter Style:</label>
               <div className="grid grid-cols-5 gap-3">
                 {styles.map((style) => (
                   <Button
                     key={style.id}
                     variant={selectedStyle === style.id ? "default" : "outline"}
                     onClick={() => setSelectedStyle(style.id as Letter['style'])}
-                    className={`btn-force-white text-xs py-2 font-medium transition-all duration-200 ${selectedStyle === style.id ? 
-                      `bg-gradient-to-r from-${style.color}-500 to-${style.color}-600 border-transparent shadow-lg` : 
-                      'border-white/20 bg-black/40 hover:bg-white/10 hover:border-white/40'}`}
+                    className={`text-sm py-3 font-medium transition-all duration-200 ${selectedStyle === style.id ? 
+                      'bg-white text-black hover:bg-gray-100 border-white shadow-lg' : 
+                      'border-white/30 bg-black/20 text-white hover:bg-white/10 hover:border-white/50'}`}
                   >
                     {style.name}
                   </Button>
@@ -117,7 +115,7 @@ const Letters = () => {
               <Button
                 onClick={stylizeContent}
                 disabled={!content.trim() || selectedStyle === 'original'}
-                className="btn-force-white bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 font-medium flex-1 py-3 px-6 border-none shadow-lg transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+                className="bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white font-medium flex-1 py-3 px-6 border-none shadow-lg transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 <Sparkles className="w-4 h-4 mr-2" />
                 Stylize with AI
@@ -125,25 +123,25 @@ const Letters = () => {
               <Button
                 onClick={saveLetter}
                 disabled={!to.trim() || !content.trim()}
-                className="btn-force-white bg-gradient-to-r from-green-500 to-blue-500 hover:from-green-600 hover:to-blue-600 font-medium flex-1 py-3 px-6 border-none shadow-lg transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+                className="bg-gradient-to-r from-green-500 to-blue-500 hover:from-green-600 hover:to-blue-600 text-white font-medium flex-1 py-3 px-6 border-none shadow-lg transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 <Heart className="w-4 h-4 mr-2" />
                 Save Letter
               </Button>
             </div>
           </div>
-        </Card>
+        </div>
 
         {/* Saved Letters */}
         {letters.length > 0 && (
           <div className="space-y-4">
-            <h2 className="text-xl font-light text-gradient-rose">Your Letters</h2>
+            <h2 className="text-xl font-light text-white">Your Letters</h2>
             {letters.map((letter) => (
-              <Card key={letter.id} className="apple-card p-6">
+              <div key={letter.id} className="bg-black/50 border border-white/10 rounded-2xl p-6">
                 <div className="space-y-4">
                   <div className="flex justify-between items-start">
-                    <h3 className="font-medium text-lg text-gradient-white">To: {letter.to}</h3>
-                    <span className={`text-xs px-2 py-1 rounded-full bg-${styles.find(s => s.id === letter.style)?.color}-500/20 text-${styles.find(s => s.id === letter.style)?.color}-300`}>
+                    <h3 className="font-medium text-lg text-white">To: {letter.to}</h3>
+                    <span className="text-xs px-3 py-1 rounded-full bg-white/10 text-gray-300 border border-white/20">
                       {styles.find(s => s.id === letter.style)?.name}
                     </span>
                   </div>
@@ -152,7 +150,7 @@ const Letters = () => {
                     {letter.createdAt.toLocaleDateString()}
                   </p>
                 </div>
-              </Card>
+              </div>
             ))}
           </div>
         )}
