@@ -19,11 +19,24 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Real auth routes
   app.get('/api/auth/user', async (req: any, res) => {
     try {
+      console.log('Auth check - isAuthenticated:', req.isAuthenticated());
+      console.log('Auth check - user:', req.user);
+      console.log('Auth check - session:', req.session);
+      
       if (!req.isAuthenticated() || !req.user) {
         return res.status(401).json({ message: "Not authenticated" });
       }
       
-      res.json(req.user);
+      // If user is just an ID, fetch full user data
+      let userData = req.user;
+      if (typeof req.user === 'string') {
+        userData = await storage.getUser(req.user);
+        if (!userData) {
+          return res.status(401).json({ message: "User not found" });
+        }
+      }
+      
+      res.json(userData);
     } catch (error) {
       console.error("Error fetching user:", error);
       res.status(500).json({ message: "Failed to fetch user" });
