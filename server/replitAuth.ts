@@ -44,9 +44,10 @@ export function getSession() {
     name: 'connect.sid', // Explicit session name
     cookie: {
       httpOnly: true,
-      secure: false, // Set to false for development
+      secure: process.env.NODE_ENV === 'production', // Dynamic based on environment
       maxAge: sessionTtl,
       sameSite: 'lax', // Allow same-site cookies
+      domain: undefined, // Let browser determine domain
     },
   });
 }

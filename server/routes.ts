@@ -106,6 +106,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
           return res.status(500).json({ error: 'Failed to establish session' });
         }
         console.log('User logged in successfully:', { id: user.id, email: user.email });
+        console.log('Session after login:', req.session);
+        console.log('Session ID:', req.sessionID);
         res.json({ success: true, user: { id: user.id, email: user.email } });
       });
     } catch (error) {
