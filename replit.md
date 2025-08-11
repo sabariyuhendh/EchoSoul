@@ -12,6 +12,9 @@ EchoSoul is a comprehensive emotional wellness platform providing tools for emot
 - ✅ **UI Polish**: Fixed font contrast issues on Letters page and removed inconsistent glass effects
 - ✅ **App Testing Complete**: Verified Google OAuth, microphone functionality in Let It Go modes, Lyra AI chatbot, and all core features working properly
 - ✅ **Feature Rename**: Updated "Letters You'll Never Send" to "Letters Live" while maintaining "EchoSoul" as app name
+- ✅ **Groq AI Integration**: Integrated Groq API with meta-llama/llama-4-scout-17b-16e-instruct model for enhanced Lyra chatbot and Humour Club
+- ✅ **Mood-Based Responses**: Added mood selection interface to Lyra for tailored emotional support based on user's current feelings
+- ✅ **Enhanced AI Features**: Lyra now provides contextual responses using conversation history and mood state
 
 ## User Preferences
 Preferred communication style: Simple, everyday language.
@@ -57,6 +60,7 @@ The application features a dark theme with a therapeutic color palette (blue, gr
 - **Lucide React**: Iconography.
 - **TypeScript**: Type safety across the stack.
 - **ESBuild**: Production builds.
-- **OpenAI API**: For AI-powered features (e.g., Lyra chatbot, Humour Club joke bot).
+- **OpenAI API**: For AI-powered features (e.g., Letters AI assistance).
+- **Groq API**: For Lyra chatbot and Humour Club using meta-llama/llama-4-scout-17b-16e-instruct model.
 - **Cloudinary**: For voice file storage in Whisper.
 - **passport-google-oauth20**: For Google OAuth authentication.

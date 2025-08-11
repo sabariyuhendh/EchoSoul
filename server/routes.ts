@@ -5,6 +5,7 @@ import { setupAuth } from "./replitAuth";
 import { insertLetItGoEntrySchema, insertMoodEntrySchema, insertLetterSchema, insertVaultEntrySchema, insertWhisperSchema, insertPostSchema, insertHumourClubEntrySchema, insertHumourClubPollSchema } from "@shared/schema";
 import { z } from "zod";
 import OpenAI from "openai";
+import Groq from "groq-sdk";
 import { getCalmPreferences, saveCalmPreferences, logMeditationSession, getMeditationStats } from './calmSpaceRoutes';
 import { isAuthenticated } from './replitAuth';
 import passport from 'passport';
@@ -375,6 +376,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   // Initialize OpenAI with API key
   const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
+  
+  // Initialize Groq with API key - use fallback if env var not set
+  const groq = new Groq({ 
+    apiKey: process.env.GROQ_API_KEY || "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"
+  });
 
   // Humour Club API endpoints
   app.get("/api/humour/entries", async (req: any, res) => {
@@ -418,17 +424,71 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Humour Club AI Joke endpoint
+  // Lyra AI Chatbot endpoint with Groq
+  app.post("/api/lyra/chat", isAuthenticated, async (req: any, res) => {
+    const { message, conversationHistory = [], currentMood } = req.body;
+    
+    try {
+      // Build system prompt based on user's mood and conversation context
+      let systemPrompt = `You are Lyra, a compassionate AI emotional support companion. You provide empathetic, non-judgmental support for emotional wellness. Key traits:
+- Warm, understanding, and genuinely caring
+- Use simple, everyday language that feels natural
+- Ask thoughtful follow-up questions
+- Validate emotions without trying to "fix" everything
+- Offer gentle guidance when appropriate
+- Remember previous conversation context`;
+
+      if (currentMood) {
+        systemPrompt += `\n\nThe user's current emotional state seems to be: ${currentMood}. Tailor your response accordingly while being sensitive to their feelings.`;
+      }
+
+      // Prepare conversation messages
+      const messages = [
+        { role: "system", content: systemPrompt },
+        ...conversationHistory.map((msg: any) => ({
+          role: msg.isUser ? "user" : "assistant",
+          content: msg.content
+        })),
+        { role: "user", content: message }
+      ];
+
+      const response = await groq.chat.completions.create({
+        model: "meta-llama/llama-4-scout-17b-16e-instruct",
+        messages: messages,
+        max_tokens: 300,
+        temperature: 0.7,
+      });
+
+      const aiResponse = response.choices[0].message.content;
+      res.json({ response: aiResponse });
+    } catch (error) {
+      console.error("Error with Lyra chat:", error);
+      
+      // Fallback empathetic responses
+      const fallbackResponses = [
+        "I hear you, and what you're feeling is completely valid. Want to tell me more about what's going on?",
+        "That sounds really tough. You're so brave for sharing this with me. How long have you been feeling this way?",
+        "Thank you for trusting me with this. Your feelings matter, and you matter. What would help you feel a little lighter right now?",
+        "I'm proud of you for reaching out. Sometimes just putting feelings into words can be healing. How can I support you today?",
+        "You're not alone in this. What you're experiencing is part of being human, and it's okay to not be okay sometimes."
+      ];
+      
+      const randomResponse = fallbackResponses[Math.floor(Math.random() * fallbackResponses.length)];
+      res.json({ response: randomResponse });
+    }
+  });
+
+  // Humour Club AI Joke endpoint with Groq
   app.post("/api/humour/joke", isAuthenticated, async (req: any, res) => {
     const { category = "general" } = req.body;
     
     try {
-      const response = await openai.chat.completions.create({
-        model: "gpt-4o", // the newest OpenAI model is "gpt-4o" which was released May 13, 2024. do not change this unless explicitly requested by the user
+      const response = await groq.chat.completions.create({
+        model: "meta-llama/llama-4-scout-17b-16e-instruct",
         messages: [
           {
             role: "system",
-            content: "You are a wholesome, positive joke generator. Create clean, uplifting jokes that would make someone smile. Keep them light-hearted and appropriate for all audiences. Avoid dark humor, controversial topics, or anything that could be offensive."
+            content: "You are a wholesome, positive joke generator. Create clean, uplifting jokes that would make someone smile. Keep them light-hearted and appropriate for all audiences. Avoid dark humor, controversial topics, or anything that could be offensive. Generate only ONE joke per request."
           },
           {
             role: "user",
@@ -436,6 +496,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
           }
         ],
         max_tokens: 150,
+        temperature: 0.8,
       });
 
       const joke = response.choices[0].message.content;

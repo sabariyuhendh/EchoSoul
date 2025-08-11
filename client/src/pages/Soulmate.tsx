@@ -5,6 +5,8 @@ import { Card } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { ArrowLeft, Send, Heart, Bot } from 'lucide-react';
 import { Link } from 'wouter';
+import { useMutation } from '@tanstack/react-query';
+import { apiRequest } from '@/lib/queryClient';
 
 interface Message {
   id: string;
@@ -24,7 +26,25 @@ const Soulmate = () => {
   ]);
   const [input, setInput] = useState('');
   const [isTyping, setIsTyping] = useState(false);
+  const [currentMood, setCurrentMood] = useState<string>('');
   const messagesEndRef = useRef<HTMLDivElement>(null);
+
+  const chatMutation = useMutation({
+    mutationFn: async ({ message, conversationHistory, mood }: { 
+      message: string; 
+      conversationHistory: Message[]; 
+      mood?: string;
+    }) => {
+      return apiRequest('/api/lyra/chat', {
+        method: 'POST',
+        body: JSON.stringify({ 
+          message, 
+          conversationHistory: conversationHistory.slice(-10), // Keep last 10 messages for context
+          currentMood: mood 
+        }),
+      });
+    },
+  });
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -38,7 +58,7 @@ const Soulmate = () => {
   }, [messages]);
 
   const sendMessage = async () => {
-    if (!input.trim()) return;
+    if (!input.trim() || chatMutation.isPending) return;
 
     const userMessage: Message = {
       id: Date.now().toString(),
@@ -48,29 +68,40 @@ const Soulmate = () => {
     };
 
     setMessages(prev => [...prev, userMessage]);
+    const currentInput = input.trim();
     setInput('');
     setIsTyping(true);
 
-    // Simulate AI response
-    setTimeout(() => {
-      const responses = [
-        "I hear you, and what you're feeling is completely valid. Want to tell me more about what's going on?",
-        "That sounds really tough. You're so brave for sharing this with me. How long have you been feeling this way?",
-        "Thank you for trusting me with this. Your feelings matter, and you matter. What would help you feel a little lighter right now?",
-        "I'm proud of you for reaching out. Sometimes just putting feelings into words can be healing. How can I support you today?",
-        "You're not alone in this. What you're experiencing is part of being human, and it's okay to not be okay sometimes.",
-      ];
+    try {
+      const response = await chatMutation.mutateAsync({
+        message: currentInput,
+        conversationHistory: messages,
+        mood: currentMood
+      });
 
       const aiMessage: Message = {
         id: (Date.now() + 1).toString(),
-        content: responses[Math.floor(Math.random() * responses.length)],
+        content: response.response,
         isUser: false,
         timestamp: new Date()
       };
 
       setMessages(prev => [...prev, aiMessage]);
+    } catch (error) {
+      console.error('Error sending message:', error);
+      
+      // Fallback response on error
+      const aiMessage: Message = {
+        id: (Date.now() + 1).toString(),
+        content: "I'm having trouble connecting right now, but I'm still here for you. Can you tell me more about how you're feeling?",
+        isUser: false,
+        timestamp: new Date()
+      };
+
+      setMessages(prev => [...prev, aiMessage]);
+    } finally {
       setIsTyping(false);
-    }, 1500);
+    }
   };
 
   const handleKeyPress = (e: React.KeyboardEvent) => {
@@ -154,6 +185,36 @@ const Soulmate = () => {
           <div ref={messagesEndRef} />
         </div>
 
+        {/* Mood Selection */}
+        <div className="px-6 py-4 border-t border-white/10">
+          <p className="text-sm text-gray-400 mb-3">How are you feeling right now?</p>
+          <div className="flex flex-wrap gap-2 mb-4">
+            {[
+              { mood: 'happy', emoji: '😊', color: 'from-green-400 to-emerald-400' },
+              { mood: 'sad', emoji: '😢', color: 'from-blue-400 to-cyan-400' },
+              { mood: 'anxious', emoji: '😰', color: 'from-yellow-400 to-amber-400' },
+              { mood: 'angry', emoji: '😠', color: 'from-red-400 to-orange-400' },
+              { mood: 'confused', emoji: '😕', color: 'from-purple-400 to-violet-400' },
+              { mood: 'excited', emoji: '🤩', color: 'from-pink-400 to-rose-400' },
+              { mood: 'calm', emoji: '😌', color: 'from-indigo-400 to-blue-400' },
+              { mood: 'overwhelmed', emoji: '😵', color: 'from-gray-400 to-slate-400' }
+            ].map(({ mood, emoji, color }) => (
+              <Button
+                key={mood}
+                variant={currentMood === mood ? "default" : "outline"}
+                size="sm"
+                onClick={() => setCurrentMood(mood)}
+                className={`text-xs ${currentMood === mood 
+                  ? `bg-gradient-to-r ${color} text-white border-0` 
+                  : 'border-white/20 text-gray-300 hover:text-white'
+                }`}
+              >
+                {emoji} {mood}
+              </Button>
+            ))}
+          </div>
+        </div>
+
         {/* Message Input */}
         <div className="p-6 border-t border-white/10">
           <div className="flex space-x-4">
@@ -163,18 +224,18 @@ const Soulmate = () => {
               onKeyPress={handleKeyPress}
               placeholder="Share what's on your heart..."
               className="flex-1 bg-white/10 border-white/20 text-white placeholder-gray-400 backdrop-blur-sm"
-              disabled={isTyping}
+              disabled={isTyping || chatMutation.isPending}
             />
             <Button
               onClick={sendMessage}
-              disabled={!input.trim() || isTyping}
+              disabled={!input.trim() || isTyping || chatMutation.isPending}
               className="apple-button bg-gradient-to-r from-rose-500 to-pink-500 text-white px-6"
             >
               <Send className="w-4 h-4" />
             </Button>
           </div>
           <p className="text-xs text-gray-500 mt-2 text-center">
-            Your AI companion is here to listen and support you 💕
+            {currentMood ? `Feeling ${currentMood} - ` : ''}Your AI companion is here to listen and support you 💕
           </p>
         </div>
       </div>
