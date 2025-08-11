@@ -66,65 +66,84 @@ import ReflectionRoom from "./pages/ReflectionRoom";
 
 const queryClient = new QueryClient();
 
-function AppRouter() {
-  const { isAuthenticated, isLoading } = useAuth();
+// Protected route components to prevent re-render issues
+const ProtectedVault = () => (
+  <ProtectedRoute fallbackMessage="Your vault entries are private and require authentication.">
+    <Vault />
+  </ProtectedRoute>
+);
 
+const ProtectedLetters = () => (
+  <ProtectedRoute fallbackMessage="Your letters are personal and require authentication to protect your privacy.">
+    <Letters />
+  </ProtectedRoute>
+);
+
+const ProtectedLetItGo = () => (
+  <ProtectedRoute fallbackMessage="Your emotional release sessions are private and require authentication.">
+    <LetItGo />
+  </ProtectedRoute>
+);
+
+const ProtectedMood = () => (
+  <ProtectedRoute fallbackMessage="Your mood tracking data is personal and requires authentication.">
+    <Mood />
+  </ProtectedRoute>
+);
+
+const ProtectedWhisper = () => (
+  <ProtectedRoute fallbackMessage="Your voice recordings are private and require authentication.">
+    <Whisper />
+  </ProtectedRoute>
+);
+
+const ProtectedSoulmate = () => (
+  <ProtectedRoute fallbackMessage="Your AI companion conversations are personal and require authentication.">
+    <Soulmate />
+  </ProtectedRoute>
+);
+
+const ProtectedFeed = () => (
+  <ProtectedRoute fallbackMessage="Accessing the community feed requires authentication.">
+    <Feed />
+  </ProtectedRoute>
+);
+
+const ProtectedCalmSpace = () => (
+  <ProtectedRoute fallbackMessage="Your meditation sessions and preferences require authentication.">
+    <CalmSpace />
+  </ProtectedRoute>
+);
+
+const ProtectedHumourClub = () => (
+  <ProtectedRoute fallbackMessage="The Humour Club features require authentication.">
+    <HumourClub />
+  </ProtectedRoute>
+);
+
+const ProtectedReflectionRoom = () => (
+  <ProtectedRoute fallbackMessage="Your reflection questions and responses are private and require authentication.">
+    <ReflectionRoom />
+  </ProtectedRoute>
+);
+
+function AppRouter() {
   return (
     <ErrorBoundary>
       <div className="min-h-screen bg-black">
         <Navigation />
         <Switch>
           <Route path="/" component={Index} />
-          <Route path="/vault" component={() => (
-            <ProtectedRoute fallbackMessage="Your vault entries are private and require authentication.">
-              <Vault />
-            </ProtectedRoute>
-          )} />
-          <Route path="/letters" component={() => (
-            <ProtectedRoute fallbackMessage="Your letters are personal and require authentication to protect your privacy.">
-              <Letters />
-            </ProtectedRoute>
-          )} />
-          <Route path="/letitgo" component={() => (
-            <ProtectedRoute fallbackMessage="Your emotional release sessions are private and require authentication.">
-              <LetItGo />
-            </ProtectedRoute>
-          )} />
-          <Route path="/mood" component={() => (
-            <ProtectedRoute fallbackMessage="Your mood tracking data is personal and requires authentication.">
-              <Mood />
-            </ProtectedRoute>
-          )} />
-          <Route path="/whisper" component={() => (
-            <ProtectedRoute fallbackMessage="Your voice recordings are private and require authentication.">
-              <Whisper />
-            </ProtectedRoute>
-          )} />
-          <Route path="/soulmate" component={() => (
-            <ProtectedRoute fallbackMessage="Your AI companion conversations are personal and require authentication.">
-              <Soulmate />
-            </ProtectedRoute>
-          )} />
-          <Route path="/feed" component={() => (
-            <ProtectedRoute fallbackMessage="Accessing the community feed requires authentication.">
-              <Feed />
-            </ProtectedRoute>
-          )} />
-          <Route path="/calm" component={() => (
-            <ProtectedRoute fallbackMessage="Your meditation sessions and preferences require authentication.">
-              <CalmSpace />
-            </ProtectedRoute>
-          )} />
-          <Route path="/humour" component={() => (
-            <ProtectedRoute fallbackMessage="The Humour Club features require authentication.">
-              <HumourClub />
-            </ProtectedRoute>
-          )} />
-          <Route path="/reflection" component={() => (
-            <ProtectedRoute fallbackMessage="Your reflection questions and responses are private and require authentication.">
-              <ReflectionRoom />
-            </ProtectedRoute>
-          )} />
+          <Route path="/vault" component={ProtectedVault} />
+          <Route path="/letters" component={ProtectedLetters} />
+          <Route path="/letitgo" component={ProtectedLetItGo} />
+          <Route path="/mood" component={ProtectedMood} />
+          <Route path="/whisper" component={ProtectedWhisper} />
+          <Route path="/soulmate" component={ProtectedSoulmate} />
+          <Route path="/feed" component={ProtectedFeed} />
+          <Route path="/calm" component={ProtectedCalmSpace} />
+          <Route path="/humour" component={ProtectedHumourClub} />
+          <Route path="/reflection" component={ProtectedReflectionRoom} />
           <Route path="/login" component={Login} />
           <Route path="/signup" component={Signup} />
           <Route component={NotFound} />
