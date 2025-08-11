@@ -38,7 +38,11 @@ const GoogleLogin = () => {
       // Wait a moment for session to be established
       await new Promise(resolve => setTimeout(resolve, 500));
       
-      // Force refetch auth state
+      // Check if session cookie was set
+      console.log('All cookies after login:', document.cookie);
+      
+      // Force refetch auth state with fresh query
+      queryClient.removeQueries({ queryKey: ["/api/auth/user"] });
       await queryClient.invalidateQueries({ queryKey: ["/api/auth/user"] });
       await queryClient.refetchQueries({ queryKey: ["/api/auth/user"] });
       
@@ -50,7 +54,7 @@ const GoogleLogin = () => {
       // Force full page reload to ensure session is picked up
       setTimeout(() => {
         window.location.href = '/profile'; // Redirect to profile first to confirm auth
-      }, 1000);
+      }, 1500); // Give more time for session to propagate
     },
     onError: (error) => {
       setIsLoading(false);

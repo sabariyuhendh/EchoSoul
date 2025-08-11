@@ -23,11 +23,11 @@ export function getSession() {
     saveUninitialized: false,
     name: 'connect.sid',
     cookie: {
-      httpOnly: true,
+      httpOnly: false, // Allow JavaScript access in development for debugging
       secure: false, // Always false for development to ensure cookies work locally
       maxAge: sessionTtl,
-      sameSite: 'lax',
-      domain: undefined,
+      sameSite: 'none', // Allow cross-origin cookies
+      domain: 'localhost',
       path: '/',
     },
   });

@@ -19,6 +19,12 @@ export const queryClient = new QueryClient({
           }
         });
         
+        // Log response cookies for debugging
+        const setCookieHeader = response.headers.get('set-cookie');
+        if (setCookieHeader) {
+          console.log('Response set-cookie header:', setCookieHeader);
+        }
+        
         console.log('Response status:', response.status, 'for', url);
         
         if (!response.ok) {
