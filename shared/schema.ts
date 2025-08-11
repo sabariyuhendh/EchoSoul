@@ -21,7 +21,7 @@ export const users = pgTable("users", {
   lastName: varchar("last_name"),
   profileImageUrl: varchar("profile_image_url"),
   googleId: varchar("google_id"),
-  passwordHash: varchar("password_hash"), // For email/password authentication
+  passwordHash: varchar("password_hash"), // For email/password authentication - nullable for OAuth users
   createdAt: timestamp("created_at").defaultNow(),
   updatedAt: timestamp("updated_at").defaultNow(),
 });
