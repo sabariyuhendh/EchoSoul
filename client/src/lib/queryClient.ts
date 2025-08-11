@@ -12,6 +12,7 @@ export const queryClient = new QueryClient({
         const url = Array.isArray(queryKey) ? queryKey[0] : queryKey;
         const response = await fetch(url as string, {
           credentials: 'include', // Include cookies for all queries
+          mode: 'cors',
         });
         
         if (!response.ok) {
@@ -31,6 +32,7 @@ export const queryClient = new QueryClient({
 export const apiRequest = async (url: string, options: RequestInit = {}) => {
   const response = await fetch(url, {
     credentials: 'include', // Include cookies for session management
+    mode: 'cors',
     headers: {
       'Content-Type': 'application/json',
       ...options.headers,

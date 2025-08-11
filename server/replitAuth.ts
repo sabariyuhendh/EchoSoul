@@ -44,10 +44,9 @@ export function getSession() {
     name: 'connect.sid', // Explicit session name
     cookie: {
       httpOnly: true,
-      secure: false, // Set to false for development to ensure cookies work
+      secure: false, // Set to false for development
       maxAge: sessionTtl,
-      sameSite: 'lax', // Help with cookie handling
-      domain: undefined, // Don't set domain to allow localhost
+      sameSite: 'lax', // Allow same-site cookies
     },
   });
 }
