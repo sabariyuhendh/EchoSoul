@@ -24,10 +24,11 @@ export function getSession() {
     name: 'connect.sid',
     cookie: {
       httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
+      secure: false, // Always false for development to ensure cookies work locally
       maxAge: sessionTtl,
       sameSite: 'lax',
       domain: undefined,
+      path: '/',
     },
   });
 }

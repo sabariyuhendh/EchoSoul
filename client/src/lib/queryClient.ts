@@ -14,7 +14,6 @@ export const queryClient = new QueryClient({
         
         const response = await fetch(url as string, {
           credentials: 'include', // Include cookies for all queries
-          mode: 'same-origin', // Changed from 'cors' to 'same-origin' for better cookie sharing
           headers: {
             'Cache-Control': 'no-cache',
           }
@@ -44,7 +43,6 @@ export const apiRequest = async (url: string, options: RequestInit = {}) => {
   
   const response = await fetch(url, {
     credentials: 'include', // Include cookies for session management
-    mode: 'same-origin', // Changed from 'cors' to 'same-origin' for better cookie sharing
     headers: {
       'Content-Type': 'application/json',
       'Cache-Control': 'no-cache',

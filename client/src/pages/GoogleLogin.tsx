@@ -32,7 +32,13 @@ const GoogleLogin = () => {
       });
     },
     onSuccess: async () => {
-      // Invalidate and refetch the auth user query
+      // Clear all queries first
+      queryClient.clear();
+      
+      // Wait a moment for session to be established
+      await new Promise(resolve => setTimeout(resolve, 500));
+      
+      // Force refetch auth state
       await queryClient.invalidateQueries({ queryKey: ["/api/auth/user"] });
       await queryClient.refetchQueries({ queryKey: ["/api/auth/user"] });
       
@@ -41,9 +47,9 @@ const GoogleLogin = () => {
         description: "You are now signed in with Google",
       });
       
-      // Give more time for auth state to properly update
+      // Force full page reload to ensure session is picked up
       setTimeout(() => {
-        window.location.href = '/'; // Force full page reload to ensure session is picked up
+        window.location.href = '/profile'; // Redirect to profile first to confirm auth
       }, 1000);
     },
     onError: (error) => {

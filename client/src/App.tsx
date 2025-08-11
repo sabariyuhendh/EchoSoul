@@ -59,6 +59,7 @@ import Feed from "./pages/Feed";
 import CalmSpace from "./pages/CalmSpace";
 import HumourClub from "./pages/HumourClub";
 import GoogleLogin from "./pages/GoogleLogin";
+import Profile from "./pages/Profile";
 import NotFound from "./pages/NotFound";
 import ProtectedRoute from './components/ProtectedRoute';
 import ReflectionRoom from "./pages/ReflectionRoom";
@@ -126,13 +127,27 @@ const ProtectedReflectionRoom = () => (
   </ProtectedRoute>
 );
 
+const ProtectedProfile = () => (
+  <ProtectedRoute fallbackMessage="Your profile and account settings require authentication.">
+    <Profile />
+  </ProtectedRoute>
+);
+
+// Make homepage protected too - mandatory authentication for ALL features
+const ProtectedIndexPage = () => (
+  <ProtectedRoute fallbackMessage="EchoSoul requires authentication to access all emotional wellness features and protect your privacy.">
+    <Index />
+  </ProtectedRoute>
+);
+
 function AppRouter() {
   return (
     <ErrorBoundary>
       <div className="min-h-screen bg-black">
         <NavigationRedesigned />
         <Switch>
-          <Route path="/" component={Index} />
+          <Route path="/" component={ProtectedIndexPage} />
+          <Route path="/profile" component={ProtectedProfile} />
           <Route path="/vault" component={ProtectedVault} />
           <Route path="/letters" component={ProtectedLetters} />
           <Route path="/letitgo" component={ProtectedLetItGo} />

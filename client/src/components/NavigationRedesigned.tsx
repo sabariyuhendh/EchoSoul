@@ -143,8 +143,13 @@ const NavigationRedesigned = () => {
                 </DropdownMenuTrigger>
                 <DropdownMenuContent 
                   align="end" 
-                  className="w-40 bg-black/95 backdrop-blur-xl border border-white/10 rounded-2xl p-2 shadow-2xl"
+                  className="w-48 bg-black/95 backdrop-blur-xl border border-white/10 rounded-2xl p-2 shadow-2xl"
                 >
+                  <Link to="/profile">
+                    <DropdownMenuItem className="px-4 py-3 text-sm font-medium text-gray-300 hover:text-white hover:bg-white/10 rounded-xl cursor-pointer">
+                      Profile Settings
+                    </DropdownMenuItem>
+                  </Link>
                   <DropdownMenuItem 
                     onClick={handleLogout}
                     className="px-4 py-3 text-sm font-medium text-gray-300 hover:text-white hover:bg-white/10 rounded-xl cursor-pointer"

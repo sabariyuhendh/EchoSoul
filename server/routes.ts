@@ -44,6 +44,28 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   // Remove Google OAuth routes since we're using Firebase + API auth
 
+  // Profile update endpoint
+  app.patch("/api/auth/profile", requireAuth, async (req: any, res) => {
+    try {
+      const { firstName, lastName } = req.body;
+      const userId = req.user.id;
+      
+      const updatedUser = await storage.updateUser(userId, {
+        firstName: firstName || undefined,
+        lastName: lastName || undefined,
+      });
+
+      if (!updatedUser) {
+        return res.status(404).json({ message: "User not found" });
+      }
+
+      res.json({ success: true, user: updatedUser });
+    } catch (error) {
+      console.error('Profile update error:', error);
+      res.status(500).json({ message: 'Failed to update profile' });
+    }
+  });
+
   app.post('/api/auth/logout', (req, res) => {
     req.logout((err) => {
       if (err) {
@@ -96,6 +118,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         console.log('User logged in successfully:', { id: user.id, email: user.email });
         console.log('Session after login:', req.session);
         console.log('Session ID:', req.sessionID);
+        console.log('Response headers will include Set-Cookie for:', req.sessionID);
         res.json({ success: true, user: { id: user.id, email: user.email } });
       });
     } catch (error) {
