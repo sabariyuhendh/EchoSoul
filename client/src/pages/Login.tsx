@@ -29,19 +29,20 @@ const Login = () => {
         body: JSON.stringify(payload),
       });
     },
-    onSuccess: () => {
-      // Invalidate the auth user query to refetch user data
-      queryClient.invalidateQueries({ queryKey: ["/api/auth/user"] });
+    onSuccess: async () => {
+      // Invalidate and refetch the auth user query
+      await queryClient.invalidateQueries({ queryKey: ["/api/auth/user"] });
+      await queryClient.refetchQueries({ queryKey: ["/api/auth/user"] });
       
       toast({
         title: isSignUp ? "Account created successfully" : "Welcome back",
         description: "You are now logged in",
       });
       
-      // Small delay to ensure auth state is updated
+      // Give more time for auth state to update
       setTimeout(() => {
         navigate('/');
-      }, 100);
+      }, 300);
     },
     onError: (error) => {
       toast({

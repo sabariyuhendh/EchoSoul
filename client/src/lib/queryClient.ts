@@ -15,7 +15,11 @@ export const queryClient = new QueryClient({
         });
         
         if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`);
+          // For auth endpoints, handle 401 differently 
+          if (response.status === 401 && url === '/api/auth/user') {
+            return null; // Return null for unauthenticated users
+          }
+          throw new Error(`${response.status}: ${response.statusText}`);
         }
         
         return response.json();
@@ -35,7 +39,15 @@ export const apiRequest = async (url: string, options: RequestInit = {}) => {
   });
 
   if (!response.ok) {
-    throw new Error(`HTTP error! status: ${response.status}`);
+    const errorText = await response.text();
+    let errorMessage = `${response.status}: ${response.statusText}`;
+    try {
+      const errorJson = JSON.parse(errorText);
+      errorMessage = errorJson.error || errorJson.message || errorMessage;
+    } catch {
+      // If parsing fails, use the status text
+    }
+    throw new Error(errorMessage);
   }
 
   return response.json();

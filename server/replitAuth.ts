@@ -44,7 +44,7 @@ export function getSession() {
     name: 'connect.sid', // Explicit session name
     cookie: {
       httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
+      secure: false, // Set to false for development to ensure cookies work
       maxAge: sessionTtl,
       sameSite: 'lax', // Help with cookie handling
     },
