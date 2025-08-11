@@ -19,6 +19,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Real auth routes
   app.get('/api/auth/user', async (req: any, res) => {
     try {
+      console.log('Auth check - isAuthenticated:', req.isAuthenticated(), 'user:', req.user);
       
       if (!req.isAuthenticated() || !req.user) {
         return res.status(401).json({ message: "Not authenticated" });
@@ -33,7 +34,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
         }
       }
       
-      res.json(userData);
+      // Remove sensitive data
+      const { passwordHash, ...safeUser } = userData;
+      res.json(safeUser);
     } catch (error) {
       console.error("Error fetching user:", error);
       res.status(500).json({ message: "Failed to fetch user" });
@@ -99,8 +102,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // Log the user in by setting up the session
       req.login(user, (err) => {
         if (err) {
+          console.error('Login error:', err);
           return res.status(500).json({ error: 'Failed to establish session' });
         }
+        console.log('User logged in successfully:', { id: user.id, email: user.email });
         res.json({ success: true, user: { id: user.id, email: user.email } });
       });
     } catch (error) {
