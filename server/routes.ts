@@ -18,9 +18,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Real auth routes
   app.get('/api/auth/user', async (req: any, res) => {
     try {
-      console.log('Auth check - requireAuth:', req.requireAuth(), 'user:', req.user);
+      console.log('Auth check - isAuthenticated:', req.isAuthenticated(), 'user:', req.user);
       
-      if (!req.requireAuth() || !req.user) {
+      if (!req.isAuthenticated() || !req.user) {
         return res.status(401).json({ message: "Not authenticated" });
       }
       
@@ -104,87 +104,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Email/Password authentication endpoints
-  app.post('/api/auth/signup', async (req, res) => {
-    try {
-      const { email, password, firstName, lastName } = req.body;
-      
-      if (!email || !password) {
-        return res.status(400).json({ error: 'Email and password are required' });
-      }
-
-      // Check if user already exists
-      const existingUser = await storage.getUserByEmail(email);
-      if (existingUser) {
-        return res.status(400).json({ error: 'User already exists with this email' });
-      }
-
-      // Hash the password
-      const saltRounds = 10;
-      const passwordHash = await bcrypt.hash(password, saltRounds);
-
-      // Create new user with UUID-compatible ID
-      const userId = crypto.randomUUID();
-      const userData = {
-        id: userId,
-        email,
-        firstName: firstName || 'User',
-        lastName: lastName || '',
-        profileImageUrl: '',
-        passwordHash
-      };
-
-      const user = await storage.upsertUser(userData);
-      
-      // Log the user in automatically
-      req.login(user, (err) => {
-        if (err) {
-          console.error('Auto-login error:', err);
-          return res.status(201).json({ success: true, user: { id: user.id, email: user.email } });
-        }
-        res.status(201).json({ success: true, user: { id: user.id, email: user.email } });
-      });
-
-    } catch (error) {
-      console.error('Signup error:', error);
-      res.status(500).json({ error: 'Internal server error' });
-    }
-  });
-
-  app.post('/api/auth/login', async (req, res) => {
-    try {
-      const { email, password } = req.body;
-      
-      if (!email || !password) {
-        return res.status(400).json({ error: 'Email and password are required' });
-      }
-
-      // Find user by email
-      const user = await storage.getUserByEmail(email);
-      if (!user || !user.passwordHash) {
-        return res.status(401).json({ error: 'Invalid credentials' });
-      }
-
-      // Check password
-      const passwordMatch = await bcrypt.compare(password, user.passwordHash);
-      if (!passwordMatch) {
-        return res.status(401).json({ error: 'Invalid credentials' });
-      }
-
-      // Log the user in
-      req.login(user, (err) => {
-        if (err) {
-          console.error('Login error:', err);
-          return res.status(500).json({ error: 'Failed to log in' });
-        }
-        res.json({ success: true, user: { id: user.id, email: user.email } });
-      });
-
-    } catch (error) {
-      console.error('Login error:', error);
-      res.status(500).json({ error: 'Internal server error' });
-    }
-  });
+  // Google-only authentication - email/password removed
 
   // Handle GET request to /api/login - redirect to login page
   app.get('/api/login', (req, res) => {

@@ -13,13 +13,13 @@ export function useAuth() {
 
   // Debug logging (only in development)
   if (import.meta.env.DEV) {
-    console.log('useAuth - data:', user, 'isLoading:', isLoading, 'requireAuth:', !!user);
+    console.log('useAuth - data:', user, 'isLoading:', isLoading, 'isAuthenticated:', !!user);
   }
 
   return {
     user: user || undefined,
     isLoading,
-    requireAuth: !!user,
+    isAuthenticated: !!user,
     refetch,
   };
 }

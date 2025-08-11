@@ -58,8 +58,7 @@ import Soulmate from "./pages/Soulmate";
 import Feed from "./pages/Feed";
 import CalmSpace from "./pages/CalmSpace";
 import HumourClub from "./pages/HumourClub";
-import Login from "./pages/Login";
-import Signup from "./pages/Signup";
+import GoogleLogin from "./pages/GoogleLogin";
 import NotFound from "./pages/NotFound";
 import ProtectedRoute from './components/ProtectedRoute';
 import ReflectionRoom from "./pages/ReflectionRoom";
@@ -144,8 +143,7 @@ function AppRouter() {
           <Route path="/calm" component={ProtectedCalmSpace} />
           <Route path="/humour" component={ProtectedHumourClub} />
           <Route path="/reflection" component={ProtectedReflectionRoom} />
-          <Route path="/login" component={Login} />
-          <Route path="/signup" component={Signup} />
+          <Route path="/login" component={GoogleLogin} />
           <Route component={NotFound} />
         </Switch>
       </div>
