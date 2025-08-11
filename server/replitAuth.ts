@@ -47,6 +47,7 @@ export function getSession() {
       secure: false, // Set to false for development to ensure cookies work
       maxAge: sessionTtl,
       sameSite: 'lax', // Help with cookie handling
+      domain: undefined, // Don't set domain to allow localhost
     },
   });
 }
@@ -74,7 +75,7 @@ async function upsertUser(
 }
 
 export async function setupAuth(app: Express) {
-  app.set("trust proxy", 1);
+  // Trust proxy is now set in main index.ts
   app.use(getSession());
   app.use(passport.initialize());
   app.use(passport.session());
@@ -154,23 +155,19 @@ export async function setupAuth(app: Express) {
 
   // Serialize/deserialize user for session management
   passport.serializeUser((user: any, cb) => {
-    console.log('Serializing user:', user);
     // Store only the user ID in the session for security
     cb(null, user.id);
   });
   
   passport.deserializeUser(async (userId: string, cb) => {
     try {
-      console.log('Deserializing user ID:', userId);
       // Retrieve the full user from database using stored ID
       const user = await storage.getUser(userId);
-      console.log('Retrieved user from storage:', user);
       if (!user) {
         return cb(new Error('User not found'), null);
       }
       // Remove sensitive data before sending to client
       const { passwordHash, ...safeUser } = user;
-      console.log('Deserialized safe user:', safeUser);
       cb(null, safeUser);
     } catch (error) {
       console.error('Deserialization error:', error);

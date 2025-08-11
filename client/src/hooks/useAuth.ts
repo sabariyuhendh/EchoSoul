@@ -11,11 +11,10 @@ export function useAuth() {
     staleTime: 0, // Always refetch to ensure fresh auth state
   });
 
-  // Debug logging
-  console.log('useAuth - data:', user);
-  console.log('useAuth - isLoading:', isLoading);
-  console.log('useAuth - error:', error);
-  console.log('useAuth - isAuthenticated:', !!user);
+  // Debug logging (only in development)
+  if (import.meta.env.DEV) {
+    console.log('useAuth - data:', user, 'isLoading:', isLoading, 'isAuthenticated:', !!user);
+  }
 
   return {
     user: user || undefined,

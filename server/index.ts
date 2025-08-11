@@ -1,8 +1,13 @@
 import express, { type Request, Response, NextFunction } from "express";
+import path from "path";
 import { registerRoutes } from "./routes";
 import { setupVite, serveStatic, log } from "./vite";
 
 const app = express();
+
+// Enable trust proxy for proper session handling
+app.set('trust proxy', 1);
+
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
@@ -45,6 +50,11 @@ app.use((req, res, next) => {
 
     res.status(status).json({ message });
     throw err;
+  });
+
+  // Serve the test auth page for debugging
+  app.get('/test-auth', (req, res) => {
+    res.sendFile(path.resolve('test-auth.html'));
   });
 
   // importantly only setup vite in development and after
