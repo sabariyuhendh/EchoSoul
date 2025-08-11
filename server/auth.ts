@@ -34,7 +34,7 @@ export function getSession() {
 
 // Simple authentication middleware
 export const requireAuth = (req: any, res: any, next: any) => {
-  if (!req.requireAuth() || !req.user) {
+  if (!req.isAuthenticated() || !req.user) {
     return res.status(401).json({ message: "Authentication required" });
   }
   next();

@@ -34,16 +34,17 @@ const GoogleLogin = () => {
     onSuccess: async () => {
       // Invalidate and refetch the auth user query
       await queryClient.invalidateQueries({ queryKey: ["/api/auth/user"] });
+      await queryClient.refetchQueries({ queryKey: ["/api/auth/user"] });
       
       toast({
         title: "Welcome to EchoSoul",
         description: "You are now signed in with Google",
       });
       
-      // Navigate to home after successful login
+      // Give more time for auth state to properly update
       setTimeout(() => {
-        navigate('/');
-      }, 500);
+        window.location.href = '/'; // Force full page reload to ensure session is picked up
+      }, 1000);
     },
     onError: (error) => {
       setIsLoading(false);
