@@ -49,10 +49,10 @@ const NavigationRedesigned = () => {
           {/* Logo */}
           <Link to="/" className="flex items-center space-x-2">
             <div className="w-8 h-8 bg-gradient-to-br from-blue-400 to-purple-400 rounded-full flex items-center justify-center">
-              <span className="text-white text-sm font-bold">E</span>
+              <span className="text-white text-sm font-bold">LL</span>
             </div>
             <h1 className="text-lg font-bold text-white">
-              EchoSoul
+              Letters Live
             </h1>
           </Link>
 
