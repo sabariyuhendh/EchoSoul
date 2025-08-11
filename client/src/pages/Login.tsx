@@ -79,7 +79,7 @@ const Login = () => {
         <Card className="glass p-8 border border-white/10">
           <div className="text-center mb-8">
             <div className="w-16 h-16 bg-gradient-to-br from-blue-400 to-green-400 rounded-full mx-auto mb-4"></div>
-            <h1 className="text-2xl font-bold text-white">Letters Live</h1>
+            <h1 className="text-2xl font-bold text-white">EchoSoul</h1>
             <p className="text-gray-400 mt-2">
               {isSignUp ? "Create your emotional wellness account" : "Welcome back to your emotional journey"}
             </p>

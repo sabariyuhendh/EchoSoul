@@ -27,7 +27,7 @@ const Index = () => {
     },
     {
       icon: MessageCircle,
-      title: "Letters You'll Never Send",
+      title: "Letters Live",
       description: "Write and stylize emotional letters with AI assistance",
       color: "sage",
       gradient: "bg-sage-gradient",

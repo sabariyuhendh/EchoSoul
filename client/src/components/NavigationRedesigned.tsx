@@ -17,7 +17,7 @@ const NavigationRedesigned = () => {
   // Main navigation items (always visible)
   const mainNavItems = [
     { title: "Vault", path: "/vault", color: "from-blue-400 to-cyan-400" },
-    { title: "Letters", path: "/letters", color: "from-green-400 to-emerald-400" },
+    { title: "Letters Live", path: "/letters", color: "from-green-400 to-emerald-400" },
     { title: "Let It Go", path: "/letitgo", color: "from-red-400 to-orange-400" },
     { title: "Mood", path: "/mood", color: "from-pink-400 to-rose-400" },
     { title: "Calm Space", path: "/calm", color: "from-purple-400 to-indigo-400" }
@@ -49,10 +49,10 @@ const NavigationRedesigned = () => {
           {/* Logo */}
           <Link to="/" className="flex items-center space-x-2">
             <div className="w-8 h-8 bg-gradient-to-br from-blue-400 to-purple-400 rounded-full flex items-center justify-center">
-              <span className="text-white text-sm font-bold">LL</span>
+              <span className="text-white text-sm font-bold">E</span>
             </div>
             <h1 className="text-lg font-bold text-white">
-              Letters Live
+              EchoSoul
             </h1>
           </Link>
 
