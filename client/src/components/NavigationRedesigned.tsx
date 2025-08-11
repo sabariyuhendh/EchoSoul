@@ -48,11 +48,11 @@ const NavigationRedesigned = () => {
         <div className="flex items-center justify-between">
           {/* Logo */}
           <Link to="/" className="flex items-center space-x-3">
-            <h1 className="text-xl font-light text-white tracking-wide">
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 via-purple-400 to-rose-400">
+            <h1 className="text-xl font-light tracking-wide">
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 via-purple-400 to-rose-400 font-medium">
                 Echo
               </span>
-              <span className="text-gray-300">
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-gray-200 via-gray-300 to-gray-400 font-light">
                 Soul
               </span>
             </h1>
