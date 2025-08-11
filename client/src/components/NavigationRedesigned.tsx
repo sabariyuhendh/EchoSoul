@@ -52,7 +52,7 @@ const NavigationRedesigned = () => {
               <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 via-purple-400 to-rose-400 font-medium">
                 Echo
               </span>
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-gray-200 via-gray-300 to-gray-400 font-light">
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-gray-500 via-gray-300 to-white font-light">
                 Soul
               </span>
             </h1>
