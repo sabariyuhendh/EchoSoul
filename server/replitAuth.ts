@@ -41,10 +41,12 @@ export function getSession() {
     store: sessionStore,
     resave: false,
     saveUninitialized: false,
+    name: 'connect.sid', // Explicit session name
     cookie: {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
       maxAge: sessionTtl,
+      sameSite: 'lax', // Help with cookie handling
     },
   });
 }
@@ -150,8 +152,26 @@ export async function setupAuth(app: Express) {
     passport.use(strategy);
   }
 
-  passport.serializeUser((user: Express.User, cb) => cb(null, user));
-  passport.deserializeUser((user: Express.User, cb) => cb(null, user));
+  // Serialize/deserialize user for session management
+  passport.serializeUser((user: any, cb) => {
+    // Store only the user ID in the session for security
+    cb(null, user.id);
+  });
+  
+  passport.deserializeUser(async (userId: string, cb) => {
+    try {
+      // Retrieve the full user from database using stored ID
+      const user = await storage.getUserById(userId);
+      if (!user) {
+        return cb(new Error('User not found'), null);
+      }
+      // Remove sensitive data before sending to client
+      const { passwordHash, ...safeUser } = user;
+      cb(null, safeUser);
+    } catch (error) {
+      cb(error, null);
+    }
+  });
 
   // Google OAuth routes
   app.get("/api/auth/google", 

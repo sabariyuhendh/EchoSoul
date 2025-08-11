@@ -19,9 +19,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Real auth routes
   app.get('/api/auth/user', async (req: any, res) => {
     try {
-      if (!req.user) {
+      if (!req.isAuthenticated() || !req.user) {
         return res.status(401).json({ message: "Not authenticated" });
       }
+      
       res.json(req.user);
     } catch (error) {
       console.error("Error fetching user:", error);
