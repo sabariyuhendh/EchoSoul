@@ -47,12 +47,14 @@ const NavigationRedesigned = () => {
       <div className="bg-black/90 backdrop-blur-xl border border-white/10 rounded-full px-6 py-3 shadow-2xl">
         <div className="flex items-center justify-between">
           {/* Logo */}
-          <Link to="/" className="flex items-center space-x-2">
-            <div className="w-8 h-8 bg-gradient-to-br from-blue-400 to-purple-400 rounded-full flex items-center justify-center">
-              <span className="text-white text-sm font-bold">E</span>
-            </div>
-            <h1 className="text-lg font-bold text-white">
-              EchoSoul
+          <Link to="/" className="flex items-center space-x-3">
+            <h1 className="text-xl font-light text-white tracking-wide">
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 via-purple-400 to-rose-400">
+                Echo
+              </span>
+              <span className="text-gray-300">
+                Soul
+              </span>
             </h1>
           </Link>
 
@@ -143,7 +145,7 @@ const NavigationRedesigned = () => {
             ) : (
               <Button 
                 onClick={handleLogin}
-                className="bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 text-white px-4 py-2 rounded-full text-sm font-medium transition-all duration-200"
+                className="apple-button bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 text-white px-6 py-2 rounded-full text-sm font-medium transition-all duration-300 shadow-lg hover:shadow-xl backdrop-blur-sm border border-white/20"
               >
                 Sign In
               </Button>

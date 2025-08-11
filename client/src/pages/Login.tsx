@@ -4,7 +4,7 @@ import { Card } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useToast } from '@/hooks/use-toast';
-import { useMutation } from '@tanstack/react-query';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { apiRequest } from '@/lib/queryClient';
 import { Link, useLocation } from 'wouter';
 
@@ -16,6 +16,7 @@ const Login = () => {
   const [lastName, setLastName] = useState('');
   const [isSignUp, setIsSignUp] = useState(false);
   const { toast } = useToast();
+  const queryClient = useQueryClient();
 
   const authMutation = useMutation({
     mutationFn: async (data: { email: string; password: string; firstName?: string; lastName?: string; isSignUp: boolean }) => {
@@ -29,11 +30,18 @@ const Login = () => {
       });
     },
     onSuccess: () => {
+      // Invalidate the auth user query to refetch user data
+      queryClient.invalidateQueries({ queryKey: ["/api/auth/user"] });
+      
       toast({
         title: isSignUp ? "Account created successfully" : "Welcome back",
         description: "You are now logged in",
       });
-      navigate('/');
+      
+      // Small delay to ensure auth state is updated
+      setTimeout(() => {
+        navigate('/');
+      }, 100);
     },
     onError: (error) => {
       toast({
@@ -78,8 +86,14 @@ const Login = () => {
       <div className="max-w-md w-full mx-auto px-6">
         <Card className="glass p-8 border border-white/10">
           <div className="text-center mb-8">
-            <div className="w-16 h-16 bg-gradient-to-br from-blue-400 to-green-400 rounded-full mx-auto mb-4"></div>
-            <h1 className="text-2xl font-bold text-white">EchoSoul</h1>
+            <h1 className="text-3xl font-light text-white tracking-wide mb-4">
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 via-purple-400 to-rose-400">
+                Echo
+              </span>
+              <span className="text-gray-300">
+                Soul
+              </span>
+            </h1>
             <p className="text-gray-400 mt-2">
               {isSignUp ? "Create your emotional wellness account" : "Welcome back to your emotional journey"}
             </p>
@@ -143,7 +157,7 @@ const Login = () => {
 
             <Button
               type="submit"
-              className="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium"
+              className="w-full apple-button bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 text-white font-medium transition-all duration-300"
               disabled={authMutation.isPending}
             >
               {authMutation.isPending
@@ -167,8 +181,8 @@ const Login = () => {
 
             <Button
               type="button"
-              onClick={() => window.location.href = '/api/auth/google'}
-              className="w-full mt-4 bg-white hover:bg-gray-100 text-black font-medium border border-white/20"
+              onClick={() => window.location.href = '/auth/google'}
+              className="w-full mt-4 apple-button bg-white hover:bg-gray-100 text-black font-medium border border-white/20 transition-all duration-300"
             >
               <svg className="w-5 h-5 mr-2" viewBox="0 0 24 24">
                 <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
