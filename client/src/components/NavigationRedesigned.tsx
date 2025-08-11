@@ -11,7 +11,7 @@ const NavigationRedesigned = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [location] = useLocation();
-  const { user, isAuthenticated } = useAuth();
+  const { user, isAuthenticated, isLoading } = useAuth();
   const typedUser = user as User | undefined;
 
   // Main navigation items (always visible)
@@ -117,7 +117,9 @@ const NavigationRedesigned = () => {
 
           {/* Auth Section */}
           <div className="flex items-center space-x-3">
-            {isAuthenticated ? (
+            {isLoading ? (
+              <div className="w-8 h-8 bg-gray-600 rounded-full animate-pulse"></div>
+            ) : isAuthenticated ? (
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <Button variant="ghost" size="sm" className="flex items-center space-x-2 hover:bg-white/10 rounded-full px-3 py-2">

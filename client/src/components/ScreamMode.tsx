@@ -57,9 +57,9 @@ const ScreamMode = ({ content, onBack, onComplete }: ScreamModeProps) => {
         audio: {
           echoCancellation: false,
           noiseSuppression: false,
-          autoGainControl: false,
+          autoGainControl: true, // Enable for better volume detection
           channelCount: 1,
-          sampleRate: 48000
+          sampleRate: 44100 // More compatible sample rate
         } 
       });
       
@@ -74,10 +74,10 @@ const ScreamMode = ({ content, onBack, onComplete }: ScreamModeProps) => {
       const analyser = audioContext.createAnalyser();
       const microphone = audioContext.createMediaStreamSource(stream);
       
-      analyser.fftSize = 256;
-      analyser.smoothingTimeConstant = 0.1;
-      analyser.minDecibels = -90;
-      analyser.maxDecibels = -10;
+      analyser.fftSize = 512; // Higher resolution for better detection
+      analyser.smoothingTimeConstant = 0.3; // Less aggressive smoothing
+      analyser.minDecibels = -80; // Better sensitivity range
+      analyser.maxDecibels = -20;
       microphone.connect(analyser);
       
       audioContextRef.current = audioContext;
@@ -118,20 +118,20 @@ const ScreamMode = ({ content, onBack, onComplete }: ScreamModeProps) => {
       sum += dataArray[i] * dataArray[i];
     }
     const rms = Math.sqrt(sum / dataArray.length);
-    const volumePercent = Math.min((rms / 64) * 100, 100); // Improved sensitivity
+    const volumePercent = Math.min((rms / 40) * 100, 100); // Much better sensitivity
     
     setVolume(volumePercent);
     
-    // Create sound wave ripples (lowered threshold)
-    if (volumePercent > 5) {
+    // Create sound wave ripples (lowered threshold for better responsiveness)
+    if (volumePercent > 3) {
       setSoundWaves(prev => [...prev, {
-        id: Date.now(),
-        scale: volumePercent / 100
-      }].slice(-5));
+        id: Date.now() + Math.random(),
+        scale: Math.max(volumePercent / 100, 0.1)
+      }].slice(-8)); // Keep more waves for better effect
     }
     
-    // Shatter glass at high volume (lowered threshold)
-    if (volumePercent > 40 && !glassShattered) {
+    // Shatter glass at moderate volume (lowered threshold for easier triggering)
+    if (volumePercent > 25 && !glassShattered) {
       setGlassShattered(true);
       setTimeout(() => {
         onComplete();

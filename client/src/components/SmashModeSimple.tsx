@@ -158,17 +158,21 @@ const SmashModeSimple = ({ content, onBack, onComplete }: SmashModeSimpleProps) 
   const handleMouseDown = () => {
     setIsCharging(true);
     const interval = setInterval(() => {
-      setSmashPower(prev => Math.min(prev + 2, 100));
-    }, 50);
+      setSmashPower(prev => Math.min(prev + 3, 100));
+    }, 30);
     
     const handleMouseUp = () => {
       clearInterval(interval);
       setIsCharging(false);
-      if (smashPower >= 100) {
-        handleSmash();
-      } else if (smashPower > 20) {
-        // Partial smash for moderate power
-        handleSmash();
+      const currentPower = smashPower;
+      
+      // Always trigger smash if power > 20, and guarantee smash at 100%
+      if (currentPower >= 100) {
+        // Full power smash - guaranteed break
+        handleSmash(true);
+      } else if (currentPower > 20) {
+        // Partial smash
+        handleSmash(false);
       }
       setSmashPower(0);
       document.removeEventListener('mouseup', handleMouseUp);
@@ -188,17 +192,19 @@ const SmashModeSimple = ({ content, onBack, onComplete }: SmashModeSimpleProps) 
   };
 
   // Handle smash
-  const handleSmash = () => {
+  const handleSmash = (isFullPower: boolean = false) => {
     const objType = OBJECT_TYPES[currentObject];
+    const actualPower = isFullPower ? 100 : smashPower;
     
     setIsSmashed(true);
-    playDestructionSound(objType.sound, smashPower);
+    playDestructionSound(objType.sound, actualPower);
     
-    // Create explosion effect
-    const newPieces = Array.from({ length: objType.pieces }, (_, i) => ({
+    // Create explosion effect - more pieces for full power
+    const pieceCount = isFullPower ? objType.pieces * 1.5 : objType.pieces;
+    const newPieces = Array.from({ length: Math.floor(pieceCount) }, (_, i) => ({
       id: i,
-      x: Math.random() * 400 - 200,
-      y: Math.random() * 400 - 200,
+      x: Math.random() * 500 - 250,
+      y: Math.random() * 500 - 250,
       opacity: 1
     }));
     setPieces(newPieces);
@@ -206,12 +212,13 @@ const SmashModeSimple = ({ content, onBack, onComplete }: SmashModeSimpleProps) 
     // Animate pieces fading out
     setTimeout(() => {
       setPieces(prev => prev.map(piece => ({ ...piece, opacity: 0 })));
-    }, 100);
+    }, 150);
     
     // Save statistics
     saveStats.mutate({
       objectType: currentObject,
-      smashPower,
+      smashPower: actualPower,
+      isFullPower,
       sessionId,
       timestamp: Date.now()
     });
@@ -235,8 +242,8 @@ const SmashModeSimple = ({ content, onBack, onComplete }: SmashModeSimpleProps) 
     }, 2000);
     
     toast({
-      title: "Smashed!",
-      description: `You destroyed the ${objType.name} with ${smashPower}% power!`,
+      title: isFullPower ? "FULL POWER SMASH!" : "Smashed!",
+      description: `You destroyed the ${objType.name} with ${actualPower}% power!`,
     });
   };
 

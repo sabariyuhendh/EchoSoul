@@ -86,22 +86,28 @@ const CalmSpace = () => {
   };
 
   const handleTrackChange = (trackId: string) => {
-    const wasPlaying = isPlaying;
-    if (audioRef.current) {
-      audioRef.current.pause();
-      setIsPlaying(false);
-      setSessionActive(false);
-    }
-    
-    setCurrentTrack(trackId);
-    
-    setTimeout(() => {
-      if (wasPlaying && audioRef.current) {
-        audioRef.current.play();
-        setIsPlaying(true);
-        setSessionActive(true);
+    try {
+      const wasPlaying = isPlaying;
+      if (audioRef.current) {
+        audioRef.current.pause();
+        setIsPlaying(false);
+        setSessionActive(false);
       }
-    }, 100);
+      
+      setCurrentTrack(trackId);
+      
+      setTimeout(() => {
+        if (wasPlaying && audioRef.current) {
+          audioRef.current.play().catch(error => {
+            console.warn('Audio playback failed:', error);
+          });
+          setIsPlaying(true);
+          setSessionActive(true);
+        }
+      }, 100);
+    } catch (error) {
+      console.error('Track change error:', error);
+    }
   };
 
   const endSession = () => {
@@ -196,7 +202,8 @@ const CalmSpace = () => {
             <div className="flex items-center gap-4 mb-6">
               <Button
                 onClick={togglePlayPause}
-                className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-3 rounded-full"
+                disabled={!currentTrackData}
+                className="bg-blue-600 hover:bg-blue-700 disabled:bg-gray-600 text-white px-8 py-3 rounded-full transition-colors"
               >
                 {isPlaying ? <Pause className="w-5 h-5" /> : <Play className="w-5 h-5" />}
               </Button>
@@ -225,7 +232,7 @@ const CalmSpace = () => {
                 <Button
                   onClick={endSession}
                   variant="outline"
-                  className="text-gray-400 border-gray-600"
+                  className="text-gray-400 border-gray-600 hover:bg-gray-700/50 transition-colors"
                 >
                   End Session
                 </Button>

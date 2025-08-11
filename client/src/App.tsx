@@ -61,6 +61,7 @@ import HumourClub from "./pages/HumourClub";
 import Login from "./pages/Login";
 import Signup from "./pages/Signup";
 import NotFound from "./pages/NotFound";
+import ProtectedRoute from './components/ProtectedRoute';
 import ReflectionRoom from "./pages/ReflectionRoom";
 
 const queryClient = new QueryClient();
@@ -74,16 +75,56 @@ function AppRouter() {
         <Navigation />
         <Switch>
           <Route path="/" component={Index} />
-          <Route path="/vault" component={Vault} />
-          <Route path="/letters" component={Letters} />
-          <Route path="/letitgo" component={LetItGo} />
-          <Route path="/mood" component={Mood} />
-          <Route path="/whisper" component={Whisper} />
-          <Route path="/soulmate" component={Soulmate} />
-          <Route path="/feed" component={Feed} />
-          <Route path="/calm" component={CalmSpace} />
-          <Route path="/humour" component={HumourClub} />
-          <Route path="/reflection" component={ReflectionRoom} />
+          <Route path="/vault" component={() => (
+            <ProtectedRoute fallbackMessage="Your vault entries are private and require authentication.">
+              <Vault />
+            </ProtectedRoute>
+          )} />
+          <Route path="/letters" component={() => (
+            <ProtectedRoute fallbackMessage="Your letters are personal and require authentication to protect your privacy.">
+              <Letters />
+            </ProtectedRoute>
+          )} />
+          <Route path="/letitgo" component={() => (
+            <ProtectedRoute fallbackMessage="Your emotional release sessions are private and require authentication.">
+              <LetItGo />
+            </ProtectedRoute>
+          )} />
+          <Route path="/mood" component={() => (
+            <ProtectedRoute fallbackMessage="Your mood tracking data is personal and requires authentication.">
+              <Mood />
+            </ProtectedRoute>
+          )} />
+          <Route path="/whisper" component={() => (
+            <ProtectedRoute fallbackMessage="Your voice recordings are private and require authentication.">
+              <Whisper />
+            </ProtectedRoute>
+          )} />
+          <Route path="/soulmate" component={() => (
+            <ProtectedRoute fallbackMessage="Your AI companion conversations are personal and require authentication.">
+              <Soulmate />
+            </ProtectedRoute>
+          )} />
+          <Route path="/feed" component={() => (
+            <ProtectedRoute fallbackMessage="Accessing the community feed requires authentication.">
+              <Feed />
+            </ProtectedRoute>
+          )} />
+          <Route path="/calm" component={() => (
+            <ProtectedRoute fallbackMessage="Your meditation sessions and preferences require authentication.">
+              <CalmSpace />
+            </ProtectedRoute>
+          )} />
+          <Route path="/humour" component={() => (
+            <ProtectedRoute fallbackMessage="The Humour Club features require authentication.">
+              <HumourClub />
+            </ProtectedRoute>
+          )} />
+          <Route path="/reflection" component={() => (
+            <ProtectedRoute fallbackMessage="Your reflection questions and responses are private and require authentication.">
+              <ReflectionRoom />
+            </ProtectedRoute>
+          )} />
           <Route path="/login" component={Login} />
           <Route path="/signup" component={Signup} />
           <Route component={NotFound} />
