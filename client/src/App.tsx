@@ -5,7 +5,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Route, Switch } from "wouter";
 import { useAuth } from "@/hooks/useAuth";
-import Navigation from "./components/NavigationRedesigned";
+import NavigationRedesigned from "./components/NavigationRedesigned";
 import { Component, ReactNode } from "react";
 
 // Simple Error Boundary without external dependency
@@ -130,7 +130,7 @@ function AppRouter() {
   return (
     <ErrorBoundary>
       <div className="min-h-screen bg-black">
-        <Navigation />
+        <NavigationRedesigned />
         <Switch>
           <Route path="/" component={Index} />
           <Route path="/vault" component={ProtectedVault} />

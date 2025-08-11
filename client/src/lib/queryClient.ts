@@ -10,35 +10,50 @@ export const queryClient = new QueryClient({
       },
       queryFn: async ({ queryKey }) => {
         const url = Array.isArray(queryKey) ? queryKey[0] : queryKey;
+        console.log('Making request to:', url, 'with credentials: include');
+        
         const response = await fetch(url as string, {
           credentials: 'include', // Include cookies for all queries
-          mode: 'cors',
+          mode: 'same-origin', // Changed from 'cors' to 'same-origin' for better cookie sharing
+          headers: {
+            'Cache-Control': 'no-cache',
+          }
         });
+        
+        console.log('Response status:', response.status, 'for', url);
         
         if (!response.ok) {
           // For auth endpoints, handle 401 differently 
           if (response.status === 401 && url === '/api/auth/user') {
+            console.log('Auth endpoint returned 401, returning null');
             return null; // Return null for unauthenticated users
           }
           throw new Error(`${response.status}: ${response.statusText}`);
         }
         
-        return response.json();
+        const data = await response.json();
+        console.log('Response data for', url, ':', data);
+        return data;
       },
     },
   },
 });
 
 export const apiRequest = async (url: string, options: RequestInit = {}) => {
+  console.log('Making API request to:', url, 'with method:', options.method || 'GET');
+  
   const response = await fetch(url, {
     credentials: 'include', // Include cookies for session management
-    mode: 'cors',
+    mode: 'same-origin', // Changed from 'cors' to 'same-origin' for better cookie sharing
     headers: {
       'Content-Type': 'application/json',
+      'Cache-Control': 'no-cache',
       ...options.headers,
     },
     ...options,
   });
+  
+  console.log('API response status:', response.status, 'for', url);
 
   if (!response.ok) {
     const errorText = await response.text();
