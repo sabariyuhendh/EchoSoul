@@ -150,6 +150,22 @@
   @apply rounded-xl font-medium transition-all duration-200 hover:scale-105;
 }
 
+.text-gradient-echo {
+  background: linear-gradient(to right, rgb(96 165 250), rgb(168 85 247), rgb(244 63 94));
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: transparent;
+}
+
+.text-gradient-soul {
+  background: linear-gradient(to right, rgb(100 116 139), rgb(203 213 225), rgb(255 255 255));
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: transparent;
+}
+
 .calm-shadow {
   box-shadow: 0 8px 32px rgba(56, 189, 248, 0.2);
 }
