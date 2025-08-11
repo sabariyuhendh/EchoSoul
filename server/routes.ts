@@ -62,6 +62,53 @@ export async function registerRoutes(app: Express): Promise<Server> {
     });
   });
 
+  // Google OAuth authentication endpoint
+  app.post('/api/auth/google', async (req, res) => {
+    try {
+      const { uid, email, firstName, lastName, profileImageUrl } = req.body;
+
+      if (!uid || !email) {
+        return res.status(400).json({ error: 'Missing required Google user data' });
+      }
+
+      // Check if user exists with this Google ID
+      let user = await storage.getUserByGoogleId(uid);
+      
+      if (!user) {
+        // Check if user exists with this email
+        user = await storage.getUserByEmail(email);
+        
+        if (user) {
+          // Link Google account to existing user
+          user = await storage.updateUser(user.id, { googleId: uid, profileImageUrl });
+        } else {
+          // Create new user
+          const userId = crypto.randomUUID();
+          user = await storage.createUser({
+            id: userId,
+            email,
+            firstName,
+            lastName,
+            googleId: uid,
+            profileImageUrl,
+            passwordHash: null, // No password for Google users
+          });
+        }
+      }
+
+      // Log the user in by setting up the session
+      req.login(user, (err) => {
+        if (err) {
+          return res.status(500).json({ error: 'Failed to establish session' });
+        }
+        res.json({ success: true, user: { id: user.id, email: user.email } });
+      });
+    } catch (error) {
+      console.error('Google auth error:', error);
+      res.status(500).json({ error: 'Google authentication failed' });
+    }
+  });
+
   // Email/Password authentication endpoints
   app.post('/api/auth/signup', async (req, res) => {
     try {
