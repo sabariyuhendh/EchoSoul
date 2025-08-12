@@ -293,7 +293,7 @@ const CalmSpace = () => {
             <CardContent className="p-4 text-center">
               <BarChart className="w-8 h-8 text-purple-400 mx-auto mb-2" />
               <div className="text-2xl font-bold text-white">
-                {preferences?.totalSessions || 0}
+                {0}
               </div>
               <div className="text-sm text-gray-400">Total Sessions</div>
             </CardContent>
@@ -303,7 +303,7 @@ const CalmSpace = () => {
             <CardContent className="p-4 text-center">
               <Sparkles className="w-8 h-8 text-cyan-400 mx-auto mb-2" />
               <div className="text-2xl font-bold text-white">
-                {Math.floor((preferences?.totalMinutes || 0) / 60)}h {(preferences?.totalMinutes || 0) % 60}m
+                0h 0m
               </div>
               <div className="text-sm text-gray-400">Total Time</div>
             </CardContent>
