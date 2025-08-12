@@ -49,8 +49,8 @@ The application is organized into several functional areas:
 
 ### Data Flow and Storage
 The application uses a client-server architecture. The React frontend communicates with the Express backend via REST APIs. Data is stored in:
-- **PostgreSQL**: For user authentication and relational data, managed with Drizzle ORM.
-- **MongoDB**: For general application data and user content.
+- **PostgreSQL**: Primary database for all application data including user authentication, chat messages, emotional wellness entries, and relational data, managed with Drizzle ORM.
+- **MongoDB**: Available in secrets for future implementation (currently unused).
 - **Cloudinary**: For voice file storage.
 - An in-memory storage implementation is available for development.
 
