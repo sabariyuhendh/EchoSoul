@@ -123,8 +123,50 @@ const NavigationRedesigned = () => {
             </DropdownMenu>
           </div>
 
-          {/* Removed auth section */}
+          {/* Authentication Section */}
           <div className="flex items-center space-x-3">
+            {isAuthenticated ? (
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="hidden lg:flex items-center gap-2 px-4 py-2 text-sm font-medium text-gray-300 hover:text-white hover:bg-white/10 rounded-full"
+                  >
+                    <div className="w-6 h-6 bg-gradient-to-r from-blue-400 to-purple-400 rounded-full flex items-center justify-center text-xs font-medium text-white">
+                      {user?.firstName?.charAt(0) || user?.email?.charAt(0) || 'U'}
+                    </div>
+                    <span className="max-w-20 truncate">{user?.firstName || 'User'}</span>
+                    <ChevronDown className="h-3 w-3" />
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent 
+                  align="end" 
+                  className="w-48 bg-black/95 backdrop-blur-xl border border-white/10 rounded-2xl p-2 shadow-2xl"
+                >
+                  <Link to="/profile">
+                    <DropdownMenuItem className="px-4 py-3 text-sm font-medium text-gray-300 hover:text-white hover:bg-white/10 rounded-xl cursor-pointer">
+                      Profile
+                    </DropdownMenuItem>
+                  </Link>
+                  <DropdownMenuItem 
+                    onClick={handleLogout}
+                    className="px-4 py-3 text-sm font-medium text-gray-300 hover:text-white hover:bg-white/10 rounded-xl cursor-pointer flex items-center gap-2"
+                  >
+                    <LogOut className="h-4 w-4" />
+                    Sign Out
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            ) : (
+              <Button
+                onClick={handleLogin}
+                size="sm"
+                className="hidden lg:flex bg-gradient-to-r from-blue-400 to-purple-400 hover:from-blue-500 hover:to-purple-500 text-white px-4 py-2 text-sm font-medium rounded-full transition-all duration-200"
+              >
+                Sign In
+              </Button>
+            )}
 
             {/* Mobile menu button */}
             <Button
@@ -187,6 +229,50 @@ const NavigationRedesigned = () => {
                     </Button>
                   </Link>
                 ))}
+              </div>
+              
+              {/* Mobile Auth Section */}
+              <div className="pt-4 border-t border-white/10">
+                {isAuthenticated ? (
+                  <div className="space-y-2">
+                    <Link to="/profile">
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        className="w-full justify-start px-4 py-3 text-sm font-medium text-gray-300 hover:text-white hover:bg-white/10 rounded-xl flex items-center gap-3"
+                        onClick={() => setIsMobileMenuOpen(false)}
+                      >
+                        <div className="w-6 h-6 bg-gradient-to-r from-blue-400 to-purple-400 rounded-full flex items-center justify-center text-xs font-medium text-white">
+                          {user?.firstName?.charAt(0) || user?.email?.charAt(0) || 'U'}
+                        </div>
+                        Profile
+                      </Button>
+                    </Link>
+                    <Button
+                      onClick={() => {
+                        setIsMobileMenuOpen(false);
+                        handleLogout();
+                      }}
+                      variant="ghost"
+                      size="sm"
+                      className="w-full justify-start px-4 py-3 text-sm font-medium text-gray-300 hover:text-white hover:bg-white/10 rounded-xl flex items-center gap-3"
+                    >
+                      <LogOut className="h-4 w-4" />
+                      Sign Out
+                    </Button>
+                  </div>
+                ) : (
+                  <Button
+                    onClick={() => {
+                      setIsMobileMenuOpen(false);
+                      handleLogin();
+                    }}
+                    size="sm"
+                    className="w-full bg-gradient-to-r from-blue-400 to-purple-400 hover:from-blue-500 hover:to-purple-500 text-white px-4 py-3 text-sm font-medium rounded-xl transition-all duration-200"
+                  >
+                    Sign In
+                  </Button>
+                )}
               </div>
             </div>
           </div>
