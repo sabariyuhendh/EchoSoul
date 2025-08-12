@@ -1,9 +1,7 @@
 import { useState } from 'react';
 import { Link, useLocation } from 'wouter';
 import { Button } from '@/components/ui/button';
-import { useAuth } from '@/hooks/useAuth';
-import type { User } from '@shared/schema';
-import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
+// Removed auth imports
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { ChevronDown, Menu, X } from 'lucide-react';
 
@@ -11,8 +9,7 @@ const NavigationRedesigned = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [location] = useLocation();
-  const { user, isAuthenticated, isLoading } = useAuth();
-  const typedUser = user as User | undefined;
+  // Removed auth state
 
   // Main navigation items (always visible)
   const mainNavItems = [
@@ -124,48 +121,8 @@ const NavigationRedesigned = () => {
             </DropdownMenu>
           </div>
 
-          {/* Auth Section */}
+          {/* Removed auth section */}
           <div className="flex items-center space-x-3">
-            {isLoading ? (
-              <div className="w-8 h-8 bg-gray-600 rounded-full animate-pulse"></div>
-            ) : isAuthenticated ? (
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <Button variant="ghost" size="sm" className="flex items-center space-x-2 hover:bg-white/10 rounded-full px-3 py-2">
-                    <Avatar className="h-6 w-6">
-                      <AvatarImage src={typedUser?.profileImageUrl || ''} />
-                      <AvatarFallback className="bg-gradient-to-br from-blue-400 to-purple-400 text-white text-xs">
-                        {typedUser?.firstName?.[0]?.toUpperCase() || typedUser?.email?.[0]?.toUpperCase() || 'U'}
-                      </AvatarFallback>
-                    </Avatar>
-                    <span className="text-sm font-medium text-gray-300 hidden md:block">{typedUser?.firstName || typedUser?.email}</span>
-                  </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent 
-                  align="end" 
-                  className="w-48 bg-black/95 backdrop-blur-xl border border-white/10 rounded-2xl p-2 shadow-2xl"
-                >
-                  <Link to="/profile">
-                    <DropdownMenuItem className="px-4 py-3 text-sm font-medium text-gray-300 hover:text-white hover:bg-white/10 rounded-xl cursor-pointer">
-                      Profile Settings
-                    </DropdownMenuItem>
-                  </Link>
-                  <DropdownMenuItem 
-                    onClick={handleLogout}
-                    className="px-4 py-3 text-sm font-medium text-gray-300 hover:text-white hover:bg-white/10 rounded-xl cursor-pointer"
-                  >
-                    Sign Out
-                  </DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
-            ) : (
-              <Button 
-                onClick={handleLogin}
-                className="apple-button bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 text-white px-6 py-2 rounded-full text-sm font-medium transition-all duration-300 shadow-lg hover:shadow-xl backdrop-blur-sm border border-white/20"
-              >
-                Sign In
-              </Button>
-            )}
 
             {/* Mobile menu button */}
             <Button

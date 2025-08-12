@@ -58,87 +58,12 @@ import Soulmate from "./pages/Soulmate";
 import Feed from "./pages/Feed";
 import CalmSpace from "./pages/CalmSpace";
 import HumourClub from "./pages/HumourClub";
-import GoogleLogin from "./pages/GoogleLogin";
-import Profile from "./pages/Profile";
 import NotFound from "./pages/NotFound";
-import ProtectedRoute from './components/ProtectedRoute';
 import ReflectionRoom from "./pages/ReflectionRoom";
 
 const queryClient = new QueryClient();
 
-// Protected route components to prevent re-render issues
-const ProtectedVault = () => (
-  <ProtectedRoute fallbackMessage="Your vault entries are private and require authentication.">
-    <Vault />
-  </ProtectedRoute>
-);
-
-const ProtectedLetters = () => (
-  <ProtectedRoute fallbackMessage="Your letters are personal and require authentication to protect your privacy.">
-    <Letters />
-  </ProtectedRoute>
-);
-
-const ProtectedLetItGo = () => (
-  <ProtectedRoute fallbackMessage="Your emotional release sessions are private and require authentication.">
-    <LetItGo />
-  </ProtectedRoute>
-);
-
-const ProtectedMood = () => (
-  <ProtectedRoute fallbackMessage="Your mood tracking data is personal and requires authentication.">
-    <Mood />
-  </ProtectedRoute>
-);
-
-const ProtectedWhisper = () => (
-  <ProtectedRoute fallbackMessage="Your voice recordings are private and require authentication.">
-    <Whisper />
-  </ProtectedRoute>
-);
-
-const ProtectedSoulmate = () => (
-  <ProtectedRoute fallbackMessage="Your AI companion conversations are personal and require authentication.">
-    <Soulmate />
-  </ProtectedRoute>
-);
-
-const ProtectedFeed = () => (
-  <ProtectedRoute fallbackMessage="Accessing the community feed requires authentication.">
-    <Feed />
-  </ProtectedRoute>
-);
-
-const ProtectedCalmSpace = () => (
-  <ProtectedRoute fallbackMessage="Your meditation sessions and preferences require authentication.">
-    <CalmSpace />
-  </ProtectedRoute>
-);
-
-const ProtectedHumourClub = () => (
-  <ProtectedRoute fallbackMessage="The Humour Club features require authentication.">
-    <HumourClub />
-  </ProtectedRoute>
-);
-
-const ProtectedReflectionRoom = () => (
-  <ProtectedRoute fallbackMessage="Your reflection questions and responses are private and require authentication.">
-    <ReflectionRoom />
-  </ProtectedRoute>
-);
-
-const ProtectedProfile = () => (
-  <ProtectedRoute fallbackMessage="Your profile and account settings require authentication.">
-    <Profile />
-  </ProtectedRoute>
-);
-
-// Make homepage protected too - mandatory authentication for ALL features
-const ProtectedIndexPage = () => (
-  <ProtectedRoute fallbackMessage="EchoSoul requires authentication to access all emotional wellness features and protect your privacy.">
-    <Index />
-  </ProtectedRoute>
-);
+// Removed all protected route components - authentication no longer required
 
 function AppRouter() {
   return (
@@ -146,19 +71,17 @@ function AppRouter() {
       <div className="min-h-screen bg-black">
         <NavigationRedesigned />
         <Switch>
-          <Route path="/" component={ProtectedIndexPage} />
-          <Route path="/profile" component={ProtectedProfile} />
-          <Route path="/vault" component={ProtectedVault} />
-          <Route path="/letters" component={ProtectedLetters} />
-          <Route path="/letitgo" component={ProtectedLetItGo} />
-          <Route path="/mood" component={ProtectedMood} />
-          <Route path="/whisper" component={ProtectedWhisper} />
-          <Route path="/soulmate" component={ProtectedSoulmate} />
-          <Route path="/feed" component={ProtectedFeed} />
-          <Route path="/calm" component={ProtectedCalmSpace} />
-          <Route path="/humour" component={ProtectedHumourClub} />
-          <Route path="/reflection" component={ProtectedReflectionRoom} />
-          <Route path="/login" component={GoogleLogin} />
+          <Route path="/" component={Index} />
+          <Route path="/vault" component={Vault} />
+          <Route path="/letters" component={Letters} />
+          <Route path="/letitgo" component={LetItGo} />
+          <Route path="/mood" component={Mood} />
+          <Route path="/whisper" component={Whisper} />
+          <Route path="/soulmate" component={Soulmate} />
+          <Route path="/feed" component={Feed} />
+          <Route path="/calm" component={CalmSpace} />
+          <Route path="/humour" component={HumourClub} />
+          <Route path="/reflection" component={ReflectionRoom} />
           <Route component={NotFound} />
         </Switch>
       </div>
