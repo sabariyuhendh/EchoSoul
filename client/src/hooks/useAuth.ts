@@ -19,7 +19,8 @@ export function useAuth() {
       if (user) {
         // User signed in, sync with backend
         try {
-          await apiRequest('/api/auth/google', {
+          console.log('Syncing with backend...');
+          const response = await apiRequest('/api/auth/google', {
             method: 'POST',
             body: JSON.stringify({
               uid: user.uid,
@@ -29,8 +30,11 @@ export function useAuth() {
               profileImageUrl: user.photoURL || '',
             }),
           });
-          // Invalidate user query to refresh backend user data
+          console.log('Backend sync successful:', response);
+          
+          // Force immediate query refetch
           queryClient.invalidateQueries({ queryKey: ["/api/auth/user"] });
+          queryClient.refetchQueries({ queryKey: ["/api/auth/user"] });
         } catch (error) {
           console.error('Failed to sync with backend:', error);
         }
@@ -44,10 +48,21 @@ export function useAuth() {
   }, [queryClient]);
 
   // Get backend user data
-  const { data: user, isLoading: backendLoading } = useQuery<User | null>({
+  const { data: user, isLoading: backendLoading, error } = useQuery<User | null>({
     queryKey: ["/api/auth/user"],
-    retry: false,
+    retry: 1,
+    refetchOnWindowFocus: false,
     enabled: !!firebaseUser && !firebaseLoading,
+    staleTime: 0, // Always fetch fresh data
+  });
+
+  console.log('useAuth state:', {
+    firebaseUser: !!firebaseUser,
+    firebaseLoading,
+    backendUser: !!user,
+    backendLoading,
+    error,
+    isAuthenticated: !!firebaseUser && !!user
   });
 
   const isLoading = firebaseLoading || (firebaseUser && backendLoading);
