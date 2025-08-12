@@ -1,70 +1,42 @@
-import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
-import { useToast } from '@/hooks/use-toast';
-import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { apiRequest } from '@/lib/queryClient';
-import { useLocation } from 'wouter';
 import { signInWithGoogle } from '@/lib/firebase';
 import { FaGoogle } from 'react-icons/fa';
+import { useAuth } from '@/hooks/useAuth';
+import { useEffect } from 'react';
+import { useLocation } from 'wouter';
 
 const GoogleLogin = () => {
   const [, navigate] = useLocation();
-  const { toast } = useToast();
-  const queryClient = useQueryClient();
-  const [isLoading, setIsLoading] = useState(false);
+  const { isAuthenticated, isLoading } = useAuth();
 
-  const googleAuthMutation = useMutation({
-    mutationFn: async () => {
-      setIsLoading(true);
-      const firebaseUser = await signInWithGoogle();
-      
-      // Send Firebase user data to backend to create/update user
-      return apiRequest('/api/auth/google', {
-        method: 'POST',
-        body: JSON.stringify({
-          uid: firebaseUser.uid,
-          email: firebaseUser.email,
-          firstName: firebaseUser.displayName?.split(' ')[0] || '',
-          lastName: firebaseUser.displayName?.split(' ').slice(1).join(' ') || '',
-          profileImageUrl: firebaseUser.photoURL || '',
-        }),
-      });
-    },
-    onSuccess: async () => {
-      // Clear all queries first
-      queryClient.clear();
-      
-      // Wait a moment for session to be established
-      await new Promise(resolve => setTimeout(resolve, 500));
-      
-      // Check if session cookie was set
-      console.log('All cookies after login:', document.cookie);
-      
-      // Force refetch auth state with fresh query
-      queryClient.removeQueries({ queryKey: ["/api/auth/user"] });
-      await queryClient.invalidateQueries({ queryKey: ["/api/auth/user"] });
-      await queryClient.refetchQueries({ queryKey: ["/api/auth/user"] });
-      
-      toast({
-        title: "Welcome to EchoSoul",
-        description: "You are now signed in with Google",
-      });
-      
-      // Force full page reload to ensure session is picked up
-      setTimeout(() => {
-        window.location.href = '/profile'; // Redirect to profile first to confirm auth
-      }, 1500); // Give more time for session to propagate
-    },
-    onError: (error) => {
-      setIsLoading(false);
-      toast({
-        title: "Sign in failed",
-        description: error.message || "Please try again",
-        variant: "destructive",
-      });
-    },
-  });
+  useEffect(() => {
+    if (isAuthenticated) {
+      navigate('/');
+    }
+  }, [isAuthenticated, navigate]);
+
+  const handleGoogleSignIn = async () => {
+    try {
+      await signInWithGoogle();
+      // Redirect will be handled by Firebase
+    } catch (error) {
+      console.error('Sign in error:', error);
+    }
+  };
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-black text-white flex items-center justify-center">
+        <div className="text-center">
+          <div className="w-12 h-12 bg-gradient-to-r from-blue-400 to-purple-400 rounded-full flex items-center justify-center mx-auto mb-4 animate-pulse">
+            <FaGoogle className="w-6 h-6 text-white" />
+          </div>
+          <p className="text-gray-400">Setting up your wellness journey...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-black via-gray-900 to-black flex items-center justify-center p-4">
@@ -82,13 +54,13 @@ const GoogleLogin = () => {
           {/* Google Sign In Button */}
           <div className="space-y-4">
             <Button
-              onClick={() => googleAuthMutation.mutate()}
-              disabled={googleAuthMutation.isPending || isLoading}
+              onClick={handleGoogleSignIn}
+              disabled={isLoading}
               className="w-full bg-white text-black hover:bg-gray-100 transition-all duration-200 py-3 text-base font-medium flex items-center justify-center space-x-3 rounded-xl"
             >
               <FaGoogle className="text-lg" />
               <span>Continue with Google</span>
-              {(googleAuthMutation.isPending || isLoading) && (
+              {isLoading && (
                 <div className="ml-2 h-4 w-4 animate-spin rounded-full border-2 border-black border-t-transparent"></div>
               )}
             </Button>

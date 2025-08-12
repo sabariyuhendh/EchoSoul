@@ -1,15 +1,16 @@
 import { useState } from 'react';
 import { Link, useLocation } from 'wouter';
 import { Button } from '@/components/ui/button';
-// Removed auth imports
+import { useAuth } from '@/hooks/useAuth';
+import { signOutFromFirebase } from '@/lib/firebase';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
-import { ChevronDown, Menu, X } from 'lucide-react';
+import { ChevronDown, Menu, X, LogOut } from 'lucide-react';
 
 const NavigationRedesigned = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [location] = useLocation();
-  // Removed auth state
+  const { isAuthenticated, user } = useAuth();
 
   // Main navigation items (always visible)
   const mainNavItems = [
@@ -37,6 +38,7 @@ const NavigationRedesigned = () => {
 
   const handleLogout = async () => {
     try {
+      await signOutFromFirebase();
       await fetch('/api/auth/logout', {
         method: 'POST',
         credentials: 'include',

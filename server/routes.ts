@@ -1,8 +1,6 @@
 import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
-import passport from 'passport';
-import bcrypt from 'bcrypt';
 import crypto from 'crypto';
 import { insertLetItGoEntrySchema, insertMoodEntrySchema, insertLetterSchema, insertVaultEntrySchema, insertWhisperSchema, insertPostSchema, insertHumourClubEntrySchema, insertHumourClubPollSchema } from "@shared/schema";
 import { z } from "zod";
@@ -15,25 +13,16 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Enable clean authentication
   await setupAuth(app);
 
-  // Real auth routes
+  // Authentication routes
   app.get('/api/auth/user', async (req: any, res) => {
     try {
-      console.log('Auth check - isAuthenticated:', req.isAuthenticated(), 'user:', req.user);
-      console.log('Session data:', req.session);
-      console.log('Session ID:', req.sessionID);
-      console.log('Request headers cookies:', req.headers.cookie);
-      
-      if (!req.isAuthenticated() || !req.user) {
+      if (!req.session?.user) {
         return res.status(401).json({ message: "Not authenticated" });
       }
       
-      // If user is just an ID, fetch full user data
-      let userData = req.user;
-      if (typeof req.user === 'string') {
-        userData = await storage.getUser(req.user);
-        if (!userData) {
-          return res.status(401).json({ message: "User not found" });
-        }
+      const userData = await storage.getUser(req.session.user.id);
+      if (!userData) {
+        return res.status(401).json({ message: "User not found" });
       }
       
       // Remove sensitive data
@@ -69,17 +58,18 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.post('/api/auth/logout', (req, res) => {
-    req.logout((err) => {
+  app.post('/api/auth/logout', (req: any, res) => {
+    req.session.destroy((err: any) => {
       if (err) {
         return res.status(500).json({ message: "Failed to logout" });
       }
+      res.clearCookie('connect.sid');
       res.json({ success: true, message: "Logged out successfully" });
     });
   });
 
-  // Google OAuth authentication endpoint
-  app.post('/api/auth/google', async (req, res) => {
+  // Google Firebase authentication endpoint
+  app.post('/api/auth/google', async (req: any, res) => {
     try {
       const { uid, email, firstName, lastName, profileImageUrl } = req.body;
 
@@ -112,18 +102,15 @@ export async function registerRoutes(app: Express): Promise<Server> {
         }
       }
 
-      // Log the user in by setting up the session
-      req.login(user, (err) => {
-        if (err) {
-          console.error('Login error:', err);
-          return res.status(500).json({ error: 'Failed to establish session' });
-        }
-        console.log('User logged in successfully:', { id: user.id, email: user.email });
-        console.log('Session after login:', req.session);
-        console.log('Session ID:', req.sessionID);
-        console.log('Response headers will include Set-Cookie for:', req.sessionID);
-        res.json({ success: true, user: { id: user.id, email: user.email } });
-      });
+      // Set user in session
+      req.session.user = {
+        id: user.id,
+        email: user.email,
+        firstName: user.firstName,
+        lastName: user.lastName,
+      };
+
+      res.json({ success: true, user: { id: user.id, email: user.email } });
     } catch (error) {
       console.error('Google auth error:', error);
       res.status(500).json({ error: 'Google authentication failed' });

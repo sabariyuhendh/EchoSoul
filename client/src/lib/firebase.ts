@@ -1,13 +1,12 @@
 import { initializeApp } from "firebase/app";
-import { getAuth, signInWithPopup, GoogleAuthProvider, signOut, onAuthStateChanged, User } from "firebase/auth";
+import { getAuth, signInWithRedirect, GoogleAuthProvider, getRedirectResult, signOut, onAuthStateChanged, User } from "firebase/auth";
 
 const firebaseConfig = {
-  apiKey: import.meta.env.VITE_FIREBASE_API_KEY || "AIzaSyCyj8a9D4igdwn8SBfMGXsVGhAq2EJhj9g",
-  authDomain: `${import.meta.env.VITE_FIREBASE_PROJECT_ID || "echosoul-72fc7"}.firebaseapp.com`,
-  projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID || "echosoul-72fc7",
-  storageBucket: `${import.meta.env.VITE_FIREBASE_PROJECT_ID || "echosoul-72fc7"}.firebasestorage.app`,
-  messagingSenderId: "512197600485",
-  appId: import.meta.env.VITE_FIREBASE_APP_ID || "1:512197600485:web:7eace7193f71bff69da00c",
+  apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
+  authDomain: `${import.meta.env.VITE_FIREBASE_PROJECT_ID}.firebaseapp.com`,
+  projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID,
+  storageBucket: `${import.meta.env.VITE_FIREBASE_PROJECT_ID}.firebasestorage.app`,
+  appId: import.meta.env.VITE_FIREBASE_APP_ID,
 };
 
 // Initialize Firebase
@@ -21,10 +20,19 @@ googleProvider.addScope('profile');
 
 export const signInWithGoogle = async () => {
   try {
-    const result = await signInWithPopup(auth, googleProvider);
-    return result.user;
+    signInWithRedirect(auth, googleProvider);
   } catch (error) {
     console.error("Google sign in error:", error);
+    throw error;
+  }
+};
+
+export const handleRedirectResult = async () => {
+  try {
+    const result = await getRedirectResult(auth);
+    return result?.user || null;
+  } catch (error) {
+    console.error("Redirect result error:", error);
     throw error;
   }
 };

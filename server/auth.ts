@@ -1,15 +1,13 @@
-import passport from "passport";
 import session from "express-session";
 import type { Express } from "express";
 import connectPg from "connect-pg-simple";
-import { storage } from "./storage";
 
 export function getSession() {
   const sessionTtl = 7 * 24 * 60 * 60 * 1000; // 1 week
   const pgStore = connectPg(session);
   const sessionStore = new pgStore({
     conString: process.env.DATABASE_URL,
-    createTableIfMissing: false,
+    createTableIfMissing: true,
     ttl: sessionTtl,
     tableName: "sessions",
   });
@@ -23,50 +21,24 @@ export function getSession() {
     saveUninitialized: false,
     name: 'connect.sid',
     cookie: {
-      httpOnly: false, // Allow JavaScript access in development for debugging
-      secure: false, // Always false for development to ensure cookies work locally
+      httpOnly: false,
+      secure: false,
       maxAge: sessionTtl,
-      sameSite: 'none', // Allow cross-origin cookies
-      domain: 'localhost',
-      path: '/',
+      sameSite: 'lax',
     },
   });
 }
 
-// Simple authentication middleware
+// Firebase-based authentication middleware
 export const requireAuth = (req: any, res: any, next: any) => {
-  if (!req.isAuthenticated() || !req.user) {
+  if (!req.session?.user) {
     return res.status(401).json({ message: "Authentication required" });
   }
+  req.user = req.session.user;
   next();
 };
 
 export async function setupAuth(app: Express) {
-  // Setup session management
+  // Setup session management only
   app.use(getSession());
-  app.use(passport.initialize());
-  app.use(passport.session());
-
-  // Simple session serialization - store user ID in session
-  passport.serializeUser((user: any, cb) => {
-    console.log('Serializing user:', user.id);
-    cb(null, user.id);
-  });
-  
-  passport.deserializeUser(async (userId: string, cb) => {
-    try {
-      console.log('Deserializing user ID:', userId);
-      const user = await storage.getUser(userId);
-      if (!user) {
-        return cb(new Error('User not found'), null);
-      }
-      // Remove sensitive data before sending to client
-      const { passwordHash, ...safeUser } = user;
-      console.log('Deserialized user:', safeUser.email);
-      cb(null, safeUser);
-    } catch (error) {
-      console.error('Deserialization error:', error);
-      cb(error, null);
-    }
-  });
 }

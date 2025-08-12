@@ -60,10 +60,10 @@ import CalmSpace from "./pages/CalmSpace";
 import HumourClub from "./pages/HumourClub";
 import NotFound from "./pages/NotFound";
 import ReflectionRoom from "./pages/ReflectionRoom";
+import GoogleLogin from "./pages/GoogleLogin";
+import ProtectedRoute from "./components/ProtectedRoute";
 
 const queryClient = new QueryClient();
-
-// Removed all protected route components - authentication no longer required
 
 function AppRouter() {
   return (
@@ -71,17 +71,18 @@ function AppRouter() {
       <div className="min-h-screen bg-black">
         <NavigationRedesigned />
         <Switch>
-          <Route path="/" component={Index} />
-          <Route path="/vault" component={Vault} />
-          <Route path="/letters" component={Letters} />
-          <Route path="/letitgo" component={LetItGo} />
-          <Route path="/mood" component={Mood} />
-          <Route path="/whisper" component={Whisper} />
-          <Route path="/soulmate" component={Soulmate} />
-          <Route path="/feed" component={Feed} />
-          <Route path="/calm" component={CalmSpace} />
-          <Route path="/humour" component={HumourClub} />
-          <Route path="/reflection" component={ReflectionRoom} />
+          <Route path="/login" component={GoogleLogin} />
+          <Route path="/" component={() => <ProtectedRoute><Index /></ProtectedRoute>} />
+          <Route path="/vault" component={() => <ProtectedRoute><Vault /></ProtectedRoute>} />
+          <Route path="/letters" component={() => <ProtectedRoute><Letters /></ProtectedRoute>} />
+          <Route path="/letitgo" component={() => <ProtectedRoute><LetItGo /></ProtectedRoute>} />
+          <Route path="/mood" component={() => <ProtectedRoute><Mood /></ProtectedRoute>} />
+          <Route path="/whisper" component={() => <ProtectedRoute><Whisper /></ProtectedRoute>} />
+          <Route path="/soulmate" component={() => <ProtectedRoute><Soulmate /></ProtectedRoute>} />
+          <Route path="/feed" component={() => <ProtectedRoute><Feed /></ProtectedRoute>} />
+          <Route path="/calm" component={() => <ProtectedRoute><CalmSpace /></ProtectedRoute>} />
+          <Route path="/humour" component={() => <ProtectedRoute><HumourClub /></ProtectedRoute>} />
+          <Route path="/reflection" component={() => <ProtectedRoute><ReflectionRoom /></ProtectedRoute>} />
           <Route component={NotFound} />
         </Switch>
       </div>
