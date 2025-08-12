@@ -20,9 +20,16 @@ const GoogleLogin = () => {
     try {
       const user = await signInWithGoogle();
       console.log('Google sign in successful:', user);
-      // useAuth hook will handle the rest
+      // Force navigation after successful sign in
+      setTimeout(() => {
+        navigate('/');
+      }, 1000);
     } catch (error) {
       console.error('Sign in error:', error);
+      // If popup is blocked or cancelled, provide instructions
+      if (error?.code === 'auth/popup-blocked' || error?.code === 'auth/cancelled-popup-request') {
+        alert('Please allow popups for this site and try again, or make sure you complete the sign-in process.');
+      }
     }
   };
 

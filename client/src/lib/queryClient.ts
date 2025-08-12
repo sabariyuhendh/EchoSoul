@@ -30,9 +30,10 @@ export const queryClient = new QueryClient({
         if (!response.ok) {
           // For auth endpoints, handle 401 differently 
           if (response.status === 401 && url === '/api/auth/user') {
-            console.log('Auth endpoint returned 401, returning null');
+            console.log('Auth endpoint returned 401, user not authenticated');
             return null; // Return null for unauthenticated users
           }
+          console.error('Query failed:', response.status, response.statusText, 'for', url);
           throw new Error(`${response.status}: ${response.statusText}`);
         }
         

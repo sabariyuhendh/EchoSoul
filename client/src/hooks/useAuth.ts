@@ -19,7 +19,7 @@ export function useAuth() {
       if (user) {
         // User signed in, sync with backend
         try {
-          console.log('Syncing with backend...');
+          console.log('Syncing with backend for user:', user.uid);
           const response = await apiRequest('/api/auth/google', {
             method: 'POST',
             body: JSON.stringify({
@@ -32,9 +32,11 @@ export function useAuth() {
           });
           console.log('Backend sync successful:', response);
           
-          // Force immediate query refetch
-          queryClient.invalidateQueries({ queryKey: ["/api/auth/user"] });
-          queryClient.refetchQueries({ queryKey: ["/api/auth/user"] });
+          // Force immediate query refetch with a slight delay to ensure session is set
+          setTimeout(() => {
+            queryClient.invalidateQueries({ queryKey: ["/api/auth/user"] });
+            queryClient.refetchQueries({ queryKey: ["/api/auth/user"] });
+          }, 100);
         } catch (error) {
           console.error('Failed to sync with backend:', error);
         }
@@ -54,6 +56,14 @@ export function useAuth() {
     refetchOnWindowFocus: false,
     enabled: !!firebaseUser && !firebaseLoading,
     staleTime: 0, // Always fetch fresh data
+    queryFn: () => fetch('/api/auth/user', { 
+      credentials: 'include',
+      headers: { 'Cache-Control': 'no-cache' }
+    }).then(res => {
+      if (res.status === 401) return null;
+      if (!res.ok) throw new Error(`${res.status}: ${res.statusText}`);
+      return res.json();
+    })
   });
 
   console.log('useAuth state:', {
