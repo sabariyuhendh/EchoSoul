@@ -18,8 +18,9 @@ const GoogleLogin = () => {
 
   const handleGoogleSignIn = async () => {
     try {
-      await signInWithGoogle();
-      // Redirect will be handled by Firebase
+      const user = await signInWithGoogle();
+      console.log('Google sign in successful:', user);
+      // useAuth hook will handle the rest
     } catch (error) {
       console.error('Sign in error:', error);
     }

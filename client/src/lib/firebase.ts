@@ -1,5 +1,5 @@
 import { initializeApp } from "firebase/app";
-import { getAuth, signInWithRedirect, GoogleAuthProvider, getRedirectResult, signOut, onAuthStateChanged, User } from "firebase/auth";
+import { getAuth, signInWithPopup, GoogleAuthProvider, getRedirectResult, signOut, onAuthStateChanged, User } from "firebase/auth";
 
 const firebaseConfig = {
   apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
@@ -20,22 +20,15 @@ googleProvider.addScope('profile');
 
 export const signInWithGoogle = async () => {
   try {
-    signInWithRedirect(auth, googleProvider);
+    const result = await signInWithPopup(auth, googleProvider);
+    return result.user;
   } catch (error) {
     console.error("Google sign in error:", error);
     throw error;
   }
 };
 
-export const handleRedirectResult = async () => {
-  try {
-    const result = await getRedirectResult(auth);
-    return result?.user || null;
-  } catch (error) {
-    console.error("Redirect result error:", error);
-    throw error;
-  }
-};
+// No longer needed since we're using popup instead of redirect
 
 export const signOutFromFirebase = async () => {
   try {

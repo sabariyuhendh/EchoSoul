@@ -1,6 +1,6 @@
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
-import { onAuthStateChange, handleRedirectResult } from "@/lib/firebase";
+import { onAuthStateChange } from "@/lib/firebase";
 import { apiRequest } from "@/lib/queryClient";
 import type { User } from "@shared/schema";
 
@@ -12,6 +12,7 @@ export function useAuth() {
   // Listen to Firebase auth state
   useEffect(() => {
     const unsubscribe = onAuthStateChange(async (user) => {
+      console.log('Firebase auth state changed:', user);
       setFirebaseUser(user);
       setFirebaseLoading(false);
       
@@ -35,17 +36,9 @@ export function useAuth() {
         }
       } else {
         // User signed out, clear backend session
-        try {
-          await apiRequest('/api/auth/logout', { method: 'POST' });
-        } catch (error) {
-          // Ignore logout errors
-        }
         queryClient.setQueryData(["/api/auth/user"], null);
       }
     });
-
-    // Handle redirect result on page load
-    handleRedirectResult().catch(console.error);
 
     return unsubscribe;
   }, [queryClient]);
