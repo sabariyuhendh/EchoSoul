@@ -24,7 +24,7 @@ const GoogleLogin = () => {
       setTimeout(() => {
         navigate('/');
       }, 1000);
-    } catch (error) {
+    } catch (error: any) {
       console.error('Sign in error:', error);
       // If popup is blocked or cancelled, provide instructions
       if (error?.code === 'auth/popup-blocked' || error?.code === 'auth/cancelled-popup-request') {
