@@ -1,6 +1,6 @@
 import { 
   users, letItGoEntries, vaultEntries, moodEntries, letters, whispers, posts,
-  smashModeStats, calmSpacePreferences, humourClubEntries, humourClubPolls, reflections,
+  smashModeStats, calmSpacePreferences, humourClubEntries, humourClubPolls, reflections, lyraConversations,
   type User, type UpsertUser, type LetItGoEntry, type InsertLetItGoEntry,
   type VaultEntry, type InsertVaultEntry, type MoodEntry, type InsertMoodEntry,
   type Letter, type InsertLetter, type Whisper, type InsertWhisper,
@@ -8,7 +8,8 @@ import {
   type CalmSpacePreferences, type InsertCalmSpacePreferences,
   type HumourClubEntry, type InsertHumourClubEntry,
   type HumourClubPoll, type InsertHumourClubPoll,
-  type Reflection, type InsertReflection
+  type Reflection, type InsertReflection,
+  type LyraConversation, type InsertLyraConversation
 } from "@shared/schema";
 import { db } from "./db";
 import { eq, lt, desc, sql } from "drizzle-orm";
@@ -71,6 +72,12 @@ export interface IStorage {
   createReflection(reflection: InsertReflection): Promise<Reflection>;
   getUserReflections(userId: string): Promise<Reflection[]>;
   updateReflection(id: string, reflection: Partial<InsertReflection>): Promise<Reflection>;
+  
+  // Lyra conversation operations
+  createLyraConversation(conversation: InsertLyraConversation): Promise<LyraConversation>;
+  getUserLyraConversations(userId: string, sessionId?: string): Promise<LyraConversation[]>;
+  getUserLyraSessions(userId: string): Promise<{sessionId: string, lastMessage: Date, messageCount: number}[]>;
+  clearUserLyraHistory(userId: string): Promise<void>;
 }
 
 export class DatabaseStorage implements IStorage {
@@ -543,6 +550,61 @@ export class DatabaseStorage implements IStorage {
       .where(eq(reflections.id, id))
       .returning();
     return updatedReflection;
+  }
+
+  // Lyra conversation operations
+  async createLyraConversation(insertConversation: InsertLyraConversation): Promise<LyraConversation> {
+    const id = `lyra_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+    
+    const conversationData = {
+      id,
+      userId: insertConversation.userId,
+      sessionId: insertConversation.sessionId,
+      userMessage: insertConversation.userMessage,
+      lyraResponse: insertConversation.lyraResponse,
+      mood: insertConversation.mood || null,
+      messageIndex: insertConversation.messageIndex
+    };
+    
+    const [conversation] = await db
+      .insert(lyraConversations)
+      .values(conversationData)
+      .returning();
+    return conversation;
+  }
+
+  async getUserLyraConversations(userId: string, sessionId?: string): Promise<LyraConversation[]> {
+    const query = db
+      .select()
+      .from(lyraConversations)
+      .where(eq(lyraConversations.userId, userId));
+    
+    if (sessionId) {
+      query.where(eq(lyraConversations.sessionId, sessionId));
+    }
+    
+    return await query.orderBy(desc(lyraConversations.createdAt));
+  }
+
+  async getUserLyraSessions(userId: string): Promise<{sessionId: string, lastMessage: Date, messageCount: number}[]> {
+    const sessions = await db
+      .select({
+        sessionId: lyraConversations.sessionId,
+        lastMessage: sql<Date>`max(${lyraConversations.createdAt})`.as('lastMessage'),
+        messageCount: sql<number>`count(*)`.as('messageCount')
+      })
+      .from(lyraConversations)
+      .where(eq(lyraConversations.userId, userId))
+      .groupBy(lyraConversations.sessionId)
+      .orderBy(desc(sql`max(${lyraConversations.createdAt})`));
+    
+    return sessions;
+  }
+
+  async clearUserLyraHistory(userId: string): Promise<void> {
+    await db
+      .delete(lyraConversations)
+      .where(eq(lyraConversations.userId, userId));
   }
 }
 

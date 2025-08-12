@@ -244,6 +244,18 @@ export const reflections = pgTable("reflections", {
   updatedAt: timestamp("updated_at").defaultNow().notNull(),
 });
 
+// Lyra AI Chat Conversations - User-specific chat history
+export const lyraConversations = pgTable("lyra_conversations", {
+  id: text("id").primaryKey().notNull(),
+  userId: varchar("user_id").notNull(),
+  sessionId: varchar("session_id").notNull(), // Group related messages
+  userMessage: text("user_message").notNull(),
+  lyraResponse: text("lyra_response").notNull(),
+  mood: varchar("mood"), // User's current mood when sending message
+  messageIndex: integer("message_index").notNull(), // Order within session
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+});
+
 export const insertReflectionSchema = createInsertSchema(reflections).pick({
   userId: true,
   questionIndex: true,
@@ -253,3 +265,15 @@ export const insertReflectionSchema = createInsertSchema(reflections).pick({
 });
 export type InsertReflection = z.infer<typeof insertReflectionSchema>;
 export type Reflection = typeof reflections.$inferSelect;
+
+// Lyra conversation types
+export const insertLyraConversationSchema = createInsertSchema(lyraConversations).pick({
+  userId: true,
+  sessionId: true,
+  userMessage: true,
+  lyraResponse: true,
+  mood: true,
+  messageIndex: true,
+});
+export type InsertLyraConversation = z.infer<typeof insertLyraConversationSchema>;
+export type LyraConversation = typeof lyraConversations.$inferSelect;

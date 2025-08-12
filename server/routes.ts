@@ -464,6 +464,42 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Lyra conversation history routes
+  app.get("/api/lyra/conversations", requireAuth, async (req: any, res) => {
+    try {
+      const userId = req.user.id;
+      const { sessionId } = req.query;
+      
+      const conversations = await storage.getUserLyraConversations(userId, sessionId as string);
+      res.json({ conversations });
+    } catch (error) {
+      console.error("Error fetching Lyra conversations:", error);
+      res.status(500).json({ error: "Failed to fetch conversations" });
+    }
+  });
+
+  app.get("/api/lyra/sessions", requireAuth, async (req: any, res) => {
+    try {
+      const userId = req.user.id;
+      const sessions = await storage.getUserLyraSessions(userId);
+      res.json({ sessions });
+    } catch (error) {
+      console.error("Error fetching Lyra sessions:", error);
+      res.status(500).json({ error: "Failed to fetch sessions" });
+    }
+  });
+
+  app.delete("/api/lyra/history", requireAuth, async (req: any, res) => {
+    try {
+      const userId = req.user.id;
+      await storage.clearUserLyraHistory(userId);
+      res.json({ success: true, message: "Chat history cleared" });
+    } catch (error) {
+      console.error("Error clearing Lyra history:", error);
+      res.status(500).json({ error: "Failed to clear history" });
+    }
+  });
+
   // Humour Club AI Joke endpoint with Groq
   app.post("/api/humour/joke", requireAuth, async (req: any, res) => {
     const { category = "general" } = req.body;
@@ -579,9 +615,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.post("/api/humour/polls", async (req: any, res) => {
+  app.post("/api/humour/polls", requireAuth, async (req: any, res) => {
     try {
-      const userId = req.user?.id || "dev-user-1";
+      const userId = req.user.id;
       const validatedData = insertHumourClubPollSchema.parse({
         ...req.body,
         userId
