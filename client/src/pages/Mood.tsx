@@ -142,7 +142,7 @@ const Mood = () => {
             <Button
               onClick={saveMoodEntry}
               disabled={selectedMood === null}
-              className="w-full apple-button bg-gradient-to-r from-sage-500 to-calm-500 text-white"
+              className="w-full immersive-button primary"
             >
               Save Mood Entry
             </Button>

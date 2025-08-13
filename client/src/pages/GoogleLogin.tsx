@@ -64,7 +64,7 @@ const GoogleLogin = () => {
             <Button
               onClick={handleGoogleSignIn}
               disabled={isLoading}
-              className="w-full bg-white text-black hover:bg-gray-100 transition-all duration-200 py-3 text-base font-medium flex items-center justify-center space-x-3 rounded-xl"
+              className="w-full immersive-button primary py-3 text-base font-medium flex items-center justify-center space-x-3"
             >
               <FaGoogle className="text-lg" />
               <span>Continue with Google</span>

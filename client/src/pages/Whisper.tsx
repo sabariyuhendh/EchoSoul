@@ -174,7 +174,7 @@ const Whisper = () => {
                 </div>
                 <Button
                   onClick={stopRecording}
-                  className="apple-button bg-gradient-to-r from-red-500 to-red-600 text-white px-8 py-3"
+                  className="immersive-button danger px-8 py-3"
                 >
                   <Square className="w-5 h-5 mr-2" />
                   Stop Recording
@@ -192,7 +192,7 @@ const Whisper = () => {
                 </div>
                 <Button
                   onClick={startRecording}
-                  className="apple-button bg-gradient-to-r from-lavender-500 to-lavender-600 text-white px-8 py-3"
+                  className="immersive-button primary px-8 py-3"
                 >
                   <Mic className="w-5 h-5 mr-2" />
                   Start Recording

@@ -115,7 +115,7 @@ const Letters = () => {
               <Button
                 onClick={stylizeContent}
                 disabled={!content.trim() || selectedStyle === 'original'}
-                className="bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white font-medium flex-1 py-3 px-6 border-none shadow-lg transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+                className="immersive-button primary flex-1 py-3 px-6"
               >
                 <Sparkles className="w-4 h-4 mr-2" />
                 Stylize with AI
@@ -123,7 +123,7 @@ const Letters = () => {
               <Button
                 onClick={saveLetter}
                 disabled={!to.trim() || !content.trim()}
-                className="bg-gradient-to-r from-green-500 to-blue-500 hover:from-green-600 hover:to-blue-600 text-white font-medium flex-1 py-3 px-6 border-none shadow-lg transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+                className="immersive-button secondary flex-1 py-3 px-6"
               >
                 <Heart className="w-4 h-4 mr-2" />
                 Save Letter

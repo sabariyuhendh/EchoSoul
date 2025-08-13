@@ -240,8 +240,7 @@ const ReflectionRoom = () => {
                 <Button
                   onClick={handleSave}
                   disabled={!currentAnswer.trim() || saveReflectionMutation.isPending}
-                  variant="outline"
-                  className="flex items-center gap-2"
+                  className="immersive-button secondary flex items-center gap-2"
                 >
                   <Save className="w-4 h-4" />
                   {saveReflectionMutation.isPending ? 'Saving...' : 'Save'}
@@ -250,7 +249,7 @@ const ReflectionRoom = () => {
                 <Button
                   onClick={handleNext}
                   disabled={currentIndex === REFLECTION_QUESTIONS.length - 1}
-                  className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700"
+                  className="immersive-button primary flex items-center gap-2"
                 >
                   Next
                   <ChevronRight className="w-4 h-4" />

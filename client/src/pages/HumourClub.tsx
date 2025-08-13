@@ -435,8 +435,7 @@ const HumourClub = () => {
                           description: "Remember this sequence: 🌟⭐✨💫🌟",
                         });
                       }}
-                      variant="outline"
-                      className="w-full apple-button border-calm-400/30 text-calm-400 hover:bg-calm-400/10 hover:border-calm-400/50"
+                      className="w-full immersive-button secondary"
                     >
                       🧠 Memory Challenge
                     </Button>

@@ -147,13 +147,13 @@ const Index = () => {
           </p>
           <div className="flex flex-col sm:flex-row gap-6 justify-center items-center">
             <Link to="/vault">
-              <Button className="apple-button bg-gradient-to-r from-calm-500 to-sage-500 text-white hover:from-calm-600 hover:to-sage-600 px-8 py-4 text-lg font-medium border-0 calm-shadow">
+              <Button className="immersive-button primary px-8 py-4 text-lg font-medium">
                 Start Your Journey
                 <ArrowRight className="w-5 h-5 ml-2" />
               </Button>
             </Link>
             <Link to="/calm">
-              <Button variant="outline" className="apple-button border-white/30 text-white hover:bg-white/10 hover:border-calm-400/50 px-8 py-4 text-lg font-light">
+              <Button className="immersive-button secondary px-8 py-4 text-lg font-light">
                 Enter Calm Space
               </Button>
             </Link>

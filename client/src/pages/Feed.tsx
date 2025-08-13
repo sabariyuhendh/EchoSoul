@@ -161,16 +161,15 @@ const Feed = () => {
               
               <div className="flex justify-end space-x-3">
                 <Button
-                  variant="outline"
                   onClick={() => setShowComposer(false)}
-                  className="border-white/20 text-gray-300 hover:bg-white/10"
+                  className="immersive-button secondary"
                 >
                   Cancel
                 </Button>
                 <Button
                   onClick={createPost}
                   disabled={!newPost.trim()}
-                  className="apple-button bg-gradient-to-r from-sage-500 to-calm-500 text-white"
+                  className="immersive-button primary"
                 >
                   Share
                 </Button>

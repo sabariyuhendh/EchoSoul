@@ -74,6 +74,127 @@
   75% { transform: translate(-52%, -48%) rotate(-1deg); }
 }
 
+/* Immersive Gradient Button Styles - Matching Reference Design */
+.immersive-button {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 14px 32px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 50px;
+  background: linear-gradient(135deg, 
+    rgba(255, 255, 255, 0.02) 0%,
+    rgba(255, 255, 255, 0.01) 50%,
+    transparent 100%);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  color: rgba(255, 255, 255, 0.9);
+  font-weight: 500;
+  font-size: 14px;
+  letter-spacing: 0.025em;
+  text-transform: none;
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  cursor: pointer;
+  overflow: hidden;
+}
+
+.immersive-button:before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(135deg,
+    rgba(59, 130, 246, 0.1) 0%,
+    rgba(147, 51, 234, 0.1) 50%,
+    rgba(236, 72, 153, 0.1) 100%);
+  opacity: 0;
+  transition: opacity 0.4s ease;
+  border-radius: inherit;
+}
+
+.immersive-button:hover:before {
+  opacity: 1;
+}
+
+.immersive-button:hover {
+  border-color: rgba(255, 255, 255, 0.15);
+  color: rgba(255, 255, 255, 1);
+  transform: translateY(-1px);
+  box-shadow: 
+    0 8px 25px rgba(0, 0, 0, 0.3),
+    0 0 30px rgba(59, 130, 246, 0.1);
+}
+
+.immersive-button:active {
+  transform: translateY(0);
+  box-shadow: 
+    0 4px 12px rgba(0, 0, 0, 0.2),
+    0 0 15px rgba(59, 130, 246, 0.05);
+}
+
+.immersive-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* Primary gradient variant */
+.immersive-button.primary {
+  background: linear-gradient(135deg, 
+    rgba(59, 130, 246, 0.15) 0%,
+    rgba(147, 51, 234, 0.15) 100%);
+  border-color: rgba(59, 130, 246, 0.2);
+}
+
+.immersive-button.primary:hover {
+  background: linear-gradient(135deg, 
+    rgba(59, 130, 246, 0.25) 0%,
+    rgba(147, 51, 234, 0.25) 100%);
+  border-color: rgba(59, 130, 246, 0.4);
+  box-shadow: 
+    0 8px 25px rgba(0, 0, 0, 0.3),
+    0 0 30px rgba(59, 130, 246, 0.2);
+}
+
+/* Secondary gradient variant */
+.immersive-button.secondary {
+  background: linear-gradient(135deg, 
+    rgba(16, 185, 129, 0.15) 0%,
+    rgba(59, 130, 246, 0.15) 100%);
+  border-color: rgba(16, 185, 129, 0.2);
+}
+
+.immersive-button.secondary:hover {
+  background: linear-gradient(135deg, 
+    rgba(16, 185, 129, 0.25) 0%,
+    rgba(59, 130, 246, 0.25) 100%);
+  border-color: rgba(16, 185, 129, 0.4);
+  box-shadow: 
+    0 8px 25px rgba(0, 0, 0, 0.3),
+    0 0 30px rgba(16, 185, 129, 0.2);
+}
+
+/* Danger gradient variant */
+.immersive-button.danger {
+  background: linear-gradient(135deg, 
+    rgba(239, 68, 68, 0.15) 0%,
+    rgba(251, 146, 60, 0.15) 100%);
+  border-color: rgba(239, 68, 68, 0.2);
+}
+
+.immersive-button.danger:hover {
+  background: linear-gradient(135deg, 
+    rgba(239, 68, 68, 0.25) 0%,
+    rgba(251, 146, 60, 0.25) 100%);
+  border-color: rgba(239, 68, 68, 0.4);
+  box-shadow: 
+    0 8px 25px rgba(0, 0, 0, 0.3),
+    0 0 30px rgba(239, 68, 68, 0.2);
+}
+
 @keyframes lens-distort {
   0%, 100% { transform: translate(-50%, -50%) scale(1); }
   50% { transform: translate(-50%, -50%) scale(1.05); }

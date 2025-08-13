@@ -229,7 +229,7 @@ const Soulmate = () => {
             <Button
               onClick={sendMessage}
               disabled={!input.trim() || isTyping || chatMutation.isPending}
-              className="apple-button bg-gradient-to-r from-rose-500 to-pink-500 text-white px-6"
+              className="immersive-button primary px-6"
             >
               <Send className="w-4 h-4" />
             </Button>

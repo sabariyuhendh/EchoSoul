@@ -145,7 +145,7 @@ const LetItGo = () => {
                 </p>
               </div>
               <Button
-                className="w-full bg-red-600 hover:bg-red-700 text-white font-medium border-0"
+                className="w-full immersive-button danger"
               >
                 Start Burning
               </Button>
@@ -169,7 +169,7 @@ const LetItGo = () => {
                 </p>
               </div>
               <Button
-                className="w-full bg-yellow-600 hover:bg-yellow-700 text-white font-medium border-0"
+                className="w-full immersive-button primary"
               >
                 Start Smashing
               </Button>
