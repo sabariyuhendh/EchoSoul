@@ -7,13 +7,9 @@ import { getAuth, signInWithPopup, GoogleAuthProvider, getRedirectResult, signOu
 const actualProjectId = import.meta.env.VITE_FIREBASE_PROJECT_ID; // echosoul-72fc7
 const actualAppId = import.meta.env.VITE_FIREBASE_APP_ID; // 1:512197600485:web:7eace7193f71bff69da00c
 
-console.log('Firebase config debug:', {
-  apiKey: import.meta.env.VITE_FIREBASE_API_KEY ? '✓ Set' : '✗ Missing',
-  actualProjectId,
-  actualAppId,
+console.log('Firebase initialized:', {
+  projectId: actualProjectId,
   authDomain: `${actualProjectId}.firebaseapp.com`,
-  secretProjectId: import.meta.env.VITE_FIREBASE_PROJECT_ID,
-  secretAppId: import.meta.env.VITE_FIREBASE_APP_ID,
 });
 
 const firebaseConfig = {
