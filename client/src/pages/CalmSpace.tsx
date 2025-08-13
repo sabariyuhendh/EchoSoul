@@ -78,7 +78,11 @@ const CalmSpace = () => {
         audioRef.current.pause();
         setSessionActive(false);
       } else {
-        audioRef.current.play();
+        audioRef.current.play().catch((error) => {
+          console.warn('Audio playback failed in CalmSpace:', error);
+          setIsPlaying(false);
+          setSessionActive(false);
+        });
         setSessionActive(true);
       }
       setIsPlaying(!isPlaying);
@@ -244,6 +248,11 @@ const CalmSpace = () => {
               src={currentTrackData?.file}
               loop
               onEnded={() => setIsPlaying(false)}
+              onError={(e) => {
+                console.warn('Audio playback error in CalmSpace:', e);
+                setIsPlaying(false);
+                setSessionActive(false);
+              }}
             />
           </CardContent>
         </Card>

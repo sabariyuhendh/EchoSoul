@@ -114,10 +114,19 @@ const Whisper = () => {
       const url = URL.createObjectURL(recording.blob);
       if (audioRef.current) {
         audioRef.current.src = url;
-        audioRef.current.play();
+        audioRef.current.play().catch((error) => {
+          console.warn('Audio playback failed:', error);
+          setPlayingId(null);
+          URL.revokeObjectURL(url);
+        });
         setPlayingId(recording.id);
         
         audioRef.current.onended = () => {
+          setPlayingId(null);
+          URL.revokeObjectURL(url);
+        };
+        
+        audioRef.current.onerror = () => {
           setPlayingId(null);
           URL.revokeObjectURL(url);
         };
@@ -143,7 +152,15 @@ const Whisper = () => {
     <div className="min-h-screen bg-black text-white page-content p-6">
       <div className="max-w-4xl mx-auto">
         {/* Hidden Audio Element */}
-        <audio ref={audioRef} className="hidden" />
+        <audio 
+          ref={audioRef} 
+          className="hidden"
+          onError={(e) => {
+            console.warn('Audio playback error:', e);
+            setPlayingId(null);
+          }}
+          onEnded={() => setPlayingId(null)}
+        />
         
         {/* Header */}
         <div className="flex items-center justify-between mb-8">
