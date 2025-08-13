@@ -12,7 +12,7 @@ import {
   type LyraConversation, type InsertLyraConversation
 } from "@shared/schema";
 import { db } from "./db";
-import { eq, lt, desc, sql } from "drizzle-orm";
+import { eq, lt, desc, sql, and } from "drizzle-orm";
 
 export interface IStorage {
   // User operations
@@ -44,6 +44,8 @@ export interface IStorage {
   // Whisper operations
   createWhisper(whisper: InsertWhisper): Promise<Whisper>;
   getUserWhispers(userId: string): Promise<Whisper[]>;
+  getUserWhisper(userId: string, whisperId: string): Promise<Whisper | null>;
+  deleteWhisper(whisperId: string): Promise<void>;
   
   // Post operations
   createPost(post: InsertPost): Promise<Post>;
@@ -275,6 +277,22 @@ export class DatabaseStorage implements IStorage {
       .from(whispers)
       .where(eq(whispers.userId, userId))
       .orderBy(desc(whispers.createdAt));
+  }
+
+  async getUserWhisper(userId: string, whisperId: string): Promise<Whisper | null> {
+    const result = await db
+      .select()
+      .from(whispers)
+      .where(and(eq(whispers.userId, userId), eq(whispers.id, whisperId)))
+      .limit(1);
+    
+    return result.length > 0 ? result[0] : null;
+  }
+
+  async deleteWhisper(whisperId: string): Promise<void> {
+    await db
+      .delete(whispers)
+      .where(eq(whispers.id, whisperId));
   }
 
   // Post operations
@@ -574,16 +592,17 @@ export class DatabaseStorage implements IStorage {
   }
 
   async getUserLyraConversations(userId: string, sessionId?: string): Promise<LyraConversation[]> {
-    const query = db
-      .select()
-      .from(lyraConversations)
-      .where(eq(lyraConversations.userId, userId));
+    let whereClause = eq(lyraConversations.userId, userId);
     
     if (sessionId) {
-      query.where(eq(lyraConversations.sessionId, sessionId));
+      whereClause = and(whereClause, eq(lyraConversations.sessionId, sessionId)) as any;
     }
     
-    return await query.orderBy(desc(lyraConversations.createdAt));
+    return await db
+      .select()
+      .from(lyraConversations)
+      .where(whereClause)
+      .orderBy(desc(lyraConversations.createdAt));
   }
 
   async getUserLyraSessions(userId: string): Promise<{sessionId: string, lastMessage: Date, messageCount: number}[]> {

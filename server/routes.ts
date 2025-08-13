@@ -290,6 +290,25 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  app.delete("/api/whisper/:id", requireAuth, async (req: any, res) => {
+    try {
+      const userId = req.user.id;
+      const whisperId = req.params.id;
+      
+      // First check if the whisper belongs to the user
+      const whisper = await storage.getUserWhisper(userId, whisperId);
+      if (!whisper) {
+        return res.status(404).json({ error: "Whisper not found" });
+      }
+
+      await storage.deleteWhisper(whisperId);
+      res.json({ success: true });
+    } catch (error) {
+      console.error("Error deleting whisper:", error);
+      res.status(500).json({ error: "Internal server error" });
+    }
+  });
+
   // Feed API endpoints
   app.get("/api/feed", async (req, res) => {
     try {

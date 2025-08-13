@@ -1,9 +1,13 @@
 
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
+import { useQuery, useMutation } from '@tanstack/react-query';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
-import { ArrowLeft, Mic, Square, Play, Pause, Trash2 } from 'lucide-react';
+import { ArrowLeft, Mic, Square, Play, Pause, Trash2, Loader2 } from 'lucide-react';
 import { Link } from 'wouter';
+import { apiRequest, queryClient } from '@/lib/queryClient';
+import { useToast } from '@/hooks/use-toast';
+import type { Whisper } from '@shared/schema';
 
 interface Recording {
   id: string;
@@ -14,14 +18,43 @@ interface Recording {
 }
 
 const Whisper = () => {
+  const { toast } = useToast();
   const [isRecording, setIsRecording] = useState(false);
-  const [recordings, setRecordings] = useState<Recording[]>([]);
+  const [localRecordings, setLocalRecordings] = useState<Recording[]>([]);
   const [playingId, setPlayingId] = useState<string | null>(null);
   const [recordingTime, setRecordingTime] = useState(0);
+  const [isSaving, setIsSaving] = useState(false);
   
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const timerRef = useRef<NodeJS.Timeout | null>(null);
+
+  // Fetch saved whispers from database
+  const { data: whispersData, isLoading } = useQuery({
+    queryKey: ['/api/whisper'],
+    queryFn: () => apiRequest('/api/whisper')
+  });
+
+  const whispers: Whisper[] = whispersData?.whispers || [];
+
+  // Delete whisper mutation
+  const deleteWhisperMutation = useMutation({
+    mutationFn: (id: string) => apiRequest(`/api/whisper/${id}`, { method: 'DELETE' }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['/api/whisper'] });
+      toast({
+        title: "Recording deleted",
+        description: "Your whisper has been removed.",
+      });
+    },
+    onError: () => {
+      toast({
+        title: "Error",
+        description: "Failed to delete recording.",
+        variant: "destructive",
+      });
+    },
+  });
 
   const startRecording = async () => {
     try {
@@ -49,7 +82,7 @@ const Whisper = () => {
         chunks.push(event.data);
       };
       
-      mediaRecorder.onstop = () => {
+      mediaRecorder.onstop = async () => {
         const blob = new Blob(chunks, { type: 'audio/wav' });
         const newRecording: Recording = {
           id: Date.now().toString(),
@@ -58,8 +91,13 @@ const Whisper = () => {
           date: new Date(),
           blob
         };
-        setRecordings([newRecording, ...recordings]);
+        
+        // Add to local state immediately for immediate playback
+        setLocalRecordings([newRecording, ...localRecordings]);
         setRecordingTime(0);
+        
+        // Save to database
+        await saveRecordingToDatabase(newRecording);
       };
       
       mediaRecorder.start();
@@ -106,11 +144,49 @@ const Whisper = () => {
     }
   };
 
-  const playRecording = (recording: Recording) => {
+  // Save recording to database
+  const saveRecordingToDatabase = async (recording: Recording) => {
+    setIsSaving(true);
+    try {
+      // For now, save without audio file URL since we need Cloudinary setup
+      // The recording will be available locally until page refresh
+      await apiRequest('/api/whisper', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          name: recording.name,
+          duration: recording.duration,
+          audioUrl: null // TODO: Implement Cloudinary upload
+        })
+      });
+
+      // Refresh the whispers list
+      queryClient.invalidateQueries({ queryKey: ['/api/whisper'] });
+      
+      toast({
+        title: "Recording saved",
+        description: "Your whisper has been saved successfully.",
+      });
+    } catch (error) {
+      console.error('Error saving recording:', error);
+      toast({
+        title: "Save failed",
+        description: "Could not save recording to database, but it's available locally this session.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
+  const playRecording = (recording: Recording | Whisper) => {
     if (playingId === recording.id) {
       audioRef.current?.pause();
       setPlayingId(null);
-    } else {
+    } else if ('blob' in recording) {
+      // Local recording with blob
       const url = URL.createObjectURL(recording.blob);
       if (audioRef.current) {
         audioRef.current.src = url;
@@ -131,14 +207,44 @@ const Whisper = () => {
           URL.revokeObjectURL(url);
         };
       }
+    } else if ('audioUrl' in recording && recording.audioUrl) {
+      // Database recording with URL
+      if (audioRef.current) {
+        audioRef.current.src = recording.audioUrl;
+        audioRef.current.play().catch((error) => {
+          console.warn('Audio playback failed:', error);
+          setPlayingId(null);
+        });
+        setPlayingId(recording.id);
+        
+        audioRef.current.onended = () => setPlayingId(null);
+        audioRef.current.onerror = () => setPlayingId(null);
+      }
+    } else {
+      toast({
+        title: "Playback unavailable",
+        description: "Audio file not available for this recording.",
+        variant: "destructive",
+      });
     }
   };
 
   const deleteRecording = (id: string) => {
-    setRecordings(recordings.filter(r => r.id !== id));
-    if (playingId === id) {
-      audioRef.current?.pause();
-      setPlayingId(null);
+    // Check if it's a local recording
+    const localRecording = localRecordings.find(r => r.id === id);
+    if (localRecording) {
+      setLocalRecordings(localRecordings.filter(r => r.id !== id));
+      if (playingId === id) {
+        audioRef.current?.pause();
+        setPlayingId(null);
+      }
+    } else {
+      // It's a database recording
+      deleteWhisperMutation.mutate(id);
+      if (playingId === id) {
+        audioRef.current?.pause();
+        setPlayingId(null);
+      }
     }
   };
 
@@ -219,12 +325,24 @@ const Whisper = () => {
           </div>
         </Card>
 
+        {/* Status indicator */}
+        {isSaving && (
+          <Card className="glass p-4 mb-4 border-blue-500/20">
+            <div className="flex items-center space-x-3 text-blue-400">
+              <Loader2 className="w-5 h-5 animate-spin" />
+              <span>Saving your whisper...</span>
+            </div>
+          </Card>
+        )}
+
         {/* Recordings List */}
-        {recordings.length > 0 && (
+        {(localRecordings.length > 0 || whispers.length > 0) && (
           <div className="space-y-4">
             <h2 className="text-xl font-light text-gradient-lavender">Your Whispers</h2>
-            {recordings.map((recording) => (
-              <Card key={recording.id} className="apple-card p-6">
+            
+            {/* Local recordings first (current session) */}
+            {localRecordings.map((recording) => (
+              <Card key={`local-${recording.id}`} className="apple-card p-6">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center space-x-4">
                     <Button
@@ -242,7 +360,7 @@ const Whisper = () => {
                     <div>
                       <h3 className="font-medium text-white">{recording.name}</h3>
                       <p className="text-sm text-gray-400">
-                        {formatTime(recording.duration)} • {recording.date.toLocaleDateString()}
+                        {formatTime(recording.duration)} • {recording.date.toLocaleDateString()} • Local
                       </p>
                     </div>
                   </div>
@@ -253,6 +371,49 @@ const Whisper = () => {
                     className="text-red-400 hover:text-red-300 hover:bg-red-500/20"
                   >
                     <Trash2 className="w-4 h-4" />
+                  </Button>
+                </div>
+              </Card>
+            ))}
+
+            {/* Database recordings */}
+            {whispers.map((recording) => (
+              <Card key={`db-${recording.id}`} className="apple-card p-6">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center space-x-4">
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => playRecording(recording)}
+                      className="w-12 h-12 rounded-full bg-lavender-500/20 hover:bg-lavender-500/30 text-lavender-400"
+                      disabled={!recording.audioUrl}
+                    >
+                      {playingId === recording.id ? (
+                        <Pause className="w-5 h-5" />
+                      ) : (
+                        <Play className="w-5 h-5" />
+                      )}
+                    </Button>
+                    <div>
+                      <h3 className="font-medium text-white">{recording.name}</h3>
+                      <p className="text-sm text-gray-400">
+                        {formatTime(recording.duration)} • {new Date(recording.createdAt).toLocaleDateString()}
+                        {!recording.audioUrl && ' • Audio unavailable'}
+                      </p>
+                    </div>
+                  </div>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => deleteRecording(recording.id)}
+                    className="text-red-400 hover:text-red-300 hover:bg-red-500/20"
+                    disabled={deleteWhisperMutation.isPending}
+                  >
+                    {deleteWhisperMutation.isPending ? (
+                      <Loader2 className="w-4 h-4 animate-spin" />
+                    ) : (
+                      <Trash2 className="w-4 h-4" />
+                    )}
                   </Button>
                 </div>
               </Card>
