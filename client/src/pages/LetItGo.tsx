@@ -193,7 +193,7 @@ const LetItGo = () => {
                 </p>
               </div>
               <Button
-                className="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium border-0"
+                className="w-full immersive-button primary"
               >
                 Start Screaming
               </Button>

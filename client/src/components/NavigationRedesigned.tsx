@@ -161,8 +161,7 @@ const NavigationRedesigned = () => {
             ) : (
               <Button
                 onClick={handleLogin}
-                size="sm"
-                className="hidden lg:flex bg-gradient-to-r from-blue-400 to-purple-400 hover:from-blue-500 hover:to-purple-500 text-white px-4 py-2 text-sm font-medium rounded-full transition-all duration-200"
+                className="hidden lg:flex immersive-button primary"
               >
                 Sign In
               </Button>
@@ -170,10 +169,8 @@ const NavigationRedesigned = () => {
 
             {/* Mobile menu button */}
             <Button
-              variant="ghost"
-              size="sm"
               onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-              className="lg:hidden hover:bg-white/10 rounded-full p-2"
+              className="lg:hidden immersive-button secondary"
             >
               {isMobileMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
             </Button>
@@ -188,15 +185,8 @@ const NavigationRedesigned = () => {
               {mainNavItems.map((item) => (
                 <Link key={item.path} to={item.path}>
                   <Button
-                    variant={isActive(item.path) ? "default" : "ghost"}
-                    size="sm"
                     className={`
-                      w-full justify-start px-4 py-3 text-sm font-medium transition-all duration-200 
-                      ${isActive(item.path) 
-                        ? `bg-gradient-to-r ${item.color} text-white` 
-                        : 'text-gray-300 hover:text-white hover:bg-white/10'
-                      }
-                      rounded-xl
+                      w-full justify-start immersive-button ${isActive(item.path) ? 'primary' : 'secondary'}
                     `}
                     onClick={() => setIsMobileMenuOpen(false)}
                   >
@@ -213,15 +203,8 @@ const NavigationRedesigned = () => {
                 {moreNavItems.map((item) => (
                   <Link key={item.path} to={item.path}>
                     <Button
-                      variant={isActive(item.path) ? "default" : "ghost"}
-                      size="sm"
                       className={`
-                        w-full justify-start px-4 py-3 text-sm font-medium transition-all duration-200 
-                        ${isActive(item.path) 
-                          ? `bg-gradient-to-r ${item.color} text-white` 
-                          : 'text-gray-300 hover:text-white hover:bg-white/10'
-                        }
-                        rounded-xl
+                        w-full justify-start immersive-button ${isActive(item.path) ? 'primary' : 'secondary'}
                       `}
                       onClick={() => setIsMobileMenuOpen(false)}
                     >
@@ -237,9 +220,7 @@ const NavigationRedesigned = () => {
                   <div className="space-y-2">
                     <Link to="/profile">
                       <Button
-                        variant="ghost"
-                        size="sm"
-                        className="w-full justify-start px-4 py-3 text-sm font-medium text-gray-300 hover:text-white hover:bg-white/10 rounded-xl flex items-center gap-3"
+                        className="w-full justify-start immersive-button secondary flex items-center gap-3"
                         onClick={() => setIsMobileMenuOpen(false)}
                       >
                         <div className="w-6 h-6 bg-gradient-to-r from-blue-400 to-purple-400 rounded-full flex items-center justify-center text-xs font-medium text-white">
@@ -253,9 +234,7 @@ const NavigationRedesigned = () => {
                         setIsMobileMenuOpen(false);
                         handleLogout();
                       }}
-                      variant="ghost"
-                      size="sm"
-                      className="w-full justify-start px-4 py-3 text-sm font-medium text-gray-300 hover:text-white hover:bg-white/10 rounded-xl flex items-center gap-3"
+                      className="w-full justify-start immersive-button danger flex items-center gap-3"
                     >
                       <LogOut className="h-4 w-4" />
                       Sign Out
@@ -267,8 +246,7 @@ const NavigationRedesigned = () => {
                       setIsMobileMenuOpen(false);
                       handleLogin();
                     }}
-                    size="sm"
-                    className="w-full bg-gradient-to-r from-blue-400 to-purple-400 hover:from-blue-500 hover:to-purple-500 text-white px-4 py-3 text-sm font-medium rounded-xl transition-all duration-200"
+                    className="w-full immersive-button primary"
                   >
                     Sign In
                   </Button>

@@ -43,7 +43,7 @@ const ProtectedRoute = ({ children, fallbackMessage }: ProtectedRouteProps) => {
               </div>
               <Button 
                 onClick={() => window.location.href = '/login'}
-                className="apple-button bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 text-white px-8 py-3 rounded-full font-medium transition-all duration-300 shadow-lg hover:shadow-xl"
+                className="immersive-button primary"
               >
                 Sign In to Continue
               </Button>

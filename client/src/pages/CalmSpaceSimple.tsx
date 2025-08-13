@@ -234,7 +234,7 @@ const CalmSpace = () => {
             <div className="flex items-center gap-4 mb-4">
               <Button
                 onClick={togglePlay}
-                className="bg-blue-600 hover:bg-blue-700"
+                className="immersive-button primary"
               >
                 {isPlaying ? <Pause className="h-4 w-4" /> : <Play className="h-4 w-4" />}
               </Button>
