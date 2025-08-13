@@ -1,16 +1,19 @@
 import { initializeApp, getApps, getApp } from "firebase/app";
 import { getAuth, signInWithPopup, GoogleAuthProvider, getRedirectResult, signOut, onAuthStateChanged, User, AuthError } from "firebase/auth";
 
-// The environment variables are swapped, so we need to correct them:
-// VITE_FIREBASE_PROJECT_ID contains the app ID
-// VITE_FIREBASE_APP_ID contains the project ID
-const actualProjectId = import.meta.env.VITE_FIREBASE_APP_ID; // echosoul-72fc7
-const actualAppId = import.meta.env.VITE_FIREBASE_PROJECT_ID; // 1:512197600485:web:7eace7193f71bff69da00c
+// Correct the environment variable mapping
+// VITE_FIREBASE_PROJECT_ID should contain the project ID (echosoul-72fc7)
+// VITE_FIREBASE_APP_ID should contain the app ID (1:512197600485:web:7eace7193f71bff69da00c)
+const actualProjectId = import.meta.env.VITE_FIREBASE_PROJECT_ID; // echosoul-72fc7
+const actualAppId = import.meta.env.VITE_FIREBASE_APP_ID; // 1:512197600485:web:7eace7193f71bff69da00c
 
 console.log('Firebase config debug:', {
   apiKey: import.meta.env.VITE_FIREBASE_API_KEY ? '✓ Set' : '✗ Missing',
   actualProjectId,
   actualAppId,
+  authDomain: `${actualProjectId}.firebaseapp.com`,
+  secretProjectId: import.meta.env.VITE_FIREBASE_PROJECT_ID,
+  secretAppId: import.meta.env.VITE_FIREBASE_APP_ID,
 });
 
 const firebaseConfig = {
