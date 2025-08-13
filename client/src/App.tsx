@@ -61,6 +61,7 @@ import HumourClub from "./pages/HumourClub";
 import NotFound from "./pages/NotFound";
 import ReflectionRoom from "./pages/ReflectionRoom";
 import GoogleLogin from "./pages/GoogleLogin";
+import Profile from "./pages/Profile";
 import ProtectedRoute from "./components/ProtectedRoute";
 
 const queryClient = new QueryClient();
@@ -72,7 +73,8 @@ function AppRouter() {
         <NavigationRedesigned />
         <Switch>
           <Route path="/login" component={GoogleLogin} />
-          <Route path="/" component={() => <ProtectedRoute><Index /></ProtectedRoute>} />
+          <Route path="/" component={Index} />
+          <Route path="/profile" component={() => <ProtectedRoute><Profile /></ProtectedRoute>} />
           <Route path="/vault" component={() => <ProtectedRoute><Vault /></ProtectedRoute>} />
           <Route path="/letters" component={() => <ProtectedRoute><Letters /></ProtectedRoute>} />
           <Route path="/letitgo" component={() => <ProtectedRoute><LetItGo /></ProtectedRoute>} />
