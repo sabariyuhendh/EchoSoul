@@ -309,6 +309,60 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Whisper upload endpoint with Cloudinary
+  app.post("/api/whisper/upload", requireAuth, async (req: any, res) => {
+    try {
+      const userId = req.user.id;
+      
+      if (!req.files || !req.files.audio) {
+        return res.status(400).json({ error: "No audio file provided" });
+      }
+
+      const audioFile = req.files.audio;
+      const name = req.body.name || `Whisper ${new Date().toLocaleTimeString()}`;
+      const duration = parseFloat(req.body.duration) || 0;
+
+      // Upload to Cloudinary
+      const cloudinary = require('cloudinary').v2;
+      cloudinary.config({
+        cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+        api_key: process.env.CLOUDINARY_API_KEY,
+        api_secret: process.env.CLOUDINARY_API_SECRET
+      });
+
+      const uploadResult = await new Promise((resolve, reject) => {
+        cloudinary.uploader.upload_stream(
+          {
+            resource_type: "video", // Cloudinary uses "video" for audio files
+            folder: "echosoul/whispers",
+            public_id: `whisper_${Date.now()}_${userId}`,
+            format: "wav"
+          },
+          (error: any, result: any) => {
+            if (error) reject(error);
+            else resolve(result);
+          }
+        ).end(audioFile.data);
+      });
+
+      const audioUrl = (uploadResult as any).secure_url;
+
+      // Save to database with Cloudinary URL
+      const validatedData = insertWhisperSchema.parse({
+        userId,
+        name,
+        duration,
+        audioUrl
+      });
+
+      const whisper = await storage.createWhisper(validatedData);
+      res.json({ success: true, whisper });
+    } catch (error) {
+      console.error("Error uploading whisper:", error);
+      res.status(500).json({ error: "Internal server error" });
+    }
+  });
+
   // Feed API endpoints
   app.get("/api/feed", async (req, res) => {
     try {

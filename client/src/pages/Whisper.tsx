@@ -144,36 +144,41 @@ const Whisper = () => {
     }
   };
 
-  // Save recording to database
+  // Upload audio to Cloudinary and save to database
   const saveRecordingToDatabase = async (recording: Recording) => {
     setIsSaving(true);
     try {
-      // For now, save without audio file URL since we need Cloudinary setup
-      // The recording will be available locally until page refresh
-      await apiRequest('/api/whisper', {
+      // Create FormData for audio upload
+      const formData = new FormData();
+      formData.append('audio', recording.blob, `${recording.name}.wav`);
+      formData.append('name', recording.name);
+      formData.append('duration', recording.duration.toString());
+
+      // Upload to server which will handle Cloudinary upload
+      const response = await fetch('/api/whisper/upload', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-          name: recording.name,
-          duration: recording.duration,
-          audioUrl: null // TODO: Implement Cloudinary upload
-        })
+        body: formData,
+        credentials: 'include', // Include cookies for authentication
       });
+
+      if (!response.ok) {
+        throw new Error('Upload failed');
+      }
+
+      const result = await response.json();
 
       // Refresh the whispers list
       queryClient.invalidateQueries({ queryKey: ['/api/whisper'] });
       
       toast({
         title: "Recording saved",
-        description: "Your whisper has been saved successfully.",
+        description: "Your whisper has been uploaded and saved successfully.",
       });
     } catch (error) {
       console.error('Error saving recording:', error);
       toast({
-        title: "Save failed",
-        description: "Could not save recording to database, but it's available locally this session.",
+        title: "Upload failed", 
+        description: "Could not upload recording to cloud storage, but it's available locally this session.",
         variant: "destructive",
       });
     } finally {
