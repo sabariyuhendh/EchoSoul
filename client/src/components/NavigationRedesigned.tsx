@@ -25,6 +25,7 @@ const NavigationRedesigned = () => {
     { title: "Whisper", path: "/whisper", color: "from-indigo-400 to-purple-400" },
     { title: "Lyra", path: "/soulmate", color: "from-blue-400 to-cyan-400" },
     { title: "Feed", path: "/feed", color: "from-green-400 to-teal-400" },
+    { title: "Matchmaking", path: "/matchmaking", color: "from-pink-400 to-rose-400" },
     { title: "Humour Club", path: "/humour", color: "from-yellow-400 to-orange-400" },
     { title: "Reflection Room", path: "/reflection", color: "from-violet-400 to-purple-400" }
   ];

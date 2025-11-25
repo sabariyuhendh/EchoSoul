@@ -706,6 +706,137 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Matchmaking API endpoints
+  app.post("/api/matchmaking/join", requireAuth, async (req: any, res) => {
+    try {
+      const userId = req.user.id;
+      const { getChatServer } = await import("./websocket");
+      const chatServer = getChatServer();
+      
+      if (!chatServer) {
+        return res.status(503).json({ error: "Chat server not available" });
+      }
+
+      const joined = chatServer.joinQueue(userId);
+      if (joined) {
+        res.json({ success: true, message: "Joined matchmaking queue" });
+      } else {
+        res.status(400).json({ error: "User not connected via WebSocket" });
+      }
+    } catch (error) {
+      console.error("Error joining matchmaking:", error);
+      res.status(500).json({ error: "Internal server error" });
+    }
+  });
+
+  app.post("/api/matchmaking/leave", requireAuth, async (req: any, res) => {
+    try {
+      const userId = req.user.id;
+      const { getChatServer } = await import("./websocket");
+      const chatServer = getChatServer();
+      
+      if (chatServer) {
+        chatServer.leaveQueue(userId);
+      }
+      res.json({ success: true, message: "Left matchmaking queue" });
+    } catch (error) {
+      console.error("Error leaving matchmaking:", error);
+      res.status(500).json({ error: "Internal server error" });
+    }
+  });
+
+  app.get("/api/matchmaking/status", requireAuth, async (req: any, res) => {
+    try {
+      const { getChatServer } = await import("./websocket");
+      const chatServer = getChatServer();
+      
+      if (!chatServer) {
+        return res.status(503).json({ error: "Chat server not available" });
+      }
+
+      const status = chatServer.getQueueStatus();
+      const userId = req.user.id;
+      
+      // Check if user is connected via WebSocket
+      const { getChatServer: getChatServer2 } = await import("./websocket");
+      const chatServer2 = getChatServer2();
+      const isConnected = chatServer2 ? chatServer2.isUserConnected(userId) : false;
+      
+      res.json({ ...status, isConnected, userId });
+    } catch (error) {
+      console.error("Error getting matchmaking status:", error);
+      res.status(500).json({ error: "Internal server error" });
+    }
+  });
+
+  // Chat session endpoints
+  app.get("/api/chat/sessions", requireAuth, async (req: any, res) => {
+    try {
+      const userId = req.user.id;
+      const sessions = await storage.getUserChatSessions(userId);
+      res.json({ sessions });
+    } catch (error) {
+      console.error("Error fetching chat sessions:", error);
+      res.status(500).json({ error: "Internal server error" });
+    }
+  });
+
+  app.get("/api/chat/sessions/:sessionId/messages", requireAuth, async (req: any, res) => {
+    try {
+      const { sessionId } = req.params;
+      const userId = req.user.id;
+      
+      // Verify user is part of this session
+      const session = await storage.getChatSession(sessionId);
+      if (!session || (session.userId1 !== userId && session.userId2 !== userId)) {
+        return res.status(403).json({ error: "Access denied" });
+      }
+
+      const messages = await storage.getChatMessages(sessionId);
+      res.json({ messages });
+    } catch (error) {
+      console.error("Error fetching chat messages:", error);
+      res.status(500).json({ error: "Internal server error" });
+    }
+  });
+
+  app.post("/api/chat/sessions/:sessionId/end", requireAuth, async (req: any, res) => {
+    try {
+      const { sessionId } = req.params;
+      const userId = req.user.id;
+      
+      // Verify user is part of this session
+      const session = await storage.getChatSession(sessionId);
+      if (!session || (session.userId1 !== userId && session.userId2 !== userId)) {
+        return res.status(403).json({ error: "Access denied" });
+      }
+
+      await storage.endChatSession(sessionId);
+      
+      const { getChatServer } = await import("./websocket");
+      const chatServer = getChatServer();
+      if (chatServer) {
+        chatServer.endSessionForUser(userId);
+      }
+
+      res.json({ success: true, message: "Session ended" });
+    } catch (error) {
+      console.error("Error ending chat session:", error);
+      res.status(500).json({ error: "Internal server error" });
+    }
+  });
+
+  app.get("/api/chat/history", requireAuth, async (req: any, res) => {
+    try {
+      const userId = req.user.id;
+      const history = await storage.getUserChatHistory(userId);
+      res.json({ history });
+    } catch (error) {
+      console.error("Error fetching chat history:", error);
+      res.status(500).json({ error: "Internal server error" });
+    }
+  });
+
   const httpServer = createServer(app);
   return httpServer;
 }

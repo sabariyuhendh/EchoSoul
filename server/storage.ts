@@ -1,6 +1,7 @@
 import { 
   users, letItGoEntries, vaultEntries, moodEntries, letters, whispers, posts,
   smashModeStats, calmSpacePreferences, humourClubEntries, humourClubPolls, reflections, lyraConversations,
+  chatSessions, chatMessages, userChatHistory,
   type User, type UpsertUser, type LetItGoEntry, type InsertLetItGoEntry,
   type VaultEntry, type InsertVaultEntry, type MoodEntry, type InsertMoodEntry,
   type Letter, type InsertLetter, type Whisper, type InsertWhisper,
@@ -9,7 +10,10 @@ import {
   type HumourClubEntry, type InsertHumourClubEntry,
   type HumourClubPoll, type InsertHumourClubPoll,
   type Reflection, type InsertReflection,
-  type LyraConversation, type InsertLyraConversation
+  type LyraConversation, type InsertLyraConversation,
+  type ChatSession, type InsertChatSession,
+  type ChatMessage, type InsertChatMessage,
+  type UserChatHistory, type InsertUserChatHistory
 } from "@shared/schema";
 import { db } from "./db";
 import { eq, lt, desc, sql, and } from "drizzle-orm";
@@ -80,6 +84,17 @@ export interface IStorage {
   getUserLyraConversations(userId: string, sessionId?: string): Promise<LyraConversation[]>;
   getUserLyraSessions(userId: string): Promise<{sessionId: string, lastMessage: Date, messageCount: number}[]>;
   clearUserLyraHistory(userId: string): Promise<void>;
+  
+  // Chat operations
+  createChatSession(session: InsertChatSession): Promise<ChatSession>;
+  getChatSession(sessionId: string): Promise<ChatSession | undefined>;
+  getUserChatSessions(userId: string): Promise<ChatSession[]>;
+  endChatSession(sessionId: string): Promise<void>;
+  createChatMessage(message: InsertChatMessage): Promise<ChatMessage>;
+  getChatMessages(sessionId: string): Promise<ChatMessage[]>;
+  createUserChatHistory(history: InsertUserChatHistory): Promise<UserChatHistory>;
+  getUserChatHistory(userId: string): Promise<UserChatHistory[]>;
+  updateUserChatHistory(id: string, history: Partial<InsertUserChatHistory>): Promise<UserChatHistory>;
 }
 
 export class DatabaseStorage implements IStorage {
@@ -652,6 +667,113 @@ export class DatabaseStorage implements IStorage {
     await db
       .delete(lyraConversations)
       .where(eq(lyraConversations.userId, userId));
+  }
+
+  // Chat operations
+  async createChatSession(insertSession: InsertChatSession): Promise<ChatSession> {
+    const id = `chat_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+    
+    const sessionData = {
+      id,
+      userId1: insertSession.userId1,
+      userId2: insertSession.userId2,
+      status: insertSession.status || 'active'
+    };
+    
+    const [session] = await db
+      .insert(chatSessions)
+      .values(sessionData)
+      .returning();
+    return session;
+  }
+
+  async getChatSession(sessionId: string): Promise<ChatSession | undefined> {
+    const [session] = await db
+      .select()
+      .from(chatSessions)
+      .where(eq(chatSessions.id, sessionId));
+    return session || undefined;
+  }
+
+  async getUserChatSessions(userId: string): Promise<ChatSession[]> {
+    return await db
+      .select()
+      .from(chatSessions)
+      .where(
+        sql`${chatSessions.userId1} = ${userId} OR ${chatSessions.userId2} = ${userId}`
+      )
+      .orderBy(desc(chatSessions.startedAt));
+  }
+
+  async endChatSession(sessionId: string): Promise<void> {
+    await db
+      .update(chatSessions)
+      .set({ 
+        status: 'ended',
+        endedAt: new Date()
+      })
+      .where(eq(chatSessions.id, sessionId));
+  }
+
+  async createChatMessage(insertMessage: InsertChatMessage): Promise<ChatMessage> {
+    const id = `msg_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+    
+    const messageData = {
+      id,
+      sessionId: insertMessage.sessionId,
+      senderId: insertMessage.senderId,
+      content: insertMessage.content
+    };
+    
+    const [message] = await db
+      .insert(chatMessages)
+      .values(messageData)
+      .returning();
+    return message;
+  }
+
+  async getChatMessages(sessionId: string): Promise<ChatMessage[]> {
+    return await db
+      .select()
+      .from(chatMessages)
+      .where(eq(chatMessages.sessionId, sessionId))
+      .orderBy(chatMessages.createdAt);
+  }
+
+  async createUserChatHistory(insertHistory: InsertUserChatHistory): Promise<UserChatHistory> {
+    const id = `history_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+    
+    const historyData = {
+      id,
+      userId: insertHistory.userId,
+      sessionId: insertHistory.sessionId,
+      partnerId: insertHistory.partnerId,
+      messages: insertHistory.messages || [],
+      summary: insertHistory.summary || null
+    };
+    
+    const [history] = await db
+      .insert(userChatHistory)
+      .values(historyData)
+      .returning();
+    return history;
+  }
+
+  async getUserChatHistory(userId: string): Promise<UserChatHistory[]> {
+    return await db
+      .select()
+      .from(userChatHistory)
+      .where(eq(userChatHistory.userId, userId))
+      .orderBy(desc(userChatHistory.createdAt));
+  }
+
+  async updateUserChatHistory(id: string, history: Partial<InsertUserChatHistory>): Promise<UserChatHistory> {
+    const [updated] = await db
+      .update(userChatHistory)
+      .set({ ...history, updatedAt: new Date() })
+      .where(eq(userChatHistory.id, id))
+      .returning();
+    return updated;
   }
 }
 

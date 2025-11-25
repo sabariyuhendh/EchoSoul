@@ -1,9 +1,11 @@
 import "dotenv/config";
 import express, { type Request, Response, NextFunction } from "express";
 import path from "path";
+import os from "os";
 import fileUpload from "express-fileupload";
 import { registerRoutes } from "./routes";
 import { setupVite, serveStatic, log } from "./vite";
+import { setupWebSocket } from "./websocket";
 
 // Verify DATABASE_URL is loaded
 if (!process.env.DATABASE_URL) {
@@ -78,6 +80,9 @@ app.use((req, res, next) => {
 
 (async () => {
   const server = await registerRoutes(app);
+  
+  // Setup WebSocket server for real-time chat
+  setupWebSocket(server);
 
   app.use((err: any, _req: Request, res: Response, _next: NextFunction) => {
     const status = err.status || err.statusCode || 500;
@@ -113,5 +118,29 @@ app.use((req, res, next) => {
   const port = 5000;
   server.listen(port, "0.0.0.0", () => {
     log(`serving on port ${port}`);
+    log(`Local:    http://localhost:${port}`);
+    
+    // Get network IP addresses
+    const networkInterfaces = os.networkInterfaces();
+    const addresses: string[] = [];
+    
+    Object.keys(networkInterfaces).forEach((interfaceName) => {
+      const interfaces = networkInterfaces[interfaceName];
+      if (interfaces) {
+        interfaces.forEach((iface: any) => {
+          if (iface.family === 'IPv4' && !iface.internal) {
+            addresses.push(iface.address);
+          }
+        });
+      }
+    });
+    
+    if (addresses.length > 0) {
+      addresses.forEach((address) => {
+        log(`Network:  http://${address}:${port}`);
+      });
+    } else {
+      log(`Network:  Use your local IP address to access from other devices`);
+    }
   });
 })();

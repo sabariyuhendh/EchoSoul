@@ -30,5 +30,10 @@ export default defineConfig(async () => {
       outDir: path.resolve(import.meta.dirname, "dist/public"),
       emptyOutDir: true,
     },
+    server: {
+      host: true, // Allow access from network (auto-detects correct host)
+      port: 5000,
+      strictPort: false,
+    },
   };
 });

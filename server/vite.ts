@@ -32,7 +32,11 @@ export async function setupVite(app: Express, server: Server) {
     },
     server: {
       middlewareMode: true,
-      hmr: { server },
+      hmr: { 
+        server,
+        // Don't set host to 0.0.0.0 for HMR - let it use the server's host
+      },
+      // Don't set host here - it causes issues with WebSocket connections
       allowedHosts: true,
     },
     appType: "custom",

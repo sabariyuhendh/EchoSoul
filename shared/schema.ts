@@ -277,3 +277,76 @@ export const insertLyraConversationSchema = createInsertSchema(lyraConversations
 });
 export type InsertLyraConversation = z.infer<typeof insertLyraConversationSchema>;
 export type LyraConversation = typeof lyraConversations.$inferSelect;
+
+// Chat Matchmaking - Chat Sessions
+export const chatSessions = pgTable("chat_sessions", {
+  id: text("id").primaryKey().notNull(),
+  userId1: varchar("user_id_1").notNull(),
+  userId2: varchar("user_id_2").notNull(),
+  status: text("status").notNull().default("active"), // 'active', 'ended', 'abandoned'
+  startedAt: timestamp("started_at").defaultNow().notNull(),
+  endedAt: timestamp("ended_at"),
+  feedback1: jsonb("feedback_1"), // User 1's feedback
+  feedback2: jsonb("feedback_2"), // User 2's feedback
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+}, (table) => [
+  index("idx_chat_sessions_user1").on(table.userId1),
+  index("idx_chat_sessions_user2").on(table.userId2),
+  index("idx_chat_sessions_status").on(table.status),
+]);
+
+// Chat Messages - Individual messages in a session
+export const chatMessages = pgTable("chat_messages", {
+  id: text("id").primaryKey().notNull(),
+  sessionId: text("session_id").notNull().references(() => chatSessions.id),
+  senderId: varchar("sender_id").notNull(),
+  content: text("content").notNull(),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+}, (table) => [
+  index("idx_chat_messages_session").on(table.sessionId),
+  index("idx_chat_messages_sender").on(table.senderId),
+]);
+
+// User Chat History - Independent structure per user
+export const userChatHistory = pgTable("user_chat_history", {
+  id: text("id").primaryKey().notNull(),
+  userId: varchar("user_id").notNull(),
+  sessionId: text("session_id").notNull().references(() => chatSessions.id),
+  partnerId: varchar("partner_id").notNull(),
+  messages: jsonb("messages").default([]), // Array of messages for this user's view
+  summary: text("summary"), // Optional AI-generated summary
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at").defaultNow().notNull(),
+}, (table) => [
+  index("idx_user_chat_history_user").on(table.userId),
+  index("idx_user_chat_history_session").on(table.sessionId),
+]);
+
+// Chat Session types
+export const insertChatSessionSchema = createInsertSchema(chatSessions).pick({
+  userId1: true,
+  userId2: true,
+  status: true,
+});
+export type InsertChatSession = z.infer<typeof insertChatSessionSchema>;
+export type ChatSession = typeof chatSessions.$inferSelect;
+
+// Chat Message types
+export const insertChatMessageSchema = createInsertSchema(chatMessages).pick({
+  sessionId: true,
+  senderId: true,
+  content: true,
+});
+export type InsertChatMessage = z.infer<typeof insertChatMessageSchema>;
+export type ChatMessage = typeof chatMessages.$inferSelect;
+
+// User Chat History types
+export const insertUserChatHistorySchema = createInsertSchema(userChatHistory).pick({
+  userId: true,
+  sessionId: true,
+  partnerId: true,
+  messages: true,
+  summary: true,
+});
+export type InsertUserChatHistory = z.infer<typeof insertUserChatHistorySchema>;
+export type UserChatHistory = typeof userChatHistory.$inferSelect;

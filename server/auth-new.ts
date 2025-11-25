@@ -8,6 +8,8 @@ import { storage } from "./storage";
 
 const pgStore = connectPg(session);
 
+let sessionStoreInstance: any = null;
+
 export function setupSession(app: Express) {
   const sessionStore = new pgStore({
     conString: process.env.DATABASE_URL,
@@ -15,6 +17,8 @@ export function setupSession(app: Express) {
     ttl: 7 * 24 * 60 * 60 * 1000, // 7 days
     tableName: "sessions",
   });
+  
+  sessionStoreInstance = sessionStore;
 
   app.use(
     session({
@@ -102,4 +106,7 @@ export async function loginUser(email: string, password: string) {
   return user;
 }
 
+export function getSessionStore() {
+  return sessionStoreInstance;
+}
 

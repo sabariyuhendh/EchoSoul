@@ -62,6 +62,7 @@ import NotFound from "./pages/NotFound";
 import ReflectionRoom from "./pages/ReflectionRoom";
 import Login from "./pages/Login";
 import Profile from "./pages/Profile";
+import Matchmaking from "./pages/Matchmaking";
 import ProtectedRoute from "./components/ProtectedRoute";
 
 function AppRouter() {
@@ -83,6 +84,7 @@ function AppRouter() {
           <Route path="/calm" component={() => <ProtectedRoute><CalmSpace /></ProtectedRoute>} />
           <Route path="/humour" component={() => <ProtectedRoute><HumourClub /></ProtectedRoute>} />
           <Route path="/reflection" component={() => <ProtectedRoute><ReflectionRoom /></ProtectedRoute>} />
+          <Route path="/matchmaking" component={() => <ProtectedRoute><Matchmaking /></ProtectedRoute>} />
           <Route component={NotFound} />
         </Switch>
       </div>
