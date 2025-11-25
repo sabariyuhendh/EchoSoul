@@ -1,12 +1,12 @@
 
+import React, { Component, ReactNode } from "react";
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { QueryClientProvider } from "@tanstack/react-query";
+import { queryClient } from "@/lib/queryClient";
 import { Route, Switch } from "wouter";
-import { useAuth } from "@/hooks/useAuth";
 import NavigationRedesigned from "./components/NavigationRedesigned";
-import { Component, ReactNode } from "react";
 
 // Simple Error Boundary without external dependency
 class ErrorBoundary extends Component<
@@ -60,11 +60,9 @@ import CalmSpace from "./pages/CalmSpace";
 import HumourClub from "./pages/HumourClub";
 import NotFound from "./pages/NotFound";
 import ReflectionRoom from "./pages/ReflectionRoom";
-import GoogleLogin from "./pages/GoogleLogin";
+import Login from "./pages/Login";
 import Profile from "./pages/Profile";
 import ProtectedRoute from "./components/ProtectedRoute";
-
-const queryClient = new QueryClient();
 
 function AppRouter() {
   return (
@@ -72,7 +70,7 @@ function AppRouter() {
       <div className="min-h-screen bg-black">
         <NavigationRedesigned />
         <Switch>
-          <Route path="/login" component={GoogleLogin} />
+          <Route path="/login" component={Login} />
           <Route path="/" component={Index} />
           <Route path="/profile" component={() => <ProtectedRoute><Profile /></ProtectedRoute>} />
           <Route path="/vault" component={() => <ProtectedRoute><Vault /></ProtectedRoute>} />

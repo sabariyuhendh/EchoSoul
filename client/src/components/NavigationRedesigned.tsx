@@ -1,8 +1,7 @@
-import { useState } from 'react';
+import React, { useState } from 'react';
 import { Link, useLocation } from 'wouter';
 import { Button } from '@/components/ui/button';
 import { useAuth } from '@/hooks/useAuth';
-import { signOutFromFirebase } from '@/lib/firebase';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { ChevronDown, Menu, X, LogOut } from 'lucide-react';
 
@@ -10,7 +9,7 @@ const NavigationRedesigned = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [location] = useLocation();
-  const { isAuthenticated, user } = useAuth();
+  const { isAuthenticated, user, logout } = useAuth();
 
   // Main navigation items (always visible)
   const mainNavItems = [
@@ -38,11 +37,7 @@ const NavigationRedesigned = () => {
 
   const handleLogout = async () => {
     try {
-      await signOutFromFirebase();
-      await fetch('/api/auth/logout', {
-        method: 'POST',
-        credentials: 'include',
-      });
+      await logout();
       window.location.href = "/login";
     } catch (error) {
       console.error('Logout error:', error);

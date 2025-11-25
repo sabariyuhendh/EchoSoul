@@ -1,8 +1,20 @@
+import "dotenv/config";
 import express, { type Request, Response, NextFunction } from "express";
 import path from "path";
 import fileUpload from "express-fileupload";
 import { registerRoutes } from "./routes";
 import { setupVite, serveStatic, log } from "./vite";
+
+// Verify DATABASE_URL is loaded
+if (!process.env.DATABASE_URL) {
+  console.error('❌ DATABASE_URL is not set!');
+  console.error('   Make sure your .env file exists and contains DATABASE_URL');
+  process.exit(1);
+}
+
+// Log DATABASE_URL (masked) for verification
+const maskedDbUrl = process.env.DATABASE_URL.replace(/:[^:@]+@/, ':****@');
+console.log('[server] DATABASE_URL loaded:', maskedDbUrl);
 
 const app = express();
 
@@ -71,8 +83,14 @@ app.use((req, res, next) => {
     const status = err.status || err.statusCode || 500;
     const message = err.message || "Internal Server Error";
 
-    res.status(status).json({ message });
-    throw err;
+    // Don't override responses that were already sent
+    if (!res.headersSent) {
+      res.status(status).json({ message, error: message, details: err.details || err.stack });
+    }
+    // Only throw in development for debugging
+    if (process.env.NODE_ENV === 'development') {
+      console.error('Unhandled error:', err);
+    }
   });
 
   // Serve the test auth page for debugging
@@ -93,11 +111,7 @@ app.use((req, res, next) => {
   // this serves both the API and the client.
   // It is the only port that is not firewalled.
   const port = 5000;
-  server.listen({
-    port,
-    host: "0.0.0.0",
-    reusePort: true,
-  }, () => {
+  server.listen(port, "0.0.0.0", () => {
     log(`serving on port ${port}`);
   });
 })();

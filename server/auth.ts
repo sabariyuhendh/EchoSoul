@@ -21,15 +21,16 @@ export function getSession() {
     saveUninitialized: false,
     name: 'connect.sid',
     cookie: {
-      httpOnly: false,
-      secure: false,
+      httpOnly: false, // Keep false for development - can be true in production
+      secure: process.env.NODE_ENV === 'production', // Use secure cookies in production
       maxAge: sessionTtl,
       sameSite: 'lax',
+      path: '/', // Ensure cookie is available for all paths
     },
   });
 }
 
-// Firebase-based authentication middleware
+// Session-based authentication middleware
 export const requireAuth = (req: any, res: any, next: any) => {
   if (!req.session?.user) {
     return res.status(401).json({ message: "Authentication required" });

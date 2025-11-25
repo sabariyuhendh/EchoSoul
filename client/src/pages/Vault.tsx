@@ -1,15 +1,50 @@
-import { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Textarea } from '@/components/ui/textarea';
 import { Progress } from '@/components/ui/progress';
 import { Clock, Save, Trash2 } from 'lucide-react';
+import { useAuth } from '@/hooks/useAuth';
+
+interface VaultEntry {
+  id: string;
+  content: string;
+  duration: number;
+  createdAt: string | Date;
+}
 
 const Vault = () => {
+  const { user, isAuthenticated } = useAuth();
   const [isActive, setIsActive] = useState(false);
   const [timeLeft, setTimeLeft] = useState(480); // 8 minutes in seconds
   const [content, setContent] = useState('');
-  const [entries, setEntries] = useState<string[]>([]);
+  const [entries, setEntries] = useState<VaultEntry[]>([]);
+  const [isLoading, setIsLoading] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
+
+  // Fetch entries on mount
+  useEffect(() => {
+    if (isAuthenticated && user) {
+      fetchEntries();
+    }
+  }, [isAuthenticated, user]);
+
+  const fetchEntries = async () => {
+    try {
+      setIsLoading(true);
+      const response = await fetch('/api/vault', {
+        credentials: 'include',
+      });
+      if (response.ok) {
+        const data = await response.json();
+        setEntries(data.entries || []);
+      }
+    } catch (error) {
+      console.error('Error fetching vault entries:', error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   useEffect(() => {
     let interval: NodeJS.Timeout;
@@ -29,22 +64,60 @@ const Vault = () => {
     return `${mins}:${secs.toString().padStart(2, '0')}`;
   };
 
+  const formatDateTime = (date: string | Date) => {
+    const d = new Date(date);
+    return d.toLocaleString('en-US', {
+      year: 'numeric',
+      month: 'short',
+      day: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit',
+    });
+  };
+
   const startSession = () => {
     setIsActive(true);
     setTimeLeft(480);
     setContent('');
   };
 
-  const saveEntry = () => {
-    if (content.trim()) {
-      setEntries([content, ...entries]);
-      setContent('');
-      setIsActive(false);
-      setTimeLeft(480);
+  const saveEntry = async () => {
+    if (content.trim() && isAuthenticated) {
+      try {
+        setIsSaving(true);
+        const duration = 480 - timeLeft; // Time spent in seconds
+        const response = await fetch('/api/vault', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          credentials: 'include',
+          body: JSON.stringify({
+            content: content.trim(),
+            duration: duration,
+          }),
+        });
+
+        if (response.ok) {
+          const data = await response.json();
+          setEntries([data.entry, ...entries]);
+          setContent('');
+          setIsActive(false);
+          setTimeLeft(480);
+        } else {
+          console.error('Error saving vault entry');
+        }
+      } catch (error) {
+        console.error('Error saving vault entry:', error);
+      } finally {
+        setIsSaving(false);
+      }
     }
   };
 
   const deleteEntry = (index: number) => {
+    // Note: Delete functionality would require a DELETE API endpoint
+    // For now, we'll just remove from local state
     setEntries(entries.filter((_, i) => i !== index));
   };
 
@@ -81,10 +154,11 @@ const Vault = () => {
                 <p className="text-gray-400">Session in progress... Let it all out.</p>
                 <Button 
                   onClick={saveEntry}
+                  disabled={isSaving || !content.trim()}
                   className="immersive-button secondary px-6 py-2"
                 >
                   <Save className="w-4 h-4 mr-2" />
-                  Save & End
+                  {isSaving ? 'Saving...' : 'Save & End'}
                 </Button>
               </div>
             )}
@@ -104,13 +178,20 @@ const Vault = () => {
         )}
 
         {/* Previous Entries */}
-        {entries.length > 0 && (
+        {isLoading ? (
+          <div className="text-center text-gray-400 py-8">Loading entries...</div>
+        ) : entries.length > 0 ? (
           <div className="space-y-4">
             <h2 className="text-xl font-light text-gradient-sage">Previous Sessions</h2>
             {entries.map((entry, index) => (
-              <Card key={index} className="apple-card p-6 group">
+              <Card key={entry.id} className="apple-card p-6 group">
                 <div className="flex justify-between items-start">
-                  <p className="text-gray-300 flex-1 line-clamp-3">{entry}</p>
+                  <div className="flex-1">
+                    <p className="text-gray-300 line-clamp-3">{entry.content}</p>
+                    <p className="text-xs text-gray-500 mt-2">
+                      {formatDateTime(entry.createdAt)} • Duration: {Math.floor(entry.duration / 60)}m {entry.duration % 60}s
+                    </p>
+                  </div>
                   <Button
                     variant="ghost"
                     size="sm"
@@ -123,7 +204,7 @@ const Vault = () => {
               </Card>
             ))}
           </div>
-        )}
+        ) : null}
       </div>
     </div>
   );

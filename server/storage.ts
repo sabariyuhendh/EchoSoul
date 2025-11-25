@@ -95,8 +95,17 @@ export class DatabaseStorage implements IStorage {
   }
 
   async getUserByEmail(email: string): Promise<User | undefined> {
-    const [user] = await db.select().from(users).where(eq(users.email, email));
-    return user || undefined;
+    try {
+      const result = await db.select().from(users).where(eq(users.email, email));
+      if (!result || result.length === 0) {
+        return undefined;
+      }
+      const [user] = result;
+      return user || undefined;
+    } catch (error) {
+      console.error('Database error in getUserByEmail:', error);
+      throw new Error(`Failed to get user by email: ${error instanceof Error ? error.message : 'Unknown error'}`);
+    }
   }
 
   async getUserByGoogleId(googleId: string): Promise<User | undefined> {
@@ -114,11 +123,30 @@ export class DatabaseStorage implements IStorage {
   }
 
   async createUser(userData: Omit<User, 'createdAt' | 'updatedAt'>): Promise<User> {
-    const [user] = await db
-      .insert(users)
-      .values({ ...userData, createdAt: new Date(), updatedAt: new Date() })
-      .returning();
-    return user;
+    try {
+      const result = await db
+        .insert(users)
+        .values({ ...userData, createdAt: new Date(), updatedAt: new Date() })
+        .returning();
+      
+      if (!result || result.length === 0) {
+        throw new Error('Failed to create user: No data returned from database');
+      }
+      
+      const [user] = result;
+      if (!user) {
+        throw new Error('Failed to create user: User object is undefined');
+      }
+      
+      return user;
+    } catch (error) {
+      console.error('Database error in createUser:', error);
+      // Re-throw with more context
+      if (error instanceof Error) {
+        throw new Error(`Failed to create user: ${error.message}`);
+      }
+      throw error;
+    }
   }
 
   async upsertUser(userData: UpsertUser): Promise<User> {

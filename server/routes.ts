@@ -7,125 +7,15 @@ import { z } from "zod";
 import OpenAI from "openai";
 import Groq from "groq-sdk";
 import { getCalmPreferences, saveCalmPreferences, logMeditationSession, getMeditationStats } from './calmSpaceRoutes';
-import { setupAuth, requireAuth } from './auth';
+import { setupAuthRoutes } from './routes-auth';
+import { requireAuth } from './auth-new';
 
 export async function registerRoutes(app: Express): Promise<Server> {
-  // Enable clean authentication
-  await setupAuth(app);
-
-  // Authentication routes
-  app.get('/api/auth/user', async (req: any, res) => {
-    try {
-      if (!req.session?.user) {
-        return res.status(401).json({ message: "Not authenticated" });
-      }
-      
-      const userData = await storage.getUser(req.session.user.id);
-      if (!userData) {
-        return res.status(401).json({ message: "User not found" });
-      }
-      
-      // Remove sensitive data
-      const { passwordHash, ...safeUser } = userData;
-      res.json(safeUser);
-    } catch (error) {
-      console.error("Error fetching user:", error);
-      res.status(500).json({ message: "Failed to fetch user" });
-    }
-  });
-
-  // Remove Google OAuth routes since we're using Firebase + API auth
-
-  // Profile update endpoint
-  app.patch("/api/auth/profile", requireAuth, async (req: any, res) => {
-    try {
-      const { firstName, lastName } = req.body;
-      const userId = req.user.id;
-      
-      const updatedUser = await storage.updateUser(userId, {
-        firstName: firstName || undefined,
-        lastName: lastName || undefined,
-      });
-
-      if (!updatedUser) {
-        return res.status(404).json({ message: "User not found" });
-      }
-
-      res.json({ success: true, user: updatedUser });
-    } catch (error) {
-      console.error('Profile update error:', error);
-      res.status(500).json({ message: 'Failed to update profile' });
-    }
-  });
-
-  app.post('/api/auth/logout', (req: any, res) => {
-    req.session.destroy((err: any) => {
-      if (err) {
-        return res.status(500).json({ message: "Failed to logout" });
-      }
-      res.clearCookie('connect.sid');
-      res.json({ success: true, message: "Logged out successfully" });
-    });
-  });
-
-  // Google Firebase authentication endpoint
-  app.post('/api/auth/google', async (req: any, res) => {
-    try {
-      const { uid, email, firstName, lastName, profileImageUrl } = req.body;
-
-      if (!uid || !email) {
-        return res.status(400).json({ error: 'Missing required Google user data' });
-      }
-
-      // Check if user exists with this Google ID
-      let user = await storage.getUserByGoogleId(uid);
-      
-      if (!user) {
-        // Check if user exists with this email
-        user = await storage.getUserByEmail(email);
-        
-        if (user) {
-          // Link Google account to existing user
-          user = await storage.updateUser(user.id, { googleId: uid, profileImageUrl });
-        } else {
-          // Create new user
-          const userId = crypto.randomUUID();
-          user = await storage.createUser({
-            id: userId,
-            email,
-            firstName,
-            lastName,
-            googleId: uid,
-            profileImageUrl,
-            passwordHash: null, // No password for Google users
-          });
-        }
-      }
-
-      // Set user in session
-      req.session.user = {
-        id: user.id,
-        email: user.email,
-        firstName: user.firstName,
-        lastName: user.lastName,
-      };
-
-      res.json({ success: true, user: { id: user.id, email: user.email } });
-    } catch (error) {
-      console.error('Google auth error:', error);
-      res.status(500).json({ error: 'Google authentication failed' });
-    }
-  });
-
-  // Google-only authentication - email/password removed
+  // Setup new clean authentication
+  setupAuthRoutes(app);
 
   // Handle GET request to /api/login - redirect to login page
   app.get('/api/login', (req, res) => {
-    res.redirect('/login');
-  });
-
-  // Handle Google OAuth (mock for development)
-  app.get('/api/auth/google', (req, res) => {
     res.redirect('/login');
   });
 
@@ -314,13 +204,31 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const userId = req.user.id;
       
+      // Check for file upload
       if (!req.files || !req.files.audio) {
+        console.error("No audio file in request. Files:", req.files);
         return res.status(400).json({ error: "No audio file provided" });
       }
 
       const audioFile = req.files.audio;
       const name = req.body.name || `Whisper ${new Date().toLocaleTimeString()}`;
       const duration = parseFloat(req.body.duration) || 0;
+
+      console.log("Uploading whisper:", { name, duration, fileSize: audioFile.size, mimetype: audioFile.mimetype });
+
+      // Check Cloudinary config
+      if (!process.env.CLOUDINARY_CLOUD_NAME || !process.env.CLOUDINARY_API_KEY || !process.env.CLOUDINARY_API_SECRET) {
+        console.error("Cloudinary credentials missing");
+        // Save to database without Cloudinary URL if credentials are missing
+        const validatedData = insertWhisperSchema.parse({
+          userId,
+          name,
+          duration,
+          audioUrl: null
+        });
+        const whisper = await storage.createWhisper(validatedData);
+        return res.json({ success: true, whisper, warning: "Cloudinary not configured, audio not uploaded" });
+      }
 
       // Upload to Cloudinary
       const cloudinary = require('cloudinary').v2;
@@ -330,8 +238,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
         api_secret: process.env.CLOUDINARY_API_SECRET
       });
 
+      // Get file buffer - express-fileupload provides .data property
+      const fileBuffer = audioFile.data || audioFile.buffer || Buffer.from(audioFile);
+
       const uploadResult = await new Promise((resolve, reject) => {
-        cloudinary.uploader.upload_stream(
+        const uploadStream = cloudinary.uploader.upload_stream(
           {
             resource_type: "video", // Cloudinary uses "video" for audio files
             folder: "echosoul/whispers",
@@ -339,10 +250,17 @@ export async function registerRoutes(app: Express): Promise<Server> {
             format: "wav"
           },
           (error: any, result: any) => {
-            if (error) reject(error);
-            else resolve(result);
+            if (error) {
+              console.error("Cloudinary upload error:", error);
+              reject(error);
+            } else {
+              console.log("Cloudinary upload successful:", result.secure_url);
+              resolve(result);
+            }
           }
-        ).end(audioFile.data);
+        );
+        
+        uploadStream.end(fileBuffer);
       });
 
       const audioUrl = (uploadResult as any).secure_url;
@@ -356,10 +274,15 @@ export async function registerRoutes(app: Express): Promise<Server> {
       });
 
       const whisper = await storage.createWhisper(validatedData);
+      console.log("Whisper saved to database:", whisper.id);
       res.json({ success: true, whisper });
-    } catch (error) {
+    } catch (error: any) {
       console.error("Error uploading whisper:", error);
-      res.status(500).json({ error: "Internal server error" });
+      console.error("Error details:", error.message, error.stack);
+      res.status(500).json({ 
+        error: "Internal server error",
+        details: process.env.NODE_ENV === 'development' ? error.message : undefined
+      });
     }
   });
 
@@ -433,8 +356,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
     });
 
-  // Initialize OpenAI with API key
-  const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
+  // Initialize OpenAI with API key (optional - currently not used, but kept for future features)
+  // Only initialize if API key is provided to avoid errors
+  const openai = process.env.OPENAI_API_KEY 
+    ? new OpenAI({ apiKey: process.env.OPENAI_API_KEY })
+    : null;
   
   // Initialize Groq with API key - use fallback if env var not set
   const groq = new Groq({ 
@@ -726,8 +652,25 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Health check endpoint
-  app.get("/api/health", (req, res) => {
-    res.json({ status: "ok", timestamp: new Date().toISOString() });
+  app.get("/api/health", async (req, res) => {
+    try {
+      // Test database connection
+      const testUser = await storage.getUser('health-check-test-id');
+      // Test session store by checking if we can query sessions table
+      res.json({ 
+        status: "ok", 
+        timestamp: new Date().toISOString(),
+        database: "connected",
+        sessionStore: "available"
+      });
+    } catch (error) {
+      res.status(500).json({ 
+        status: "error", 
+        timestamp: new Date().toISOString(),
+        database: "error",
+        error: error instanceof Error ? error.message : 'Unknown error'
+      });
+    }
   });
 
   // Reflection routes

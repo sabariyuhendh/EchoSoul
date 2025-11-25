@@ -1,22 +1,50 @@
 
-import { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Textarea } from '@/components/ui/textarea';
 import { ArrowLeft, TrendingUp, Calendar } from 'lucide-react';
 import { Link } from 'wouter';
+import { useAuth } from '@/hooks/useAuth';
 
 interface MoodEntry {
   id: string;
   mood: number;
-  note: string;
-  date: Date;
+  note: string | null;
+  createdAt: string | Date;
 }
 
 const Mood = () => {
+  const { user, isAuthenticated } = useAuth();
   const [selectedMood, setSelectedMood] = useState<number | null>(null);
   const [note, setNote] = useState('');
   const [entries, setEntries] = useState<MoodEntry[]>([]);
+  const [isLoading, setIsLoading] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
+
+  // Fetch entries on mount
+  useEffect(() => {
+    if (isAuthenticated && user) {
+      fetchEntries();
+    }
+  }, [isAuthenticated, user]);
+
+  const fetchEntries = async () => {
+    try {
+      setIsLoading(true);
+      const response = await fetch('/api/mood', {
+        credentials: 'include',
+      });
+      if (response.ok) {
+        const data = await response.json();
+        setEntries(data.entries || []);
+      }
+    } catch (error) {
+      console.error('Error fetching mood entries:', error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   const moods = [
     { value: 1, emoji: '😢', label: 'Very Sad', color: 'rose' },
@@ -26,17 +54,35 @@ const Mood = () => {
     { value: 5, emoji: '😊', label: 'Very Good', color: 'sage' }
   ];
 
-  const saveMoodEntry = () => {
-    if (selectedMood !== null) {
-      const newEntry: MoodEntry = {
-        id: Date.now().toString(),
-        mood: selectedMood,
-        note: note.trim(),
-        date: new Date()
-      };
-      setEntries([newEntry, ...entries]);
-      setSelectedMood(null);
-      setNote('');
+  const saveMoodEntry = async () => {
+    if (selectedMood !== null && isAuthenticated) {
+      try {
+        setIsSaving(true);
+        const response = await fetch('/api/mood', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          credentials: 'include',
+          body: JSON.stringify({
+            mood: selectedMood,
+            note: note.trim() || null,
+          }),
+        });
+
+        if (response.ok) {
+          const data = await response.json();
+          setEntries([data.entry, ...entries]);
+          setSelectedMood(null);
+          setNote('');
+        } else {
+          console.error('Error saving mood entry');
+        }
+      } catch (error) {
+        console.error('Error saving mood entry:', error);
+      } finally {
+        setIsSaving(false);
+      }
     }
   };
 
@@ -48,7 +94,18 @@ const Mood = () => {
   const getWeeklyEntries = () => {
     const oneWeekAgo = new Date();
     oneWeekAgo.setDate(oneWeekAgo.getDate() - 7);
-    return entries.filter(entry => entry.date >= oneWeekAgo);
+    return entries.filter(entry => new Date(entry.createdAt) >= oneWeekAgo);
+  };
+
+  const formatDateTime = (date: string | Date) => {
+    const d = new Date(date);
+    return d.toLocaleString('en-US', {
+      year: 'numeric',
+      month: 'short',
+      day: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit',
+    });
   };
 
   return (
@@ -93,7 +150,7 @@ const Mood = () => {
                 </div>
                 <h3 className="text-lg font-medium text-gradient-lavender">Latest Mood</h3>
                 <p className="text-sm text-gray-400">
-                  {entries.length > 0 ? entries[0].date.toLocaleDateString() : 'No entries yet'}
+                  {entries.length > 0 ? formatDateTime(entries[0].createdAt) : 'No entries yet'}
                 </p>
               </div>
             </Card>
@@ -141,16 +198,18 @@ const Mood = () => {
             {/* Save Button */}
             <Button
               onClick={saveMoodEntry}
-              disabled={selectedMood === null}
+              disabled={selectedMood === null || isSaving}
               className="w-full immersive-button primary"
             >
-              Save Mood Entry
+              {isSaving ? 'Saving...' : 'Save Mood Entry'}
             </Button>
           </div>
         </Card>
 
         {/* Mood History */}
-        {entries.length > 0 && (
+        {isLoading ? (
+          <div className="text-center text-gray-400 py-8">Loading mood entries...</div>
+        ) : entries.length > 0 ? (
           <div className="space-y-4">
             <h2 className="text-xl font-light text-gradient-sage">Mood History</h2>
             {entries.map((entry) => (
@@ -165,7 +224,7 @@ const Mood = () => {
                         {moods.find(m => m.value === entry.mood)?.label}
                       </h3>
                       <span className="text-sm text-gray-400">
-                        {entry.date.toLocaleDateString()}
+                        {formatDateTime(entry.createdAt)}
                       </span>
                     </div>
                     {entry.note && (
@@ -176,7 +235,7 @@ const Mood = () => {
               </Card>
             ))}
           </div>
-        )}
+        ) : null}
       </div>
     </div>
   );

@@ -1,5 +1,5 @@
 
-import { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { useQuery, useMutation } from '@tanstack/react-query';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
@@ -9,21 +9,14 @@ import { apiRequest, queryClient } from '@/lib/queryClient';
 import { useToast } from '@/hooks/use-toast';
 import type { Whisper } from '@shared/schema';
 
-interface Recording {
-  id: string;
-  name: string;
-  duration: number;
-  date: Date;
-  blob: Blob;
-}
 
 const Whisper = () => {
   const { toast } = useToast();
   const [isRecording, setIsRecording] = useState(false);
-  const [localRecordings, setLocalRecordings] = useState<Recording[]>([]);
   const [playingId, setPlayingId] = useState<string | null>(null);
   const [recordingTime, setRecordingTime] = useState(0);
   const [isSaving, setIsSaving] = useState(false);
+  const [currentRecordingBlob, setCurrentRecordingBlob] = useState<Blob | null>(null);
   
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
   const audioRef = useRef<HTMLAudioElement | null>(null);
@@ -83,21 +76,13 @@ const Whisper = () => {
       };
       
       mediaRecorder.onstop = async () => {
-        const blob = new Blob(chunks, { type: 'audio/wav' });
-        const newRecording: Recording = {
-          id: Date.now().toString(),
-          name: `Whisper ${new Date().toLocaleTimeString()}`,
-          duration: recordingTime,
-          date: new Date(),
-          blob
-        };
-        
-        // Add to local state immediately for immediate playback
-        setLocalRecordings([newRecording, ...localRecordings]);
+        const blob = new Blob(chunks, { type: mediaRecorder.mimeType || 'audio/webm' });
+        setCurrentRecordingBlob(blob);
         setRecordingTime(0);
         
-        // Save to database
-        await saveRecordingToDatabase(newRecording);
+        // Save to database immediately
+        const name = `Whisper ${new Date().toLocaleTimeString()}`;
+        await saveRecordingToDatabase(blob, name, recordingTime);
       };
       
       mediaRecorder.start();
@@ -145,40 +130,49 @@ const Whisper = () => {
   };
 
   // Upload audio to Cloudinary and save to database
-  const saveRecordingToDatabase = async (recording: Recording) => {
+  const saveRecordingToDatabase = async (blob: Blob, name: string, duration: number) => {
     setIsSaving(true);
     try {
       // Create FormData for audio upload
       const formData = new FormData();
-      formData.append('audio', recording.blob, `${recording.name}.wav`);
-      formData.append('name', recording.name);
-      formData.append('duration', recording.duration.toString());
+      // Use the blob directly - browser will set correct content type
+      formData.append('audio', blob, `${name}.webm`);
+      formData.append('name', name);
+      formData.append('duration', duration.toString());
+
+      console.log('Uploading whisper:', { name, duration, blobSize: blob.size });
 
       // Upload to server which will handle Cloudinary upload
       const response = await fetch('/api/whisper/upload', {
         method: 'POST',
         body: formData,
         credentials: 'include', // Include cookies for authentication
+        // Don't set Content-Type header - browser will set it with boundary for FormData
       });
 
       if (!response.ok) {
-        throw new Error('Upload failed');
+        const errorData = await response.json().catch(() => ({ error: 'Upload failed' }));
+        throw new Error(errorData.error || 'Upload failed');
       }
 
       const result = await response.json();
+      console.log('Upload successful:', result);
+
+      // Clear current recording blob
+      setCurrentRecordingBlob(null);
 
       // Refresh the whispers list
-      queryClient.invalidateQueries({ queryKey: ['/api/whisper'] });
+      await queryClient.invalidateQueries({ queryKey: ['/api/whisper'] });
       
       toast({
         title: "Recording saved",
         description: "Your whisper has been uploaded and saved successfully.",
       });
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error saving recording:', error);
       toast({
         title: "Upload failed", 
-        description: "Could not upload recording to cloud storage, but it's available locally this session.",
+        description: error.message || "Could not upload recording. Please try again.",
         variant: "destructive",
       });
     } finally {
@@ -186,33 +180,11 @@ const Whisper = () => {
     }
   };
 
-  const playRecording = (recording: Recording | Whisper) => {
+  const playRecording = (recording: Whisper) => {
     if (playingId === recording.id) {
       audioRef.current?.pause();
       setPlayingId(null);
-    } else if ('blob' in recording) {
-      // Local recording with blob
-      const url = URL.createObjectURL(recording.blob);
-      if (audioRef.current) {
-        audioRef.current.src = url;
-        audioRef.current.play().catch((error) => {
-          console.warn('Audio playback failed:', error);
-          setPlayingId(null);
-          URL.revokeObjectURL(url);
-        });
-        setPlayingId(recording.id);
-        
-        audioRef.current.onended = () => {
-          setPlayingId(null);
-          URL.revokeObjectURL(url);
-        };
-        
-        audioRef.current.onerror = () => {
-          setPlayingId(null);
-          URL.revokeObjectURL(url);
-        };
-      }
-    } else if ('audioUrl' in recording && recording.audioUrl) {
+    } else if (recording.audioUrl) {
       // Database recording with URL
       if (audioRef.current) {
         audioRef.current.src = recording.audioUrl;
@@ -225,6 +197,28 @@ const Whisper = () => {
         audioRef.current.onended = () => setPlayingId(null);
         audioRef.current.onerror = () => setPlayingId(null);
       }
+    } else if (currentRecordingBlob && recording.id === 'current') {
+      // Current recording being saved
+      const url = URL.createObjectURL(currentRecordingBlob);
+      if (audioRef.current) {
+        audioRef.current.src = url;
+        audioRef.current.play().catch((error) => {
+          console.warn('Audio playback failed:', error);
+          setPlayingId(null);
+          URL.revokeObjectURL(url);
+        });
+        setPlayingId('current');
+        
+        audioRef.current.onended = () => {
+          setPlayingId(null);
+          URL.revokeObjectURL(url);
+        };
+        
+        audioRef.current.onerror = () => {
+          setPlayingId(null);
+          URL.revokeObjectURL(url);
+        };
+      }
     } else {
       toast({
         title: "Playback unavailable",
@@ -235,11 +229,10 @@ const Whisper = () => {
   };
 
   const deleteRecording = (id: string) => {
-    // Check if it's a local recording
-    const localRecording = localRecordings.find(r => r.id === id);
-    if (localRecording) {
-      setLocalRecordings(localRecordings.filter(r => r.id !== id));
-      if (playingId === id) {
+    if (id === 'current' && currentRecordingBlob) {
+      // Delete current recording
+      setCurrentRecordingBlob(null);
+      if (playingId === 'current') {
         audioRef.current?.pause();
         setPlayingId(null);
       }
@@ -341,49 +334,54 @@ const Whisper = () => {
         )}
 
         {/* Recordings List */}
-        {(localRecordings.length > 0 || whispers.length > 0) && (
+        {(currentRecordingBlob || whispers.length > 0) && (
           <div className="space-y-4">
             <h2 className="text-xl font-light text-gradient-lavender">Your Whispers</h2>
             
-            {/* Local recordings first (current session) */}
-            {localRecordings.map((recording) => (
-              <Card key={`local-${recording.id}`} className="apple-card p-6">
+            {/* Current recording being saved */}
+            {currentRecordingBlob && (
+              <Card key="current" className="apple-card p-6 border-blue-500/30">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center space-x-4">
                     <Button
                       variant="ghost"
                       size="sm"
-                      onClick={() => playRecording(recording)}
+                      onClick={() => playRecording({ id: 'current', name: 'Current Recording', duration: recordingTime, audioUrl: null, userId: '', createdAt: new Date() } as Whisper)}
                       className="w-12 h-12 rounded-full bg-lavender-500/20 hover:bg-lavender-500/30 text-lavender-400"
+                      disabled={isSaving}
                     >
-                      {playingId === recording.id ? (
+                      {playingId === 'current' ? (
                         <Pause className="w-5 h-5" />
                       ) : (
                         <Play className="w-5 h-5" />
                       )}
                     </Button>
                     <div>
-                      <h3 className="font-medium text-white">{recording.name}</h3>
+                      <h3 className="font-medium text-white">
+                        {isSaving ? 'Saving...' : 'Current Recording'}
+                      </h3>
                       <p className="text-sm text-gray-400">
-                        {formatTime(recording.duration)} • {recording.date.toLocaleDateString()} • Local
+                        {formatTime(recordingTime)} • {isSaving ? 'Uploading to cloud...' : 'Ready to save'}
                       </p>
                     </div>
                   </div>
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={() => deleteRecording(recording.id)}
-                    className="text-red-400 hover:text-red-300 hover:bg-red-500/20"
-                  >
-                    <Trash2 className="w-4 h-4" />
-                  </Button>
+                  {!isSaving && (
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => deleteRecording('current')}
+                      className="text-red-400 hover:text-red-300 hover:bg-red-500/20"
+                    >
+                      <Trash2 className="w-4 h-4" />
+                    </Button>
+                  )}
                 </div>
               </Card>
-            ))}
+            )}
 
             {/* Database recordings */}
             {whispers.map((recording) => (
-              <Card key={`db-${recording.id}`} className="apple-card p-6">
+              <Card key={recording.id} className="apple-card p-6">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center space-x-4">
                     <Button
@@ -424,6 +422,13 @@ const Whisper = () => {
               </Card>
             ))}
           </div>
+        )}
+
+        {/* Empty state */}
+        {!currentRecordingBlob && whispers.length === 0 && !isLoading && (
+          <Card className="apple-card p-8 text-center">
+            <p className="text-gray-400">No whispers yet. Record your first voice diary entry above.</p>
+          </Card>
         )}
       </div>
     </div>

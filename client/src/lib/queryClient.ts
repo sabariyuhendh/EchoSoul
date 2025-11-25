@@ -10,7 +10,12 @@ export const queryClient = new QueryClient({
       },
       queryFn: async ({ queryKey }) => {
         const url = Array.isArray(queryKey) ? queryKey[0] : queryKey;
-        console.log('Making request to:', url, 'with credentials: include');
+        const isAuthEndpoint = url === '/api/auth/user';
+        
+        // Only log non-auth requests to reduce console noise
+        if (!isAuthEndpoint) {
+          console.log('Making request to:', url, 'with credentials: include');
+        }
         
         const response = await fetch(url as string, {
           credentials: 'include', // Include cookies for all queries
@@ -19,18 +24,18 @@ export const queryClient = new QueryClient({
           }
         });
         
-        // Log response cookies for debugging
-        const setCookieHeader = response.headers.get('set-cookie');
-        if (setCookieHeader) {
-          console.log('Response set-cookie header:', setCookieHeader);
+        // Log response cookies for debugging (only for non-auth endpoints)
+        if (!isAuthEndpoint) {
+          const setCookieHeader = response.headers.get('set-cookie');
+          if (setCookieHeader) {
+            console.log('Response set-cookie header:', setCookieHeader);
+          }
+          console.log('Response status:', response.status, 'for', url);
         }
         
-        console.log('Response status:', response.status, 'for', url);
-        
         if (!response.ok) {
-          // For auth endpoints, handle 401 differently 
-          if (response.status === 401 && url === '/api/auth/user') {
-            console.log('Auth endpoint returned 401, user not authenticated');
+          // For auth endpoints, handle 401 silently (expected for unauthenticated users)
+          if (response.status === 401 && isAuthEndpoint) {
             return null; // Return null for unauthenticated users
           }
           console.error('Query failed:', response.status, response.statusText, 'for', url);
@@ -38,7 +43,9 @@ export const queryClient = new QueryClient({
         }
         
         const data = await response.json();
-        console.log('Response data for', url, ':', data);
+        if (!isAuthEndpoint) {
+          console.log('Response data for', url, ':', data);
+        }
         return data;
       },
     },
@@ -46,7 +53,12 @@ export const queryClient = new QueryClient({
 });
 
 export const apiRequest = async (url: string, options: RequestInit = {}) => {
-  console.log('Making API request to:', url, 'with method:', options.method || 'GET');
+  const isAuthEndpoint = url.includes('/api/auth/');
+  
+  // Only log non-auth requests to reduce console noise
+  if (!isAuthEndpoint) {
+    console.log('Making API request to:', url, 'with method:', options.method || 'GET');
+  }
   
   const response = await fetch(url, {
     credentials: 'include', // Include cookies for session management
@@ -58,7 +70,9 @@ export const apiRequest = async (url: string, options: RequestInit = {}) => {
     ...options,
   });
   
-  console.log('API response status:', response.status, 'for', url);
+  if (!isAuthEndpoint) {
+    console.log('API response status:', response.status, 'for', url);
+  }
 
   if (!response.ok) {
     const errorText = await response.text();

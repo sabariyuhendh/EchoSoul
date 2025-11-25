@@ -11,5 +11,24 @@ if (!process.env.DATABASE_URL) {
   );
 }
 
-export const pool = new Pool({ connectionString: process.env.DATABASE_URL });
+// Log connection info (without password) for debugging
+const dbUrl = process.env.DATABASE_URL;
+const maskedUrl = dbUrl.replace(/:[^:@]+@/, ':****@');
+console.log('[db] Initializing database connection:', maskedUrl);
+
+// Test connection on startup
+const pool = new Pool({ connectionString: process.env.DATABASE_URL });
+
+// Test connection immediately
+pool.query('SELECT 1 as test').then(() => {
+  console.log('[db] ✅ Database connection verified');
+}).catch((err) => {
+  console.error('[db] ❌ Database connection failed:', err.message);
+  console.error('[db] Error code:', err.code);
+  if (err.code === '28P01') {
+    console.error('[db] 💡 Password authentication failed - check your DATABASE_URL password');
+  }
+});
+
+export { pool };
 export const db = drizzle({ client: pool, schema });

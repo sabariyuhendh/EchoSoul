@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Heart, MessageCircle, BookOpen, Mic, TrendingUp, Sparkles, Shield, Clock, ArrowRight, Flame, Users, Brain } from 'lucide-react';

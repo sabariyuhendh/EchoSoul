@@ -1,17 +1,15 @@
 
-import { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Textarea } from '@/components/ui/textarea';
-import { ArrowLeft, Flame, Zap, Mic, Timer } from 'lucide-react';
+import { ArrowLeft, Flame, Timer } from 'lucide-react';
 import { Link } from 'wouter';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { apiRequest } from '@/lib/queryClient';
 import BurnMode from '@/components/BurnModeRealistic';
-import SmashMode from '@/components/SmashModeSimple';
-import ScreamMode from '@/components/ScreamMode';
 
-type ReleaseMode = 'burn' | 'smash' | 'scream';
+type ReleaseMode = 'burn';
 
 const LetItGo = () => {
   const [mode, setMode] = useState<ReleaseMode | null>(null);
@@ -71,26 +69,6 @@ const LetItGo = () => {
     );
   }
 
-  if (mode === 'smash') {
-    return (
-      <SmashMode 
-        content={content}
-        onBack={handleBackToSelection}
-        onComplete={handleModeComplete}
-      />
-    );
-  }
-
-  if (mode === 'scream') {
-    return (
-      <ScreamMode 
-        content={content}
-        onBack={handleBackToSelection}
-        onComplete={handleModeComplete}
-      />
-    );
-  }
-
   return (
     <div className="min-h-screen bg-black text-white page-content">
       <div className="max-w-6xl mx-auto px-6">
@@ -113,92 +91,30 @@ const LetItGo = () => {
           </div>
           <h1 className="text-4xl font-bold text-white mb-4">Let It Go Room</h1>
           <p className="text-gray-400 text-lg max-w-2xl mx-auto">
-            A safe space to release your emotions. Choose how you want to let it go – nothing is saved, everything disappears.
+            A safe space to release your emotions. Write what's bothering you and watch it burn away – nothing is saved, everything disappears.
           </p>
         </div>
 
         {/* Writing Area */}
-        <Card className="glass p-8 mb-12 animate-fade-in border border-white/10">
+        <Card className="glass p-8 mb-8 animate-fade-in border border-white/10">
           <Textarea
             value={content}
             onChange={(e) => setContent(e.target.value)}
-            placeholder="Write everything you want to release... your anger, frustration, pain. Choose how you want to let it go."
+            placeholder="Write everything you want to release... your anger, frustration, pain. Then watch it burn away."
             className="min-h-48 bg-transparent border-none text-lg resize-none focus:ring-0 text-white placeholder-gray-500"
           />
         </Card>
 
-        {/* Mode Selection Cards */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-8">
-          {/* Burn Mode */}
-          <Card 
-            className="glass p-8 hover:scale-105 transition-all duration-300 cursor-pointer group hover:ring-2 hover:ring-red-500/20 animate-fade-in border border-white/10"
+        {/* Burn Button */}
+        <div className="flex justify-center mb-8">
+          <Button
             onClick={() => setMode('burn')}
+            disabled={!content.trim()}
+            className="immersive-button danger px-8 py-3"
           >
-            <div className="text-center space-y-6">
-              <div className="text-6xl mb-4 group-hover:animate-bounce">
-                🔥
-              </div>
-              <div>
-                <h3 className="text-xl font-semibold text-white mb-2">Burn Mode</h3>
-                <p className="text-gray-400 text-sm leading-relaxed">
-                  Write what's bothering you and watch it burn away in flames.
-                </p>
-              </div>
-              <Button
-                className="w-full immersive-button danger"
-              >
-                Start Burning
-              </Button>
-            </div>
-          </Card>
-
-          {/* Smash Mode */}
-          <Card 
-            className="glass p-8 hover:scale-105 transition-all duration-300 cursor-pointer group hover:ring-2 hover:ring-yellow-500/20 animate-fade-in border border-white/10"
-            onClick={() => setMode('smash')}
-            style={{ animationDelay: '0.1s' }}
-          >
-            <div className="text-center space-y-6">
-              <div className="text-6xl mb-4 group-hover:animate-bounce">
-                💥
-              </div>
-              <div>
-                <h3 className="text-xl font-semibold text-white mb-2">Smash Mode</h3>
-                <p className="text-gray-400 text-sm leading-relaxed">
-                  Break virtual objects to release your frustration safely.
-                </p>
-              </div>
-              <Button
-                className="w-full immersive-button primary"
-              >
-                Start Smashing
-              </Button>
-            </div>
-          </Card>
-
-          {/* Scream Mode */}
-          <Card 
-            className="glass p-8 hover:scale-105 transition-all duration-300 cursor-pointer group hover:ring-2 hover:ring-blue-500/20 animate-fade-in border border-white/10"
-            onClick={() => setMode('scream')}
-            style={{ animationDelay: '0.2s' }}
-          >
-            <div className="text-center space-y-6">
-              <div className="text-6xl mb-4 group-hover:animate-bounce">
-                🎤
-              </div>
-              <div>
-                <h3 className="text-xl font-semibold text-white mb-2">Scream Mode</h3>
-                <p className="text-gray-400 text-sm leading-relaxed">
-                  Let it all out vocally – shatter glass with the power of your voice.
-                </p>
-              </div>
-              <Button
-                className="w-full immersive-button primary"
-              >
-                Start Screaming
-              </Button>
-            </div>
-          </Card>
+            <Flame className="w-5 h-5 mr-2" />
+            Burn It Away
+          </Button>
         </div>
 
         {/* Privacy Note */}
