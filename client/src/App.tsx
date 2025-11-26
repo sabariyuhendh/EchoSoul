@@ -56,10 +56,7 @@ import Mood from "./pages/Mood";
 import Whisper from "./pages/Whisper";
 import Soulmate from "./pages/Soulmate";
 import Feed from "./pages/Feed";
-import CalmSpace from "./pages/CalmSpace";
-import HumourClub from "./pages/HumourClub";
 import NotFound from "./pages/NotFound";
-import ReflectionRoom from "./pages/ReflectionRoom";
 import Login from "./pages/Login";
 import Profile from "./pages/Profile";
 import Matchmaking from "./pages/Matchmaking";
@@ -81,9 +78,6 @@ function AppRouter() {
           <Route path="/whisper" component={() => <ProtectedRoute><Whisper /></ProtectedRoute>} />
           <Route path="/soulmate" component={() => <ProtectedRoute><Soulmate /></ProtectedRoute>} />
           <Route path="/feed" component={() => <ProtectedRoute><Feed /></ProtectedRoute>} />
-          <Route path="/calm" component={() => <ProtectedRoute><CalmSpace /></ProtectedRoute>} />
-          <Route path="/humour" component={() => <ProtectedRoute><HumourClub /></ProtectedRoute>} />
-          <Route path="/reflection" component={() => <ProtectedRoute><ReflectionRoom /></ProtectedRoute>} />
           <Route path="/matchmaking" component={() => <ProtectedRoute><Matchmaking /></ProtectedRoute>} />
           <Route component={NotFound} />
         </Switch>

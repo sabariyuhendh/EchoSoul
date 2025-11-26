@@ -317,6 +317,22 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  app.delete("/api/feed/:id", requireAuth, async (req: any, res) => {
+    try {
+      const { id } = req.params;
+      const userId = req.user.id;
+      
+      await storage.deletePost(id, userId);
+      res.json({ success: true, message: "Post deleted successfully" });
+    } catch (error) {
+      console.error("Error deleting post:", error);
+      if (error instanceof Error && error.message.includes("not found") || error.message.includes("permission")) {
+        return res.status(403).json({ error: error.message });
+      }
+      res.status(500).json({ error: "Internal server error" });
+    }
+  });
+
     // Calm Space API endpoints
     app.get("/api/calm/preferences", getCalmPreferences);
     app.post("/api/calm/preferences", saveCalmPreferences);
@@ -634,19 +650,52 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.post("/api/humour/polls/:id/vote", async (req: any, res) => {
+  app.post("/api/humour/polls/:id/vote", requireAuth, async (req: any, res) => {
     try {
       const { id } = req.params;
       const { optionIndex } = req.body;
+      const userId = req.user.id;
       
       if (typeof optionIndex !== 'number' || optionIndex < 0) {
         return res.status(400).json({ error: "Invalid option index" });
       }
 
-      const poll = await storage.voteInHumourClubPoll(id, optionIndex);
+      const poll = await storage.voteInHumourClubPoll(id, userId, optionIndex);
       res.json({ success: true, poll });
     } catch (error) {
       console.error("Error voting in poll:", error);
+      if (error instanceof Error && error.message === "User has already voted in this poll") {
+        return res.status(400).json({ error: error.message });
+      }
+      res.status(500).json({ error: "Internal server error" });
+    }
+  });
+
+  app.get("/api/humour/polls/:id/vote-status", requireAuth, async (req: any, res) => {
+    try {
+      const { id } = req.params;
+      const userId = req.user.id;
+      
+      const voteIndex = await storage.getUserPollVote(id, userId);
+      res.json({ hasVoted: voteIndex !== null, optionIndex: voteIndex });
+    } catch (error) {
+      console.error("Error getting vote status:", error);
+      res.status(500).json({ error: "Internal server error" });
+    }
+  });
+
+  app.delete("/api/humour/polls/:id", requireAuth, async (req: any, res) => {
+    try {
+      const { id } = req.params;
+      const userId = req.user.id;
+      
+      await storage.deletePoll(id, userId);
+      res.json({ success: true, message: "Poll deleted successfully" });
+    } catch (error) {
+      console.error("Error deleting poll:", error);
+      if (error instanceof Error && (error.message.includes("not found") || error.message.includes("permission"))) {
+        return res.status(403).json({ error: error.message });
+      }
       res.status(500).json({ error: "Internal server error" });
     }
   });

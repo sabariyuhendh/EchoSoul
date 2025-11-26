@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
-import { Heart, MessageCircle, BookOpen, Mic, TrendingUp, Sparkles, Shield, Clock, ArrowRight, Flame, Users, Brain } from 'lucide-react';
+import { Heart, MessageCircle, BookOpen, Mic, TrendingUp, Shield, Clock, ArrowRight, Flame, Users } from 'lucide-react';
 import { Link } from 'wouter';
 
 const Index = () => {
@@ -72,30 +72,6 @@ const Index = () => {
       color: "sage",
       gradient: "bg-wellness-flow",
       path: "/feed"
-    },
-    {
-      icon: Sparkles,
-      title: "Calm Space",
-      description: "Meditative space with cosmic visuals and calming music",
-      color: "lavender",
-      gradient: "bg-wellness-flow",
-      path: "/calm"
-    },
-    {
-      icon: Heart,
-      title: "Humour Club",
-      description: "Joyful space to laugh, play games, and reset with humor",
-      color: "amber",
-      gradient: "bg-wellness-flow",
-      path: "/humour"
-    },
-    {
-      icon: Brain,
-      title: "Reflection Room",
-      description: "Deep introspective questions for self-discovery and growth",
-      color: "lavender",
-      gradient: "bg-wellness-flow",
-      path: "/reflection"
     }
   ];
 
@@ -150,11 +126,6 @@ const Index = () => {
               <Button className="immersive-button primary px-8 py-4 text-lg font-medium">
                 Start Your Journey
                 <ArrowRight className="w-5 h-5 ml-2" />
-              </Button>
-            </Link>
-            <Link to="/calm">
-              <Button className="immersive-button secondary px-8 py-4 text-lg font-light">
-                Enter Calm Space
               </Button>
             </Link>
           </div>

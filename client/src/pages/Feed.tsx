@@ -3,7 +3,7 @@ import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Textarea } from '@/components/ui/textarea';
-import { ArrowLeft, Heart, Plus } from 'lucide-react';
+import { ArrowLeft, Heart, Plus, Trash2 } from 'lucide-react';
 import { Link } from 'wouter';
 import { useAuth } from '@/hooks/useAuth';
 
@@ -74,6 +74,28 @@ const Feed = () => {
     }
     
     setLikedPosts(newLikedPosts);
+  };
+
+  const deletePost = async (postId: string) => {
+    if (!isAuthenticated || !user) return;
+    if (!confirm('Are you sure you want to delete this post?')) return;
+
+    try {
+      const response = await fetch(`/api/feed/${postId}`, {
+        method: 'DELETE',
+        credentials: 'include',
+      });
+
+      if (response.ok) {
+        setPosts(posts.filter(post => post.id !== postId));
+      } else {
+        const data = await response.json();
+        alert(data.error || 'Failed to delete post');
+      }
+    } catch (error) {
+      console.error('Error deleting post:', error);
+      alert('Failed to delete post');
+    }
   };
 
   const createPost = async () => {
@@ -240,9 +262,22 @@ const Feed = () => {
                           </p>
                         </div>
                       </div>
-                      <span className={`text-xs px-3 py-1 rounded-full border ${moodConfig?.badgeClass || 'bg-gray-500/20 text-gray-300 border-gray-500/30'}`}>
-                        {moodConfig?.name}
-                      </span>
+                      <div className="flex items-center space-x-2">
+                        <span className={`text-xs px-3 py-1 rounded-full border ${moodConfig?.badgeClass || 'bg-gray-500/20 text-gray-300 border-gray-500/30'}`}>
+                          {moodConfig?.name}
+                        </span>
+                        {user && post.userId === user.id && (
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => deletePost(post.id)}
+                            className="text-red-400 hover:text-red-300 hover:bg-red-500/10"
+                            title="Delete post"
+                          >
+                            <Trash2 className="w-4 h-4" />
+                          </Button>
+                        )}
+                      </div>
                     </div>
 
                     {/* Post Content */}

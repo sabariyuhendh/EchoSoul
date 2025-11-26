@@ -201,7 +201,7 @@ const Matchmaking = () => {
         <div className="mb-8">
           <div className="text-center mb-6">
             <h1 className="text-3xl font-light tracking-tight">
-              <span className="text-gradient-calm">Find a Chat Partner</span>
+              <span className="text-gradient-calm">Chat with Souls</span>
             </h1>
             <p className="text-gray-400 text-sm mt-2">Connect with someone who understands</p>
           </div>

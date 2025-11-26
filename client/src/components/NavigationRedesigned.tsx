@@ -16,8 +16,7 @@ const NavigationRedesigned = () => {
     { title: "Vault", path: "/vault", color: "from-blue-400 to-cyan-400" },
     { title: "Letters Live", path: "/letters", color: "from-green-400 to-emerald-400" },
     { title: "Let It Go", path: "/letitgo", color: "from-red-400 to-orange-400" },
-    { title: "Mood", path: "/mood", color: "from-pink-400 to-rose-400" },
-    { title: "Calm Space", path: "/calm", color: "from-purple-400 to-indigo-400" }
+    { title: "Mood", path: "/mood", color: "from-pink-400 to-rose-400" }
   ];
 
   // Dropdown "More" items
@@ -25,9 +24,7 @@ const NavigationRedesigned = () => {
     { title: "Whisper", path: "/whisper", color: "from-indigo-400 to-purple-400" },
     { title: "Lyra", path: "/soulmate", color: "from-blue-400 to-cyan-400" },
     { title: "Feed", path: "/feed", color: "from-green-400 to-teal-400" },
-    { title: "Matchmaking", path: "/matchmaking", color: "from-pink-400 to-rose-400" },
-    { title: "Humour Club", path: "/humour", color: "from-yellow-400 to-orange-400" },
-    { title: "Reflection Room", path: "/reflection", color: "from-violet-400 to-purple-400" }
+    { title: "Chat with Souls", path: "/matchmaking", color: "from-pink-400 to-rose-400" }
   ];
 
   const isActive = (path: string) => location === path;

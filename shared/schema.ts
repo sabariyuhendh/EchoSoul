@@ -126,6 +126,14 @@ export const humourClubPolls = pgTable("humour_club_polls", {
   updatedAt: timestamp("updated_at").defaultNow().notNull(),
 });
 
+export const pollVotes = pgTable("poll_votes", {
+  id: text("id").primaryKey().notNull(),
+  pollId: varchar("poll_id").notNull(),
+  userId: varchar("user_id").notNull(),
+  optionIndex: integer("option_index").notNull(),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+});
+
 // User types
 export type UpsertUser = typeof users.$inferInsert;
 export type User = typeof users.$inferSelect;
@@ -232,6 +240,7 @@ export const insertHumourClubPollSchema = createInsertSchema(humourClubPolls).pi
 });
 export type InsertHumourClubPoll = z.infer<typeof insertHumourClubPollSchema>;
 export type HumourClubPoll = typeof humourClubPolls.$inferSelect;
+export type PollVote = typeof pollVotes.$inferSelect;
 
 export const reflections = pgTable("reflections", {
   id: text("id").primaryKey().$defaultFn(() => crypto.randomUUID()),

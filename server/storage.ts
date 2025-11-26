@@ -1,6 +1,6 @@
 import { 
   users, letItGoEntries, vaultEntries, moodEntries, letters, whispers, posts,
-  smashModeStats, calmSpacePreferences, humourClubEntries, humourClubPolls, reflections, lyraConversations,
+  smashModeStats, calmSpacePreferences, humourClubEntries, humourClubPolls, pollVotes, reflections, lyraConversations,
   chatSessions, chatMessages, userChatHistory,
   type User, type UpsertUser, type LetItGoEntry, type InsertLetItGoEntry,
   type VaultEntry, type InsertVaultEntry, type MoodEntry, type InsertMoodEntry,
@@ -54,6 +54,7 @@ export interface IStorage {
   // Post operations
   createPost(post: InsertPost): Promise<Post>;
   getPublicPosts(): Promise<Post[]>;
+  deletePost(postId: string, userId: string): Promise<void>;
   
   // Smash mode operations
   createSmashModeStats(stats: InsertSmashModeStats): Promise<SmashModeStats>;
@@ -72,7 +73,9 @@ export interface IStorage {
   // Humour Club Poll operations
   createHumourClubPoll(poll: InsertHumourClubPoll): Promise<HumourClubPoll>;
   getActiveHumourClubPolls(): Promise<HumourClubPoll[]>;
-  voteInHumourClubPoll(pollId: string, optionIndex: number): Promise<HumourClubPoll>;
+  getUserPollVote(pollId: string, userId: string): Promise<number | null>;
+  voteInHumourClubPoll(pollId: string, userId: string, optionIndex: number): Promise<HumourClubPoll>;
+  deletePoll(pollId: string, userId: string): Promise<void>;
   
   // Reflection operations
   createReflection(reflection: InsertReflection): Promise<Reflection>;
@@ -366,6 +369,23 @@ export class DatabaseStorage implements IStorage {
       .limit(50); // Limit to recent 50 posts
   }
 
+  async deletePost(postId: string, userId: string): Promise<void> {
+    // Verify the post belongs to the user before deleting
+    const [post] = await db
+      .select()
+      .from(posts)
+      .where(and(eq(posts.id, postId), eq(posts.userId, userId)))
+      .limit(1);
+    
+    if (!post) {
+      throw new Error("Post not found or you don't have permission to delete it");
+    }
+    
+    await db
+      .delete(posts)
+      .where(eq(posts.id, postId));
+  }
+
   // Smash mode operations
   async createSmashModeStats(stats: InsertSmashModeStats): Promise<SmashModeStats> {
     const id = `smash_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
@@ -525,7 +545,23 @@ export class DatabaseStorage implements IStorage {
       .limit(10);
   }
 
-  async voteInHumourClubPoll(pollId: string, optionIndex: number): Promise<HumourClubPoll> {
+  async getUserPollVote(pollId: string, userId: string): Promise<number | null> {
+    const [vote] = await db
+      .select()
+      .from(pollVotes)
+      .where(and(eq(pollVotes.pollId, pollId), eq(pollVotes.userId, userId)))
+      .limit(1);
+    
+    return vote ? vote.optionIndex : null;
+  }
+
+  async voteInHumourClubPoll(pollId: string, userId: string, optionIndex: number): Promise<HumourClubPoll> {
+    // Check if user has already voted
+    const existingVote = await this.getUserPollVote(pollId, userId);
+    if (existingVote !== null) {
+      throw new Error("User has already voted in this poll");
+    }
+
     const [poll] = await db
       .select()
       .from(humourClubPolls)
@@ -536,6 +572,16 @@ export class DatabaseStorage implements IStorage {
       throw new Error("Poll not found");
     }
     
+    // Record the vote
+    const voteId = `poll_vote_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+    await db.insert(pollVotes).values({
+      id: voteId,
+      pollId,
+      userId,
+      optionIndex,
+    });
+    
+    // Update vote counts
     const votes = Array.isArray(poll.votes) ? [...(poll.votes as number[])] : [];
     while (votes.length <= optionIndex) {
       votes.push(0);
@@ -549,6 +595,29 @@ export class DatabaseStorage implements IStorage {
       .returning();
     
     return updatedPoll;
+  }
+
+  async deletePoll(pollId: string, userId: string): Promise<void> {
+    // Verify the poll belongs to the user before deleting
+    const [poll] = await db
+      .select()
+      .from(humourClubPolls)
+      .where(and(eq(humourClubPolls.id, pollId), eq(humourClubPolls.userId, userId)))
+      .limit(1);
+    
+    if (!poll) {
+      throw new Error("Poll not found or you don't have permission to delete it");
+    }
+    
+    // Delete all votes for this poll
+    await db
+      .delete(pollVotes)
+      .where(eq(pollVotes.pollId, pollId));
+    
+    // Delete the poll
+    await db
+      .delete(humourClubPolls)
+      .where(eq(humourClubPolls.id, pollId));
   }
   // Reflection operations
   async createReflection(insertReflection: InsertReflection): Promise<Reflection> {

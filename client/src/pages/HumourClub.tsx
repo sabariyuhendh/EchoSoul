@@ -7,7 +7,8 @@ import { useToast } from '@/hooks/use-toast';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { apiRequest } from '@/lib/queryClient';
 import { Link } from 'wouter';
-import { ArrowLeft, Shuffle, Sparkles, Heart, Vote, Play, Volume2, VolumeX } from 'lucide-react';
+import { ArrowLeft, Shuffle, Sparkles, Heart, Vote, Volume2, VolumeX, Trash2 } from 'lucide-react';
+import { useAuth } from '@/hooks/useAuth';
 
 interface Meme {
   text: string;
@@ -17,35 +18,32 @@ interface Meme {
 
 interface Poll {
   id: string;
+  userId: string;
   question: string;
   options: string[];
   votes: number[];
   isActive: boolean;
 }
 
-interface GameResult {
-  score: number;
-  level: number;
-  gameType: string;
+interface VoteStatus {
+  hasVoted: boolean;
+  optionIndex: number | null;
 }
+
 
 const HumourClub = () => {
   const [currentJoke, setCurrentJoke] = useState('');
   const [currentMeme, setCurrentMeme] = useState<Meme | null>(null);
   const [confettiActive, setConfettiActive] = useState(false);
-  const [gameScore, setGameScore] = useState(0);
-  const [gameActive, setGameActive] = useState(false);
   const [soundEnabled, setSoundEnabled] = useState(true);
-  const [dancingGifs, setDancingGifs] = useState<string[]>([]);
   const [pollQuestion, setPollQuestion] = useState('');
   const [pollOptions, setPollOptions] = useState(['', '']);
+  const [userVotes, setUserVotes] = useState<Record<string, VoteStatus>>({});
   
   const { toast } = useToast();
   const queryClient = useQueryClient();
+  const { isAuthenticated } = useAuth();
 
-  // Predefined dancing GIF emojis/animations
-  const danceEmojis = ['💃', '🕺', '🎭', '🎪', '🎊', '🎉', '✨', '⭐', '🌟', '💫'];
-  
   // Predefined sound effects (using Web Audio API for basic sounds)
   const playSound = (type: 'pop' | 'cheer' | 'whoosh' | 'ding') => {
     if (!soundEnabled || typeof window === 'undefined') return;
@@ -142,7 +140,38 @@ const HumourClub = () => {
   // Get active polls
   const { data: pollsData } = useQuery({
     queryKey: ['/api/humour/polls'],
+    queryFn: () => apiRequest('/api/humour/polls'),
   });
+
+  // Fetch vote status for all polls
+  useEffect(() => {
+    if (!isAuthenticated || !(pollsData as any)?.polls) return;
+    
+    const fetchVoteStatuses = async () => {
+      const polls = (pollsData as any).polls as Poll[];
+      const voteStatuses: Record<string, VoteStatus> = {};
+      
+      await Promise.all(
+        polls.map(async (poll) => {
+          try {
+            const response = await fetch(`/api/humour/polls/${poll.id}/vote-status`, {
+              credentials: 'include',
+            });
+            if (response.ok) {
+              const data = await response.json();
+              voteStatuses[poll.id] = data;
+            }
+          } catch (error) {
+            console.error(`Error fetching vote status for poll ${poll.id}:`, error);
+          }
+        })
+      );
+      
+      setUserVotes(voteStatuses);
+    };
+    
+    fetchVoteStatuses();
+  }, [pollsData, isAuthenticated]);
 
   // Vote in poll
   const voteMutation = useMutation({
@@ -152,13 +181,33 @@ const HumourClub = () => {
         body: JSON.stringify({ optionIndex }),
       });
     },
-    onSuccess: () => {
+    onSuccess: (_, variables) => {
       queryClient.invalidateQueries({ queryKey: ['/api/humour/polls'] });
+      // Update local vote status
+      setUserVotes(prev => ({
+        ...prev,
+        [variables.pollId]: { hasVoted: true, optionIndex: variables.optionIndex }
+      }));
       playSound('ding');
       toast({
         title: "Vote recorded!",
         description: "Thanks for participating!",
       });
+    },
+    onError: (error: any) => {
+      if (error?.message?.includes('already voted')) {
+        toast({
+          title: "Already voted",
+          description: "You have already voted in this poll.",
+          variant: "destructive",
+        });
+      } else {
+        toast({
+          title: "Vote failed",
+          description: "Could not record your vote. Please try again.",
+          variant: "destructive",
+        });
+      }
     },
   });
 
@@ -185,38 +234,29 @@ const HumourClub = () => {
     },
   });
 
-  // Simple bubble pop game
-  const startBubbleGame = () => {
-    setGameActive(true);
-    setGameScore(0);
-    playSound('whoosh');
-    
-    // Simple game logic - increment score on clicks
-    const gameInterval = setInterval(() => {
-      setGameScore(prev => prev + 1);
-    }, 1000);
-    
-    setTimeout(() => {
-      clearInterval(gameInterval);
-      setGameActive(false);
-      triggerConfetti();
-      toast({
-        title: "Game Over!",
-        description: `You scored ${gameScore + 10} points! 🎉`,
+  // Delete poll
+  const deletePollMutation = useMutation({
+    mutationFn: async (pollId: string) => {
+      return apiRequest(`/api/humour/polls/${pollId}`, {
+        method: 'DELETE',
       });
-    }, 10000); // 10 second game
-  };
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['/api/humour/polls'] });
+      toast({
+        title: "Poll deleted",
+        description: "Your poll has been removed.",
+      });
+    },
+    onError: () => {
+      toast({
+        title: "Error",
+        description: "Failed to delete poll.",
+        variant: "destructive",
+      });
+    },
+  });
 
-  // Trigger dancing GIFs
-  const triggerDanceParty = () => {
-    const newGifs = Array.from({ length: 8 }, () => 
-      danceEmojis[Math.floor(Math.random() * danceEmojis.length)]
-    );
-    setDancingGifs(newGifs);
-    playSound('cheer');
-    
-    setTimeout(() => setDancingGifs([]), 5000);
-  };
 
   // Add poll option
   const addPollOption = () => {
@@ -277,25 +317,6 @@ const HumourClub = () => {
         </div>
       )}
 
-      {/* Dancing GIFs overlay */}
-      {dancingGifs.length > 0 && (
-        <div className="absolute inset-0 pointer-events-none z-10">
-          {dancingGifs.map((gif, i) => (
-            <div
-              key={i}
-              className="absolute animate-bounce text-6xl"
-              style={{
-                left: `${(i * 12) + 10}%`,
-                top: `${20 + (i % 3) * 20}%`,
-                animationDelay: `${i * 0.2}s`,
-                animationDuration: '1s'
-              }}
-            >
-              {gif}
-            </div>
-          ))}
-        </div>
-      )}
 
       <div className="relative z-20 max-w-6xl mx-auto px-6 py-8 animate-fadeIn">
         {/* Header */}
@@ -387,85 +408,6 @@ const HumourClub = () => {
             </div>
           </Card>
 
-          {/* Mini Games */}
-          <Card className="apple-card p-8 animate-slideUp" style={{animationDelay: '0.3s'}}>
-            <div className="space-y-6">
-              <div className="flex items-center space-x-3">
-                <div className="w-12 h-12 bg-gradient-to-br from-calm-500 to-lavender-600 rounded-2xl flex items-center justify-center animate-breathe" style={{animationDelay: '1s'}}>
-                  <Play className="w-6 h-6 text-white" />
-                </div>
-                <h3 className="text-xl font-medium tracking-tight">Quick Games</h3>
-              </div>
-              
-              <div className="space-y-4">
-                {gameActive ? (
-                  <div className="apple-card-subtle p-6 text-center">
-                    <div className="text-2xl font-bold mb-3">🎯 Bubble Pop!</div>
-                    <div className="text-xl mb-3 text-gradient-calm">Score: {gameScore}</div>
-                    <div className="text-sm text-gray-400 mb-4">Keep clicking bubbles!</div>
-                    <div className="mt-4 flex flex-wrap justify-center gap-3">
-                      {Array.from({ length: 6 }).map((_, i) => (
-                        <button
-                          key={i}
-                          onClick={() => {
-                            setGameScore(prev => prev + 1);
-                            playSound('pop');
-                          }}
-                          className="w-16 h-16 bg-gradient-to-br from-calm-400 to-lavender-500 rounded-2xl shadow-lg transform hover:scale-110 transition-all animate-float apple-button"
-                          style={{ animationDelay: `${i * 0.1}s` }}
-                        >
-                          💫
-                        </button>
-                      ))}
-                    </div>
-                  </div>
-                ) : (
-                  <>
-                    <Button
-                      onClick={startBubbleGame}
-                      className="w-full apple-button bg-gradient-to-r from-calm-500 to-lavender-600 hover:from-calm-600 hover:to-lavender-700 text-white font-medium border-0 calm-shadow"
-                    >
-                      🎯 Bubble Pop Game (10s)
-                    </Button>
-                    <Button
-                      onClick={() => {
-                        triggerConfetti();
-                        toast({
-                          title: "Memory Challenge!",
-                          description: "Remember this sequence: 🌟⭐✨💫🌟",
-                        });
-                      }}
-                      className="w-full immersive-button secondary"
-                    >
-                      🧠 Memory Challenge
-                    </Button>
-                  </>
-                )}
-              </div>
-            </div>
-          </Card>
-
-          {/* Dance Party */}
-          <Card className="apple-card p-8 animate-slideUp" style={{animationDelay: '0.4s'}}>
-            <div className="space-y-6">
-              <div className="flex items-center space-x-3">
-                <div className="w-12 h-12 bg-gradient-to-br from-sage-400 to-sage-600 rounded-2xl flex items-center justify-center animate-breathe" style={{animationDelay: '1.5s'}}>
-                  <span className="text-white text-xl">💃</span>
-                </div>
-                <h3 className="text-xl font-medium tracking-tight">Dance Party</h3>
-              </div>
-              
-              <div className="apple-card-subtle p-6 text-center">
-                <p className="text-gray-400 mb-4 font-light">Need an instant mood boost?</p>
-                <Button
-                  onClick={triggerDanceParty}
-                  className="w-full apple-button bg-gradient-to-r from-sage-500 to-sage-600 hover:from-sage-600 hover:to-sage-700 text-white font-medium text-lg py-6 transform hover:scale-105 transition-all border-0 sage-shadow"
-                >
-                  🎉 START DANCE PARTY! 🎉
-                </Button>
-              </div>
-            </div>
-          </Card>
         </div>
 
         {/* Community Polls Section */}
@@ -478,40 +420,80 @@ const HumourClub = () => {
             {/* Active Polls */}
             <div className="space-y-6">
               <h3 className="text-xl font-medium text-lavender-400">Vote Now!</h3>
-              {(pollsData as any)?.polls?.map((poll: Poll) => (
-                <Card key={poll.id} className="apple-card p-6 animate-slideUp">
-                  <h4 className="font-medium mb-4 text-lg">{poll.question}</h4>
-                  <div className="space-y-2">
-                    {poll.options.map((option: string, index: number) => {
-                      const totalVotes = poll.votes.reduce((sum, count) => sum + count, 0);
-                      const percentage = totalVotes > 0 ? (poll.votes[index] / totalVotes) * 100 : 0;
-                      
-                      return (
-                        <div key={index} className="space-y-1">
-                          <Button
-                            onClick={() => voteMutation.mutate({ pollId: poll.id, optionIndex: index })}
-                            variant="outline"
-                            className="w-full text-left justify-start border-white/20 hover:bg-white/10"
-                            disabled={voteMutation.isPending}
-                          >
-                            <Vote className="w-4 h-4 mr-2" />
-                            {option}
-                          </Button>
-                          <div className="flex items-center space-x-2 text-sm text-gray-300">
-                            <div className="flex-1 bg-white/10 rounded-full h-2">
-                              <div 
-                                className="bg-gradient-to-r from-cyan-400 to-purple-500 h-2 rounded-full transition-all duration-500"
-                                style={{ width: `${percentage}%` }}
-                              />
+              {(pollsData as any)?.polls?.map((poll: Poll) => {
+                const voteStatus = userVotes[poll.id] || { hasVoted: false, optionIndex: null };
+                const hasVoted = voteStatus.hasVoted;
+                
+                return (
+                  <Card key={poll.id} className="apple-card p-6 animate-slideUp">
+                    <div className="flex items-start justify-between mb-4">
+                      <h4 className="font-medium text-lg flex-1">{poll.question}</h4>
+                      {user && poll.userId === user.id && (
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => {
+                            if (confirm('Are you sure you want to delete this poll?')) {
+                              deletePollMutation.mutate(poll.id);
+                            }
+                          }}
+                          className="text-red-400 hover:text-red-300 hover:bg-red-500/10 ml-2"
+                          title="Delete poll"
+                          disabled={deletePollMutation.isPending}
+                        >
+                          <Trash2 className="w-4 h-4" />
+                        </Button>
+                      )}
+                    </div>
+                    {hasVoted && (
+                      <div className="mb-3 text-sm text-lavender-400">
+                        ✓ You voted for: {poll.options[voteStatus.optionIndex!]}
+                      </div>
+                    )}
+                    <div className="space-y-2">
+                      {poll.options.map((option: string, index: number) => {
+                        const totalVotes = poll.votes.reduce((sum, count) => sum + count, 0);
+                        const percentage = totalVotes > 0 ? (poll.votes[index] / totalVotes) * 100 : 0;
+                        const isUserVote = hasVoted && voteStatus.optionIndex === index;
+                        
+                        return (
+                          <div key={index} className="space-y-1">
+                            <Button
+                              onClick={() => voteMutation.mutate({ pollId: poll.id, optionIndex: index })}
+                              variant="outline"
+                              className={`w-full text-left justify-start border-white/20 ${
+                                isUserVote 
+                                  ? 'bg-lavender-500/20 border-lavender-400/50' 
+                                  : hasVoted 
+                                    ? 'opacity-50 cursor-not-allowed' 
+                                    : 'hover:bg-white/10'
+                              }`}
+                              disabled={voteMutation.isPending || hasVoted || !isAuthenticated}
+                            >
+                              <Vote className="w-4 h-4 mr-2" />
+                              {option}
+                              {isUserVote && <span className="ml-2">✓</span>}
+                            </Button>
+                            <div className="flex items-center space-x-2 text-sm text-gray-300">
+                              <div className="flex-1 bg-white/10 rounded-full h-2">
+                                <div 
+                                  className={`h-2 rounded-full transition-all duration-500 ${
+                                    isUserVote 
+                                      ? 'bg-gradient-to-r from-lavender-400 to-purple-500' 
+                                      : 'bg-gradient-to-r from-cyan-400 to-purple-500'
+                                  }`}
+                                  style={{ width: `${percentage}%` }}
+                                />
+                              </div>
+                              <span>{poll.votes[index]} votes ({percentage.toFixed(0)}%)</span>
                             </div>
-                            <span>{poll.votes[index]} votes ({percentage.toFixed(0)}%)</span>
                           </div>
-                        </div>
-                      );
-                    })}
-                  </div>
-                </Card>
-              ))}
+                        );
+                      })}
+                    </div>
+                  </Card>
+                );
+              })}
             </div>
 
             {/* Create Poll */}

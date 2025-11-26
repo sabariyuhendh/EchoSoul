@@ -237,3 +237,5 @@ Most endpoints require authentication via `requireAuth` middleware:
 - `GET /api/reflections` - Reflections (currently uses mock user)
 
 
+
+
