@@ -23,10 +23,13 @@ const Matchmaking = () => {
 
     // Connect to WebSocket with credentials
     const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
-    // Use window.location.host to get the actual hostname (not 0.0.0.0)
-    const host = window.location.hostname === '0.0.0.0' ? 'localhost' : window.location.hostname;
-    const port = window.location.port || '5000';
-    const wsUrl = `${protocol}//${host}:${port}/ws`;
+    // Use window.location.host which automatically handles ports correctly
+    // For HTTPS: host = "echosoul-6hpk.onrender.com" (no port shown, defaults to 443)
+    // For HTTP localhost: host = "localhost:5000" (includes port)
+    const host = window.location.hostname === '0.0.0.0' 
+      ? 'localhost:5000' 
+      : window.location.host;
+    const wsUrl = `${protocol}//${host}/ws`;
     console.log('[Client] Connecting to WebSocket:', wsUrl);
     const websocket = new WebSocket(wsUrl);
     
