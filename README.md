@@ -1,14 +1,11 @@
 # EchoSoul
-
-![EchoSoul Logo](https://echosoul-6hpk.onrender.com/) <!-- Replace with actual logo if available -->
-
 A comprehensive emotional wellness platform designed to help users navigate their inner world through journaling, mood tracking, AI-powered conversations, and interactive emotional release activities.
 
-## 🌐 Live Demo
+##  Live Demo
 
 [Visit EchoSoul](https://echosoul-6hpk.onrender.com/)
 
-## ✨ Features
+##  Features
 
 ### Core Emotional Wellness Tools
 - **Vault**: 8-minute guided journaling sessions for emotional release in complete privacy
@@ -34,7 +31,7 @@ A comprehensive emotional wellness platform designed to help users navigate thei
 - **Burn Mode**: Interactive stress relief activities
 - **Soulmate**: Deep connection features for meaningful relationships
 
-## 🛠️ Tech Stack
+##  Tech Stack
 
 ### Frontend
 - **React 18** with TypeScript
@@ -64,7 +61,7 @@ A comprehensive emotional wellness platform designed to help users navigate thei
 - **Vitest** for testing (configured)
 - **TypeScript** for type checking
 
-## 🚀 Quick Start
+##  Quick Start
 
 ### Prerequisites
 - Node.js (v18 or higher)
@@ -108,7 +105,7 @@ A comprehensive emotional wellness platform designed to help users navigate thei
 
 The application will be available at `http://localhost:5000`
 
-## 📁 Project Structure
+##  Project Structure
 
 ```
 echosoul/
@@ -128,7 +125,7 @@ echosoul/
 └── attached_assets/      # Additional assets
 ```
 
-## 🔧 Available Scripts
+##  Available Scripts
 
 - `npm run dev` - Start development server
 - `npm run build` - Build for production
@@ -136,7 +133,7 @@ echosoul/
 - `npm run check` - Type checking
 - `npm run db:push` - Push database schema changes
 
-## 🌍 Deployment
+##  Deployment
 
 The application is configured for deployment on platforms like Render, Vercel, or Railway. For production deployment:
 
@@ -146,15 +143,15 @@ The application is configured for deployment on platforms like Render, Vercel, o
 4. Build the client: `npm run build`
 5. Start the server: `npm start`
 
-## 🤝 Contributing
+##  Contributing
 
 We welcome contributions! Please see our contributing guidelines and code of conduct.
 
-## 📄 License
+##  License
 
 This project is licensed under the MIT License - see the LICENSE file for details.
 
-## 🙏 Acknowledgments
+##  Acknowledgments
 
 - Built with modern web technologies for emotional wellness
 - Powered by AI for personalized support
