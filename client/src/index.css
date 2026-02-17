@@ -310,19 +310,15 @@
   }
   
   html {
-    height: 100%;
-    overflow-y: auto;
     scroll-behavior: smooth;
   }
   
   body {
     @apply bg-black text-white font-sans antialiased;
     min-height: 100vh;
-    height: 100%;
     margin: 0;
     padding: 0;
     overflow-x: hidden;
-    overflow-y: auto;
     position: relative;
     background: #000000;
     font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Helvetica', 'Arial', sans-serif;
@@ -334,7 +330,6 @@
   #root {
     min-height: 100vh;
     position: relative;
-    overflow: visible;
   }
   
   /* Apple-style glassmorphism with calming accents */
@@ -429,18 +424,6 @@
   .feed-content, .content-grid {
     max-height: calc(100vh - 150px);
     overflow-y: auto;
-  }
-  
-  /* Home page specific fix for scrolling */
-  body {
-    overflow-y: auto !important;
-    overflow-x: hidden;
-  }
-  
-  /* Remove any body height restrictions */
-  html, body {
-    height: auto !important;
-    min-height: 100vh;
   }
   
   /* Fix for pages with fixed height containers */
@@ -716,15 +699,10 @@
     opacity: 0.9 !important;
   }
   
-  /* Prevent scrolling beyond page bounds */
-  body {
-    overflow-x: hidden;
-    overscroll-behavior: none;
-  }
-  
+  /* Prevent horizontal scrolling */
   html {
     overflow-x: hidden;
-    scroll-behavior: smooth;
+    overscroll-behavior-x: none;
   }
   
   /* Animation fixes */
